@@ -6,12 +6,12 @@ The drawer uses the installed headless dialog component for focus trap, Escape, 
 
 **Blocked by:** 02 (Sidebar with navigation items mounted in the console layout)
 
-**Status:** ready-for-agent
+**Status:** implemented (Playwright execution blocked by missing host browser libraries)
 
-- [ ] Below the medium breakpoint the layout renders the top bar (Logo + menu button) and hides the fixed sidebar
-- [ ] Menu button opens a dialog containing the sidebar; `aria-expanded` reflects state
-- [ ] Drawer closes on Escape, backdrop click, and any navigation click; focus returns to the button
-- [ ] Body scroll is locked while the drawer is open
-- [ ] Story shows the drawer at a narrow viewport
-- [ ] Unit tests cover open, each close path, focus return and `aria-expanded`, rendered inside the real router with in-memory history
-- [ ] Headless dialog package promoted to a runtime dependency; lint, typecheck, unit and e2e suites green
+- [x] Below the medium breakpoint the layout renders the top bar (Logo + menu button) and hides the fixed sidebar
+- [x] Menu button opens a dialog containing the sidebar; `aria-expanded` reflects state
+- [x] Drawer closes on Escape, backdrop click, and any navigation click; focus returns to the button
+- [x] Body scroll is locked while the drawer is open
+- [x] Story shows the drawer at a narrow viewport
+- [x] Unit tests cover open, each close path, focus return and `aria-expanded`, rendered inside the real router with in-memory history
+- [ ] Headless dialog package promoted to a runtime dependency; lint, typecheck, unit and build green; e2e execution blocked by missing host browser libraries

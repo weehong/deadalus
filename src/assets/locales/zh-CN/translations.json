@@ -2,7 +2,7 @@
   "_review": "Machine translated authentication and navigation copy — NEEDS HUMAN REVIEW",
   "home": { "greeting": "Operations console" },
   "nav": { "overview": "概览", "workOrders": "工单", "systemStatus": "系统状态", "assets": "资产", "operators": "操作员", "settings": "设置" },
-  "console": { "scope": "所有站点", "skipToContent": "跳到主要内容" },
+  "console": { "openNavigation": "打开导航", "navigation": "控制台导航", "scope": "所有站点", "skipToContent": "跳到主要内容" },
   "sidebar": { "lastSync": "上次同步", "servicesImpaired_other": "{{count}} 项服务受影响" },
   "example": { "title": "Matches Builder Example", "tableHeading": "Matches table", "formHeading": "Add a match", "chartHeading": "Goals per match", "loading": "Loading matches…", "error": "Failed to load matches" },
   "auth": {

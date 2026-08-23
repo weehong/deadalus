@@ -3,10 +3,11 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { FunctionComponent } from "@/common/types";
-import { Sidebar, SidebarStatus } from "@/components/layout";
+import { ConsoleDrawer, Sidebar, SidebarStatus } from "@/components/layout";
 import { consoleNavigation } from "@/features/console/navigation";
 
-// The frame every console screen renders inside: skip link, sidebar, content. The header lands here next.
+// The frame every console screen renders inside: skip link, sidebar (fixed on desktop,
+// a drawer below the medium breakpoint), and the content region. The header lands here next.
 export const ConsoleShell = (): FunctionComponent => {
 	const { t } = useTranslation();
 	// The moment the shell mounted — honest until a real sync clock feeds the same prop.
@@ -15,6 +16,13 @@ export const ConsoleShell = (): FunctionComponent => {
 		...item,
 		label: t(labelKey),
 	}));
+	const sidebar = (
+		<Sidebar
+			items={items}
+			scope={t("console.scope")}
+			status={<SidebarStatus syncTime={syncTime} />}
+		/>
+	);
 	return (
 		<div className="min-h-screen bg-canvas text-ink md:grid md:grid-cols-[236px_minmax(0,1fr)]">
 			<a
@@ -23,12 +31,9 @@ export const ConsoleShell = (): FunctionComponent => {
 			>
 				{t("console.skipToContent")}
 			</a>
+			<ConsoleDrawer sidebar={sidebar} />
 			<div className="hidden md:sticky md:top-0 md:block md:h-screen">
-				<Sidebar
-					items={items}
-					scope={t("console.scope")}
-					status={<SidebarStatus syncTime={syncTime} />}
-				/>
+				{sidebar}
 			</div>
 			<main className="p-12" id="content">
 				<Outlet />

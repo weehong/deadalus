@@ -1,3 +1,4 @@
+export { ConsoleDrawer } from "./ConsoleDrawer";
 export { Sidebar } from "./Sidebar";
 export type { SidebarProps } from "./Sidebar";
 export { SidebarItem } from "./SidebarItem";

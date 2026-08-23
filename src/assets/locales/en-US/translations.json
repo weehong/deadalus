@@ -1,7 +1,7 @@
 {
   "home": { "greeting": "Operations console" },
   "nav": { "overview": "Overview", "workOrders": "Work orders", "systemStatus": "System status", "assets": "Assets", "operators": "Operators", "settings": "Settings" },
-  "console": { "scope": "All sites", "skipToContent": "Skip to content" },
+  "console": { "openNavigation": "Open navigation", "navigation": "Console navigation", "scope": "All sites", "skipToContent": "Skip to content" },
   "sidebar": { "lastSync": "Last sync", "servicesImpaired_one": "{{count}} service impaired", "servicesImpaired_other": "{{count}} services impaired" },
   "example": { "title": "Matches Builder Example", "tableHeading": "Matches table", "formHeading": "Add a match", "chartHeading": "Goals per match", "loading": "Loading matches…", "error": "Failed to load matches" },
   "auth": {
