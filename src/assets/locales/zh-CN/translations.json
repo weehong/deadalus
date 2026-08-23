@@ -1,0 +1,16 @@
+{
+  "_review": "Machine translated authentication copy — NEEDS HUMAN REVIEW",
+  "home": { "greeting": "Operations console" },
+  "example": { "title": "Matches Builder Example", "tableHeading": "Matches table", "formHeading": "Add a match", "chartHeading": "Goals per match", "loading": "Loading matches…", "error": "Failed to load matches" },
+  "auth": {
+    "brandKicker": "运营智能", "brandHeadline": "确保每个站点正常运转。", "brandBlurb": "集中查看所有站点的工单、资产健康状况和事件历史。",
+    "figures": { "sites": "站点", "assets": "资产", "coverage": "覆盖" },
+    "cardKicker": "管理员访问", "heading": "登录", "subtitle": "使用您的工作凭据继续。",
+    "email": "工作邮箱", "emailPlaceholder": "you@company.com", "password": "密码", "passwordPlaceholder": "输入您的密码",
+    "showPassword": "显示密码", "hidePassword": "隐藏密码", "submit": "登录", "submitting": "正在登录…",
+    "access": "需要访问权限？请联系您的站点管理员。",
+    "validation": { "emailRequired": "请输入工作邮箱", "emailInvalid": "请输入有效的邮箱地址", "passwordRequired": "请输入密码" },
+    "errors": { "invalidCredentials": "邮箱或密码不正确。", "rateLimited": "尝试次数过多，请稍后再试。", "unavailable": "无法连接登录服务，请检查网络后重试。", "unknown": "出现问题，请重试。" },
+    "language": "语言", "english": "English", "chinese": "简体中文"
+  }
+}

@@ -1,14 +1,12 @@
 import { test, expect } from "@playwright/test";
 
-test("home page renders the greeting", async ({ page }) => {
-	await page.goto("/");
-	await expect(page).toHaveTitle("Vite React Boilerplate");
-	await expect(page.getByText("Hello, world!")).toBeVisible();
+test("application is branded", async ({ page }) => {
+	await page.goto("/example");
+	await expect(page).toHaveTitle("Daedalus Ops");
 });
 
-test("can navigate to the example page", async ({ page }) => {
-	await page.goto("/");
-	await page.getByRole("link", { name: /example/i }).click();
+test("demo is available on its own public route", async ({ page }) => {
+	await page.goto("/example");
 	await expect(page).toHaveURL(/\/example/);
 	await expect(
 		page.getByRole("heading", { level: 1, name: /matches/i })

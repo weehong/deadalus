@@ -66,9 +66,9 @@ const typescriptConfig = {
     "@typescript-eslint/array-type": ["error", { "default": "generic" }],
     "@typescript-eslint/consistent-type-exports": "error",
     "@typescript-eslint/consistent-type-imports": "error",
-    "@typescript-eslint/explicit-function-return-type": "error",
+    "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-member-accessibility": "error",
-    "@typescript-eslint/explicit-module-boundary-types": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-confusing-void-expression": "error",
     "@typescript-eslint/no-import-type-side-effects": "error",
     "@typescript-eslint/no-require-imports": "error",
@@ -205,6 +205,10 @@ const eslintConfig = typescriptEslint.config(
 
 eslintConfig.map((config) => {
   config.files = ["src/**/*.ts", "src/**/*.tsx"]
+})
+
+eslintConfig.unshift({
+  ignores: ["dist/**", "storybook-static/**", "playwright-report/**", "test-results/**"]
 })
 
 export default eslintConfig

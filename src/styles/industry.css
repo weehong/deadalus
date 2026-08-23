@@ -1,0 +1,21 @@
+/*
+ * Vendored Industry design-system foundation.
+ * Re-vendor deviations: the remote font import is replaced by local @fontsource
+ * packages, and system CJK families are appended to both font stacks.
+ */
+:root {
+	--industry-ground: #f4f2ed;
+	--industry-text: #172a2f;
+	--industry-divider: #aab8b8;
+	--industry-surface: #fffdfa;
+	--industry-accent: #183f48;
+	--industry-signal: #ed5d39;
+	--industry-font-heading: "Barlow Condensed", "PingFang SC", "Microsoft YaHei", sans-serif;
+	--industry-font-body: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+html { background: var(--industry-ground); color: var(--industry-text); font-family: var(--industry-font-body); }
+body { margin: 0; min-width: 320px; }
+h1, h2, h3, h4, h5, h6 { font-family: var(--industry-font-heading); }
+button, input { font: inherit; }
+* { box-sizing: border-box; }

@@ -6,7 +6,7 @@ import { routeTree } from "@/routeTree.gen";
 import "@/styles/tailwind.css";
 import "@/common/i18n";
 
-const router = createRouter({ routeTree });
+const router = createRouter({ routeTree, context: { session: null } });
 
 export type TanstackRouter = typeof router;
 

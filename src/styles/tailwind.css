@@ -1,1 +1,24 @@
 @import "tailwindcss";
+@import "@fontsource/barlow-condensed/400.css";
+@import "@fontsource/barlow-condensed/600.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/600.css";
+@import "./industry.css";
+
+@theme {
+	--font-heading: "Barlow Condensed", "PingFang SC", "Microsoft YaHei", sans-serif;
+	--font-body: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+	--color-steel-50: #f2f6f7;
+	--color-steel-100: #dce7e9;
+	--color-steel-300: #91aab0;
+	--color-steel-500: #526f76;
+	--color-steel-700: #29474f;
+	--color-steel-900: #102f37;
+	--color-signal-400: #ff7856;
+	--color-signal-500: #ed5d39;
+	/* Industry role-token aliases: ground → canvas, text → ink, divider → rule. */
+	--color-canvas: var(--industry-ground);
+	--color-ink: var(--industry-text);
+	--color-rule: var(--industry-divider);
+	--color-surface: var(--industry-surface);
+}

@@ -1,0 +1,17 @@
+{
+  "home": { "greeting": "Operations console" },
+  "example": { "title": "Matches Builder Example", "tableHeading": "Matches table", "formHeading": "Add a match", "chartHeading": "Goals per match", "loading": "Loading matches…", "error": "Failed to load matches" },
+  "auth": {
+    "brandKicker": "Operations intelligence",
+    "brandHeadline": "Keep every site in working order.",
+    "brandBlurb": "One operational view of work orders, asset health, and incident history across every site.",
+    "figures": { "sites": "Sites", "assets": "Assets", "coverage": "Coverage" },
+    "cardKicker": "Administrator access", "heading": "Sign in", "subtitle": "Use your work credentials to continue.",
+    "email": "Work email", "emailPlaceholder": "you@company.com", "password": "Password", "passwordPlaceholder": "Enter your password",
+    "showPassword": "Show password", "hidePassword": "Hide password", "submit": "Sign in", "submitting": "Signing in…",
+    "access": "Need access? Ask your site administrator.",
+    "validation": { "emailRequired": "Work email is required", "emailInvalid": "Enter a valid email address", "passwordRequired": "Password is required" },
+    "errors": { "invalidCredentials": "The email or password is incorrect.", "rateLimited": "Too many attempts. Please wait before trying again.", "unavailable": "The sign-in service is unreachable. Check your connection and try again.", "unknown": "Something went wrong. Please try again." },
+    "language": "Language", "english": "English", "chinese": "简体中文"
+  }
+}
