@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/features/blueprints/data/database";
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -11,7 +12,7 @@ if (import.meta.env.MODE !== "test" && (!url || !anonKey)) {
 	);
 }
 
-export const supabase = createClient(
+export const supabase = createClient<Database>(
 	url || "https://example.supabase.co",
 	anonKey || "development-placeholder-key",
 	{

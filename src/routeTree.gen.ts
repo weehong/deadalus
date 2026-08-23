@@ -17,7 +17,14 @@ import { Route as ConsoleWorkOrdersRouteImport } from './routes/_console/work-or
 import { Route as ConsoleSystemStatusRouteImport } from './routes/_console/system-status'
 import { Route as ConsoleSettingsRouteImport } from './routes/_console/settings'
 import { Route as ConsoleOperatorsRouteImport } from './routes/_console/operators'
+import { Route as ConsoleBlueprintsRouteImport } from './routes/_console/blueprints'
 import { Route as ConsoleAssetsRouteImport } from './routes/_console/assets'
+import { Route as ConsoleBlueprintsIndexRouteImport } from './routes/_console/blueprints/index'
+import { Route as ConsoleBlueprintsUploadRouteImport } from './routes/_console/blueprints/upload'
+import { Route as ConsoleBlueprintsUnitsRouteImport } from './routes/_console/blueprints/units'
+import { Route as ConsoleBlueprintsSubcontractorsRouteImport } from './routes/_console/blueprints/subcontractors'
+import { Route as ConsoleBlueprintsStructureRouteImport } from './routes/_console/blueprints/structure'
+import { Route as ConsoleBlueprintsUnitsUnitIdRouteImport } from './routes/_console/blueprints/units.$unitId'
 
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
@@ -58,21 +65,66 @@ const ConsoleOperatorsRoute = ConsoleOperatorsRouteImport.update({
   path: '/operators',
   getParentRoute: () => ConsoleRoute,
 } as any)
+const ConsoleBlueprintsRoute = ConsoleBlueprintsRouteImport.update({
+  id: '/blueprints',
+  path: '/blueprints',
+  getParentRoute: () => ConsoleRoute,
+} as any)
 const ConsoleAssetsRoute = ConsoleAssetsRouteImport.update({
   id: '/assets',
   path: '/assets',
   getParentRoute: () => ConsoleRoute,
 } as any)
+const ConsoleBlueprintsIndexRoute = ConsoleBlueprintsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ConsoleBlueprintsRoute,
+} as any)
+const ConsoleBlueprintsUploadRoute = ConsoleBlueprintsUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => ConsoleBlueprintsRoute,
+} as any)
+const ConsoleBlueprintsUnitsRoute = ConsoleBlueprintsUnitsRouteImport.update({
+  id: '/units',
+  path: '/units',
+  getParentRoute: () => ConsoleBlueprintsRoute,
+} as any)
+const ConsoleBlueprintsSubcontractorsRoute =
+  ConsoleBlueprintsSubcontractorsRouteImport.update({
+    id: '/subcontractors',
+    path: '/subcontractors',
+    getParentRoute: () => ConsoleBlueprintsRoute,
+  } as any)
+const ConsoleBlueprintsStructureRoute =
+  ConsoleBlueprintsStructureRouteImport.update({
+    id: '/structure',
+    path: '/structure',
+    getParentRoute: () => ConsoleBlueprintsRoute,
+  } as any)
+const ConsoleBlueprintsUnitsUnitIdRoute =
+  ConsoleBlueprintsUnitsUnitIdRouteImport.update({
+    id: '/$unitId',
+    path: '/$unitId',
+    getParentRoute: () => ConsoleBlueprintsUnitsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/example': typeof ExampleRoute
   '/sign-in': typeof SignInRoute
   '/assets': typeof ConsoleAssetsRoute
+  '/blueprints': typeof ConsoleBlueprintsRouteWithChildren
   '/operators': typeof ConsoleOperatorsRoute
   '/settings': typeof ConsoleSettingsRoute
   '/system-status': typeof ConsoleSystemStatusRoute
   '/work-orders': typeof ConsoleWorkOrdersRoute
   '/': typeof ConsoleIndexRoute
+  '/blueprints/structure': typeof ConsoleBlueprintsStructureRoute
+  '/blueprints/subcontractors': typeof ConsoleBlueprintsSubcontractorsRoute
+  '/blueprints/units': typeof ConsoleBlueprintsUnitsRouteWithChildren
+  '/blueprints/upload': typeof ConsoleBlueprintsUploadRoute
+  '/blueprints/': typeof ConsoleBlueprintsIndexRoute
+  '/blueprints/units/$unitId': typeof ConsoleBlueprintsUnitsUnitIdRoute
 }
 export interface FileRoutesByTo {
   '/example': typeof ExampleRoute
@@ -83,6 +135,12 @@ export interface FileRoutesByTo {
   '/system-status': typeof ConsoleSystemStatusRoute
   '/work-orders': typeof ConsoleWorkOrdersRoute
   '/': typeof ConsoleIndexRoute
+  '/blueprints/structure': typeof ConsoleBlueprintsStructureRoute
+  '/blueprints/subcontractors': typeof ConsoleBlueprintsSubcontractorsRoute
+  '/blueprints/units': typeof ConsoleBlueprintsUnitsRouteWithChildren
+  '/blueprints/upload': typeof ConsoleBlueprintsUploadRoute
+  '/blueprints': typeof ConsoleBlueprintsIndexRoute
+  '/blueprints/units/$unitId': typeof ConsoleBlueprintsUnitsUnitIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -90,11 +148,18 @@ export interface FileRoutesById {
   '/example': typeof ExampleRoute
   '/sign-in': typeof SignInRoute
   '/_console/assets': typeof ConsoleAssetsRoute
+  '/_console/blueprints': typeof ConsoleBlueprintsRouteWithChildren
   '/_console/operators': typeof ConsoleOperatorsRoute
   '/_console/settings': typeof ConsoleSettingsRoute
   '/_console/system-status': typeof ConsoleSystemStatusRoute
   '/_console/work-orders': typeof ConsoleWorkOrdersRoute
   '/_console/': typeof ConsoleIndexRoute
+  '/_console/blueprints/structure': typeof ConsoleBlueprintsStructureRoute
+  '/_console/blueprints/subcontractors': typeof ConsoleBlueprintsSubcontractorsRoute
+  '/_console/blueprints/units': typeof ConsoleBlueprintsUnitsRouteWithChildren
+  '/_console/blueprints/upload': typeof ConsoleBlueprintsUploadRoute
+  '/_console/blueprints/': typeof ConsoleBlueprintsIndexRoute
+  '/_console/blueprints/units/$unitId': typeof ConsoleBlueprintsUnitsUnitIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -102,11 +167,18 @@ export interface FileRouteTypes {
     | '/example'
     | '/sign-in'
     | '/assets'
+    | '/blueprints'
     | '/operators'
     | '/settings'
     | '/system-status'
     | '/work-orders'
     | '/'
+    | '/blueprints/structure'
+    | '/blueprints/subcontractors'
+    | '/blueprints/units'
+    | '/blueprints/upload'
+    | '/blueprints/'
+    | '/blueprints/units/$unitId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/example'
@@ -117,17 +189,30 @@ export interface FileRouteTypes {
     | '/system-status'
     | '/work-orders'
     | '/'
+    | '/blueprints/structure'
+    | '/blueprints/subcontractors'
+    | '/blueprints/units'
+    | '/blueprints/upload'
+    | '/blueprints'
+    | '/blueprints/units/$unitId'
   id:
     | '__root__'
     | '/_console'
     | '/example'
     | '/sign-in'
     | '/_console/assets'
+    | '/_console/blueprints'
     | '/_console/operators'
     | '/_console/settings'
     | '/_console/system-status'
     | '/_console/work-orders'
     | '/_console/'
+    | '/_console/blueprints/structure'
+    | '/_console/blueprints/subcontractors'
+    | '/_console/blueprints/units'
+    | '/_console/blueprints/upload'
+    | '/_console/blueprints/'
+    | '/_console/blueprints/units/$unitId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -194,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleOperatorsRouteImport
       parentRoute: typeof ConsoleRoute
     }
+    '/_console/blueprints': {
+      id: '/_console/blueprints'
+      path: '/blueprints'
+      fullPath: '/blueprints'
+      preLoaderRoute: typeof ConsoleBlueprintsRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
     '/_console/assets': {
       id: '/_console/assets'
       path: '/assets'
@@ -201,11 +293,87 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleAssetsRouteImport
       parentRoute: typeof ConsoleRoute
     }
+    '/_console/blueprints/': {
+      id: '/_console/blueprints/'
+      path: '/'
+      fullPath: '/blueprints/'
+      preLoaderRoute: typeof ConsoleBlueprintsIndexRouteImport
+      parentRoute: typeof ConsoleBlueprintsRoute
+    }
+    '/_console/blueprints/upload': {
+      id: '/_console/blueprints/upload'
+      path: '/upload'
+      fullPath: '/blueprints/upload'
+      preLoaderRoute: typeof ConsoleBlueprintsUploadRouteImport
+      parentRoute: typeof ConsoleBlueprintsRoute
+    }
+    '/_console/blueprints/units': {
+      id: '/_console/blueprints/units'
+      path: '/units'
+      fullPath: '/blueprints/units'
+      preLoaderRoute: typeof ConsoleBlueprintsUnitsRouteImport
+      parentRoute: typeof ConsoleBlueprintsRoute
+    }
+    '/_console/blueprints/subcontractors': {
+      id: '/_console/blueprints/subcontractors'
+      path: '/subcontractors'
+      fullPath: '/blueprints/subcontractors'
+      preLoaderRoute: typeof ConsoleBlueprintsSubcontractorsRouteImport
+      parentRoute: typeof ConsoleBlueprintsRoute
+    }
+    '/_console/blueprints/structure': {
+      id: '/_console/blueprints/structure'
+      path: '/structure'
+      fullPath: '/blueprints/structure'
+      preLoaderRoute: typeof ConsoleBlueprintsStructureRouteImport
+      parentRoute: typeof ConsoleBlueprintsRoute
+    }
+    '/_console/blueprints/units/$unitId': {
+      id: '/_console/blueprints/units/$unitId'
+      path: '/$unitId'
+      fullPath: '/blueprints/units/$unitId'
+      preLoaderRoute: typeof ConsoleBlueprintsUnitsUnitIdRouteImport
+      parentRoute: typeof ConsoleBlueprintsUnitsRoute
+    }
   }
 }
 
+interface ConsoleBlueprintsUnitsRouteChildren {
+  ConsoleBlueprintsUnitsUnitIdRoute: typeof ConsoleBlueprintsUnitsUnitIdRoute
+}
+
+const ConsoleBlueprintsUnitsRouteChildren: ConsoleBlueprintsUnitsRouteChildren =
+  {
+    ConsoleBlueprintsUnitsUnitIdRoute: ConsoleBlueprintsUnitsUnitIdRoute,
+  }
+
+const ConsoleBlueprintsUnitsRouteWithChildren =
+  ConsoleBlueprintsUnitsRoute._addFileChildren(
+    ConsoleBlueprintsUnitsRouteChildren,
+  )
+
+interface ConsoleBlueprintsRouteChildren {
+  ConsoleBlueprintsStructureRoute: typeof ConsoleBlueprintsStructureRoute
+  ConsoleBlueprintsSubcontractorsRoute: typeof ConsoleBlueprintsSubcontractorsRoute
+  ConsoleBlueprintsUnitsRoute: typeof ConsoleBlueprintsUnitsRouteWithChildren
+  ConsoleBlueprintsUploadRoute: typeof ConsoleBlueprintsUploadRoute
+  ConsoleBlueprintsIndexRoute: typeof ConsoleBlueprintsIndexRoute
+}
+
+const ConsoleBlueprintsRouteChildren: ConsoleBlueprintsRouteChildren = {
+  ConsoleBlueprintsStructureRoute: ConsoleBlueprintsStructureRoute,
+  ConsoleBlueprintsSubcontractorsRoute: ConsoleBlueprintsSubcontractorsRoute,
+  ConsoleBlueprintsUnitsRoute: ConsoleBlueprintsUnitsRouteWithChildren,
+  ConsoleBlueprintsUploadRoute: ConsoleBlueprintsUploadRoute,
+  ConsoleBlueprintsIndexRoute: ConsoleBlueprintsIndexRoute,
+}
+
+const ConsoleBlueprintsRouteWithChildren =
+  ConsoleBlueprintsRoute._addFileChildren(ConsoleBlueprintsRouteChildren)
+
 interface ConsoleRouteChildren {
   ConsoleAssetsRoute: typeof ConsoleAssetsRoute
+  ConsoleBlueprintsRoute: typeof ConsoleBlueprintsRouteWithChildren
   ConsoleOperatorsRoute: typeof ConsoleOperatorsRoute
   ConsoleSettingsRoute: typeof ConsoleSettingsRoute
   ConsoleSystemStatusRoute: typeof ConsoleSystemStatusRoute
@@ -215,6 +383,7 @@ interface ConsoleRouteChildren {
 
 const ConsoleRouteChildren: ConsoleRouteChildren = {
   ConsoleAssetsRoute: ConsoleAssetsRoute,
+  ConsoleBlueprintsRoute: ConsoleBlueprintsRouteWithChildren,
   ConsoleOperatorsRoute: ConsoleOperatorsRoute,
   ConsoleSettingsRoute: ConsoleSettingsRoute,
   ConsoleSystemStatusRoute: ConsoleSystemStatusRoute,

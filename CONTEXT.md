@@ -36,3 +36,34 @@ _Avoid_: Login state, auth token, cookie
 The act of bringing an Administrator's account into existence. It happens outside the console;
 an Administrator never creates their own account, and Daedalus Ops offers no sign-up.
 _Avoid_: Registration, sign-up, onboarding (as a term for account creation)
+
+**Storey**:
+A vertical zone of a Site between two structural levels. The top of the building structure;
+it contains Floor plans.
+_Avoid_: Level (a level is an elevation in metres, not a storey), floor (as the zone)
+
+**Floor plan**:
+One drawn plan within a Storey, the parent of Units; the thing a Drawing describes.
+_Avoid_: Layout, sheet (a sheet is the Drawing, not the plan)
+
+**Unit**:
+A bounded space on a Floor plan — a tenancy or a group of rooms — in which Installations sit.
+_Avoid_: Tenancy, space, room
+
+**Installation**:
+A piece of equipment installed in a Unit, with an asset tag and a state.
+_Avoid_: Asset (reserved for the asset register), device
+
+**Subcontractor**:
+An external company that can be put in charge of Scope items, Unit by Unit.
+_Avoid_: Vendor, supplier, contractor (as the generic)
+
+**Scope item**:
+One of a fixed, lettered list of trades (A–F) that a Subcontractor can be in charge of on a
+Unit.
+_Avoid_: Task, work item, trade (as the data term)
+
+**Drawing**:
+An architect's file (PDF, DWG, DXF, RVT) uploaded against a Site and optionally linked to a
+Floor plan.
+_Avoid_: Blueprint (as a data term — "Blueprints" is the section's name), document, file

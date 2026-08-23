@@ -1,5 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import type { Session } from "@supabase/supabase-js";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
 	createMemoryHistory,
 	createRouter,
@@ -31,7 +32,15 @@ const mount = async (path: string, current: Session | null) => {
 		context: { session: current },
 		history: createMemoryHistory({ initialEntries: [path] }),
 	});
-	render(<RouterProvider router={router} />);
+	render(
+		<QueryClientProvider
+			client={
+				new QueryClient({ defaultOptions: { queries: { retry: false } } })
+			}
+		>
+			<RouterProvider router={router} />
+		</QueryClientProvider>
+	);
 	await router.load();
 	return router;
 };
@@ -46,12 +55,28 @@ const destinations = [
 ];
 
 describe("console routes", () => {
+	it("expands the Blueprints section only on Blueprint paths and marks its child current", async () => {
+		await mount("/blueprints/subcontractors", session);
+		const section = screen.getByRole("link", { name: "Blueprints" });
+		expect(section.getAttribute("aria-expanded")).toBe("true");
+		expect(
+			screen
+				.getByRole("link", { name: "Subcontractors" })
+				.getAttribute("aria-current")
+		).toBe("page");
+	});
+
+	it("redirects the bare Blueprints path to structure", async () => {
+		const router = await mount("/blueprints", session);
+		expect(router.state.location.pathname).toBe("/blueprints/structure");
+	});
+
 	it("wraps every screen in the shell: skip link first, sidebar navigation, current item marked", async () => {
 		await mount("/work-orders", session);
 		const skip = await screen.findByRole("link", { name: "Skip to content" });
 		expect(skip.getAttribute("href")).toBe("#content");
 		const links = within(screen.getByRole("navigation")).getAllByRole("link");
-		expect(links).toHaveLength(6);
+		expect(links).toHaveLength(7);
 		expect(
 			links.find((link) => link.getAttribute("aria-current") === "page")
 				?.textContent

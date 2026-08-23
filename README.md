@@ -1,5 +1,9 @@
 # Vite React Boilerplate
 
+## Blueprint Manager development data
+
+Apply `supabase/migrations/202608230001_blueprint_manager.sql` with `supabase db push`. Load `supabase/seed.sql` only in a disposable development environment (for example, with `supabase db reset`). Its Harbourline records are fictional and must never be applied to production.
+
 ![Vite React Boilerplate preview](/vite-react-boilerplate.png)
 
 Everything you need to kick off your next Vite + React web app!

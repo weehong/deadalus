@@ -8,6 +8,7 @@ export type SidebarItemProps = {
 	icon: ComponentType<SVGProps<SVGSVGElement>>;
 	exact?: boolean;
 	count?: number;
+	children?: ReadonlyArray<{ label: string; path: ConsolePath }>;
 };
 
 const displayCount = (count: number) => (count > 999 ? "999+" : String(count));

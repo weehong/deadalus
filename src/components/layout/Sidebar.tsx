@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Logo } from "@/components/ui/Logo";
 import { SidebarItem, type SidebarItemProps } from "./SidebarItem";
+import { SidebarSection } from "./SidebarSection";
 
 export type SidebarProps = {
 	items: ReadonlyArray<SidebarItemProps>;
@@ -28,7 +29,11 @@ export const Sidebar = ({
 			<ul className="space-y-1">
 				{items.map((item) => (
 					<li key={item.path}>
-						<SidebarItem {...item} />
+						{item.children === undefined ? (
+							<SidebarItem {...item} />
+						) : (
+							<SidebarSection {...item} children={item.children} />
+						)}
 					</li>
 				))}
 			</ul>

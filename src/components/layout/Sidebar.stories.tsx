@@ -12,6 +12,10 @@ import { Sidebar, type SidebarProps } from "./Sidebar";
 const items = consoleNavigation.map((item) => ({
 	...item,
 	label: item.labelKey,
+	children: item.children?.map((child) => ({
+		...child,
+		label: child.labelKey,
+	})),
 }));
 const renderSidebar = (props: SidebarProps) => {
 	const rootRoute = createRootRoute();
