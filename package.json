@@ -31,6 +31,8 @@
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",
+    "@headlessui/react": "^2.2.9",
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.2",
     "@nivo/bar": "^0.99.0",
     "@nivo/core": "^0.99.0",
@@ -60,8 +62,6 @@
     "@faker-js/faker": "^10.1.0",
     "@fontsource/barlow": "^5.3.0",
     "@fontsource/barlow-condensed": "^5.3.0",
-    "@headlessui/react": "^2.2.9",
-    "@heroicons/react": "^2.2.0",
     "@hookform/devtools": "^4.4.0",
     "@playwright/test": "^1.57.0",
     "@storybook/addon-links": "^10.1.4",

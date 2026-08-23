@@ -97,3 +97,25 @@ test("a signed-in Administrator reaches every destination directly", async ({
 		await expect(page.getByRole("heading", { name: heading })).toBeVisible();
 	}
 });
+
+test("sidebar links navigate to every destination and mark it current", async ({
+	page,
+}) => {
+	await interceptProvider(page);
+	await page.goto("/sign-in");
+	await signIn(page);
+
+	for (const { path, heading } of destinations.slice(1)) {
+		const navigation = page.getByRole("navigation", { name: "Primary" });
+		await navigation
+			.getByRole("link", { name: new RegExp(`^${heading}(?:,|$)`) })
+			.click();
+		await expect(page).toHaveURL(new RegExp(`${path.replace("/", "\\/")}$`));
+		await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+		await expect(
+			navigation.getByRole("link", { name: new RegExp(`^${heading}(?:,|$)`) })
+		).toHaveAttribute("aria-current", "page");
+		await navigation.getByRole("link", { name: "Overview" }).click();
+		await expect(page).toHaveURL(/\/$/);
+	}
+});

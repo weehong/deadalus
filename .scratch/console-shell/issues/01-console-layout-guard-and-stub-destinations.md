@@ -8,7 +8,7 @@ Navigation labels are added to both locales (en-US, zh-CN — Chinese flagged fo
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** implemented (Playwright execution blocked by missing host browser libraries)
 
 - [x] A pathless layout route wraps six child routes: the console root and five kebab-case paths named after their labels
 - [x] The layout's pre-load hook redirects a visitor without a Session to sign-in with the intended path preserved; the root route no longer carries its own guard

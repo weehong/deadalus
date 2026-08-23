@@ -6,14 +6,14 @@
 
 **Blocked by:** 01 (Console layout route with session guard and stub destinations)
 
-**Status:** ready-for-agent
+**Status:** implemented (Playwright execution blocked by missing host browser libraries)
 
-- [ ] `Sidebar` and `SidebarItem` live in the layout tier, each with story and tests, exported from a barrel
-- [ ] The sidebar renders a navigation landmark listing the six destinations in order with icon and label; Logo and scope label sit above
-- [ ] The current item carries `aria-current="page"` and the border-plus-wash treatment; Overview is exact-match, others prefix-match
-- [ ] Counts: tabular numerals, dimmed when not current, "999+" above 999, omitted when none, included in the link's accessible name
-- [ ] Navigation configuration module defines the six items (label key, path, icon, exact flag, placeholder count) and is the sidebar's only source of items
-- [ ] Skip link is the first focusable element and targets the main content region
-- [ ] Unit tests mount the sidebar inside the real router with in-memory history; no module mocking
-- [ ] End-to-end: from Overview, clicking each sidebar item lands on its path, shows its heading, and marks it current
-- [ ] Icon package promoted to a runtime dependency; lint, typecheck, unit and e2e suites green
+- [x] `Sidebar` and `SidebarItem` live in the layout tier, each with story and tests, exported from a barrel
+- [x] The sidebar renders a navigation landmark listing the six destinations in order with icon and label; Logo and scope label sit above
+- [x] The current item carries `aria-current="page"` and the border-plus-wash treatment; Overview is exact-match, others prefix-match
+- [x] Counts: tabular numerals, dimmed when not current, "999+" above 999, omitted when none, included in the link's accessible name
+- [x] Navigation configuration module defines the six items (label key, path, icon, exact flag, placeholder count) and is the sidebar's only source of items
+- [x] Skip link is the first focusable element and targets the main content region
+- [x] Unit tests mount the sidebar inside the real router with in-memory history; no module mocking
+- [x] End-to-end coverage written: from Overview, clicking each sidebar item lands on its path, shows its heading, and marks it current
+- [ ] Icon package promoted to a runtime dependency; lint, typecheck, unit and build green; e2e execution blocked by missing host browser libraries

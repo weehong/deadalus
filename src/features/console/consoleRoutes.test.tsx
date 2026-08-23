@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import type { Session } from "@supabase/supabase-js";
 import {
 	createMemoryHistory,
@@ -46,6 +46,19 @@ const destinations = [
 ];
 
 describe("console routes", () => {
+	it("wraps every screen in the shell: skip link first, sidebar navigation, current item marked", async () => {
+		await mount("/work-orders", session);
+		const skip = await screen.findByRole("link", { name: "Skip to content" });
+		expect(skip.getAttribute("href")).toBe("#content");
+		const links = within(screen.getByRole("navigation")).getAllByRole("link");
+		expect(links).toHaveLength(6);
+		expect(
+			links.find((link) => link.getAttribute("aria-current") === "page")
+				?.textContent
+		).toContain("Work orders");
+		expect(screen.getByRole("main").id).toBe("content");
+	});
+
 	for (const { path, heading } of destinations) {
 		it(`${path} redirects a visitor without a Session to sign-in, preserving the path`, async () => {
 			const router = await mount(path, null);
