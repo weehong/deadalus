@@ -26,6 +26,14 @@
 
 If the user gives different values, substitute them; otherwise create the files exactly as written.
 
+## Template scope and version
+
+This manifest defines the standalone **Vite React Boilerplate** baseline captured in repository
+commit `6cae4e3`. It is not a snapshot of Daedalus Ops and does not track application-specific
+changes made after the boilerplate was adopted, including authentication dependencies,
+localization changes, and visual-design dependencies. Treat the file blocks and dependency
+versions below as one internally consistent template version.
+
 ## Conventions you must honor (the ESLint config is strict — `--max-warnings 0`)
 
 Code you write must satisfy these or `pnpm lint` fails the build:

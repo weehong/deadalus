@@ -1,6 +1,7 @@
 {
-  "_review": "Machine translated authentication copy — NEEDS HUMAN REVIEW",
+  "_review": "Machine translated authentication and navigation copy — NEEDS HUMAN REVIEW",
   "home": { "greeting": "Operations console" },
+  "nav": { "overview": "概览", "workOrders": "工单", "systemStatus": "系统状态", "assets": "资产", "operators": "操作员", "settings": "设置" },
   "example": { "title": "Matches Builder Example", "tableHeading": "Matches table", "formHeading": "Add a match", "chartHeading": "Goals per match", "loading": "Loading matches…", "error": "Failed to load matches" },
   "auth": {
     "brandKicker": "运营智能", "brandHeadline": "确保每个站点正常运转。", "brandBlurb": "集中查看所有站点的工单、资产健康状况和事件历史。",

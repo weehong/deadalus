@@ -11,7 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as ExampleRouteImport } from './routes/example'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConsoleRouteImport } from './routes/_console'
+import { Route as ConsoleIndexRouteImport } from './routes/_console/index'
+import { Route as ConsoleWorkOrdersRouteImport } from './routes/_console/work-orders'
+import { Route as ConsoleSystemStatusRouteImport } from './routes/_console/system-status'
+import { Route as ConsoleSettingsRouteImport } from './routes/_console/settings'
+import { Route as ConsoleOperatorsRouteImport } from './routes/_console/operators'
+import { Route as ConsoleAssetsRouteImport } from './routes/_console/assets'
 
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
@@ -23,38 +29,109 @@ const ExampleRoute = ExampleRouteImport.update({
   path: '/example',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const ConsoleRoute = ConsoleRouteImport.update({
+  id: '/_console',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsoleIndexRoute = ConsoleIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleWorkOrdersRoute = ConsoleWorkOrdersRouteImport.update({
+  id: '/work-orders',
+  path: '/work-orders',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleSystemStatusRoute = ConsoleSystemStatusRouteImport.update({
+  id: '/system-status',
+  path: '/system-status',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleSettingsRoute = ConsoleSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleOperatorsRoute = ConsoleOperatorsRouteImport.update({
+  id: '/operators',
+  path: '/operators',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleAssetsRoute = ConsoleAssetsRouteImport.update({
+  id: '/assets',
+  path: '/assets',
+  getParentRoute: () => ConsoleRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/example': typeof ExampleRoute
   '/sign-in': typeof SignInRoute
+  '/assets': typeof ConsoleAssetsRoute
+  '/operators': typeof ConsoleOperatorsRoute
+  '/settings': typeof ConsoleSettingsRoute
+  '/system-status': typeof ConsoleSystemStatusRoute
+  '/work-orders': typeof ConsoleWorkOrdersRoute
+  '/': typeof ConsoleIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/example': typeof ExampleRoute
   '/sign-in': typeof SignInRoute
+  '/assets': typeof ConsoleAssetsRoute
+  '/operators': typeof ConsoleOperatorsRoute
+  '/settings': typeof ConsoleSettingsRoute
+  '/system-status': typeof ConsoleSystemStatusRoute
+  '/work-orders': typeof ConsoleWorkOrdersRoute
+  '/': typeof ConsoleIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_console': typeof ConsoleRouteWithChildren
   '/example': typeof ExampleRoute
   '/sign-in': typeof SignInRoute
+  '/_console/assets': typeof ConsoleAssetsRoute
+  '/_console/operators': typeof ConsoleOperatorsRoute
+  '/_console/settings': typeof ConsoleSettingsRoute
+  '/_console/system-status': typeof ConsoleSystemStatusRoute
+  '/_console/work-orders': typeof ConsoleWorkOrdersRoute
+  '/_console/': typeof ConsoleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/example' | '/sign-in'
+  fullPaths:
+    | '/example'
+    | '/sign-in'
+    | '/assets'
+    | '/operators'
+    | '/settings'
+    | '/system-status'
+    | '/work-orders'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/example' | '/sign-in'
-  id: '__root__' | '/' | '/example' | '/sign-in'
+  to:
+    | '/example'
+    | '/sign-in'
+    | '/assets'
+    | '/operators'
+    | '/settings'
+    | '/system-status'
+    | '/work-orders'
+    | '/'
+  id:
+    | '__root__'
+    | '/_console'
+    | '/example'
+    | '/sign-in'
+    | '/_console/assets'
+    | '/_console/operators'
+    | '/_console/settings'
+    | '/_console/system-status'
+    | '/_console/work-orders'
+    | '/_console/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  ConsoleRoute: typeof ConsoleRouteWithChildren
   ExampleRoute: typeof ExampleRoute
   SignInRoute: typeof SignInRoute
 }
@@ -75,18 +152,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExampleRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_console': {
+      id: '/_console'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof ConsoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_console/': {
+      id: '/_console/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleIndexRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/_console/work-orders': {
+      id: '/_console/work-orders'
+      path: '/work-orders'
+      fullPath: '/work-orders'
+      preLoaderRoute: typeof ConsoleWorkOrdersRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/_console/system-status': {
+      id: '/_console/system-status'
+      path: '/system-status'
+      fullPath: '/system-status'
+      preLoaderRoute: typeof ConsoleSystemStatusRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/_console/settings': {
+      id: '/_console/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof ConsoleSettingsRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/_console/operators': {
+      id: '/_console/operators'
+      path: '/operators'
+      fullPath: '/operators'
+      preLoaderRoute: typeof ConsoleOperatorsRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/_console/assets': {
+      id: '/_console/assets'
+      path: '/assets'
+      fullPath: '/assets'
+      preLoaderRoute: typeof ConsoleAssetsRouteImport
+      parentRoute: typeof ConsoleRoute
     }
   }
 }
 
+interface ConsoleRouteChildren {
+  ConsoleAssetsRoute: typeof ConsoleAssetsRoute
+  ConsoleOperatorsRoute: typeof ConsoleOperatorsRoute
+  ConsoleSettingsRoute: typeof ConsoleSettingsRoute
+  ConsoleSystemStatusRoute: typeof ConsoleSystemStatusRoute
+  ConsoleWorkOrdersRoute: typeof ConsoleWorkOrdersRoute
+  ConsoleIndexRoute: typeof ConsoleIndexRoute
+}
+
+const ConsoleRouteChildren: ConsoleRouteChildren = {
+  ConsoleAssetsRoute: ConsoleAssetsRoute,
+  ConsoleOperatorsRoute: ConsoleOperatorsRoute,
+  ConsoleSettingsRoute: ConsoleSettingsRoute,
+  ConsoleSystemStatusRoute: ConsoleSystemStatusRoute,
+  ConsoleWorkOrdersRoute: ConsoleWorkOrdersRoute,
+  ConsoleIndexRoute: ConsoleIndexRoute,
+}
+
+const ConsoleRouteWithChildren =
+  ConsoleRoute._addFileChildren(ConsoleRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  ConsoleRoute: ConsoleRouteWithChildren,
   ExampleRoute: ExampleRoute,
   SignInRoute: SignInRoute,
 }
