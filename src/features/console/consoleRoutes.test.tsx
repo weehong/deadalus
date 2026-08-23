@@ -57,6 +57,8 @@ describe("console routes", () => {
 				?.textContent
 		).toContain("Work orders");
 		expect(screen.getByRole("main").id).toBe("content");
+		expect(screen.getByText("Last sync")).toBeTruthy();
+		expect(screen.queryByText(/impaired/)).toBeNull();
 	});
 
 	for (const { path, heading } of destinations) {

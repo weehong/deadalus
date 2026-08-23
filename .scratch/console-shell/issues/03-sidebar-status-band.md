@@ -4,11 +4,11 @@
 
 **Blocked by:** 02 (Sidebar with navigation items mounted in the console layout)
 
-**Status:** ready-for-agent
+**Status:** complete
 
-- [ ] `SidebarStatus` component with story (default and impaired) and tests, exported from the sidebar barrel
-- [ ] `Sidebar` accepts a status prop and renders the band at its foot
-- [ ] "Last sync" row shows the supplied time; the layout supplies the mount time formatted HH:mm
-- [ ] Impairment row renders only when a count is supplied, with plural forms in en-US and zh-CN
-- [ ] Unit tests: time renders; impairment line absent without a count, present and pluralised with one
-- [ ] Lint, typecheck and unit suites green
+- [x] `SidebarStatus` component with story (default and impaired) and tests, exported from the sidebar barrel
+- [x] `Sidebar` accepts a status prop and renders the band at its foot
+- [x] "Last sync" row shows the supplied time; the layout supplies the mount time formatted HH:mm
+- [x] Impairment row renders only when a count is supplied, with plural forms in en-US and zh-CN
+- [x] Unit tests: time renders; impairment line absent without a count, present and pluralised with one
+- [x] Lint, typecheck and unit suites green
