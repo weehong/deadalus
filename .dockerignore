@@ -1,0 +1,36 @@
+# Build context is the workspace root (see apps/backend/docker-compose.yml), so
+# the ignore rules must live here rather than inside each app.
+**/node_modules
+**/dist
+**/coverage
+**/playwright-report
+**/test-results
+**/.husky
+**/*.log
+
+.git
+.vscode
+**/.vscode
+
+# Test sources are not needed to build the runtime image.
+apps/backend/tests
+apps/backend/e2e
+apps/frontend/e2e
+
+# Docs and container definitions
+**/README.md
+**/SCAFFOLD.md
+**/CLAUDE.md
+**/AGENTS.md
+SPEC.md
+**/Dockerfile
+**/docker-compose.yml
+**/.dockerignore
+
+# Secrets: never bake a real .env into an image.
+**/.env
+**/.env.*
+!**/.env.example
+
+# The frontend plays no part in the API image.
+apps/frontend

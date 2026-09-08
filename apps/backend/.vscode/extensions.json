@@ -1,0 +1,14 @@
+{
+	"recommendations": [
+		"steoates.autoimport",
+		"formulahendry.auto-rename-tag",
+		"ms-azuretools.vscode-docker",
+		"mikestead.dotenv",
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+		"ms-playwright.playwright",
+		"prisma.prisma",
+		"yoavbls.pretty-ts-errors",
+		"wayou.vscode-todo-highlight"
+	]
+}

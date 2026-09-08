@@ -1,0 +1,28 @@
+// Prisma schema. Docs: https://pris.ly/d/prisma-schema
+// After editing, run `pnpm db:generate` (client) and `pnpm db:migrate`.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Seed domain for the reference vertical slice. Mirrors the shape the frontend
+/// example feature renders (table + chart + form). Replace with your own
+/// entities; see `apps/frontend/src/features/example/ExamplePage.tsx` for the
+/// list of files to delete alongside it.
+model Match {
+  id        String   @id @default(cuid())
+  homeTeam  String
+  awayTeam  String
+  homeScore Int      @default(0)
+  awayScore Int      @default(0)
+  playedOn  DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("matches")
+}

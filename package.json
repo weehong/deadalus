@@ -1,0 +1,24 @@
+{
+  "name": "daedalus",
+  "version": "0.0.0",
+  "description": "Daedalus — Unit Matrix platform for construction: contractors track project progression by unit, and subcontractors record their own progress against it. Monorepo: Express 5 API and Vite + React client.",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "lint:fix": "pnpm -r lint:fix",
+    "format": "pnpm -r format",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test:unit:run",
+    "test:e2e": "pnpm -r test:e2e",
+    "db:up": "docker compose -f apps/backend/docker-compose.yml up -d db",
+    "db:down": "docker compose -f apps/backend/docker-compose.yml down",
+    "db:migrate": "pnpm --filter @daedalus/backend db:migrate",
+    "db:seed": "pnpm --filter @daedalus/backend db:seed"
+  }
+}

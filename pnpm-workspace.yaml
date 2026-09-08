@@ -1,0 +1,15 @@
+packages:
+  - "apps/*"
+
+# Dependencies allowed to run install scripts. pnpm blocks postinstall by
+# default; Prisma must be listed or `prisma generate` silently produces no
+# client. The @swc/core and esbuild entries are inherited from the frontend
+# boilerplate's own workspace file, which merged into this one.
+allowBuilds:
+  "@swc/core": true
+  esbuild: true
+  prisma: true
+  "@prisma/client": true
+  "@prisma/engines": true
+  # Prisma's telemetry package; nothing to build and no reason to run it.
+  "@scarf/scarf": false
