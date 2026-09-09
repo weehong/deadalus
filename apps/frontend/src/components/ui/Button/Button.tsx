@@ -1,8 +1,8 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { ComponentPropsWithRef } from "react";
 import { BlueprintFrame } from "@/components/ui/BlueprintFrame";
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = ComponentPropsWithRef<"button"> & {
 	/** Stretch to the full width of the container. */
 	block?: boolean;
 	/** Wrap in the blueprint frame; the system's primary buttons wear it. */

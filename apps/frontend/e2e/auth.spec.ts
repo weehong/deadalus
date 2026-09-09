@@ -1,128 +1,96 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+import {
+	administrator,
+	interceptProvider,
+	signIn,
+	submitCredentials,
+} from "./provider";
 
-/*
- * Two seams, both at the browser's edge: the provider's token endpoint and
- * the API's /me endpoint. Everything between — the client, the store, the
- * guard, the redirect and the form — is real.
- */
-
-const administrator = {
-	id: "00000000-0000-4000-8000-000000000001",
-	aud: "authenticated",
-	role: "authenticated",
-	email: "administrator@example.com",
-	app_metadata: {},
-	user_metadata: {},
-	created_at: "2026-01-01T00:00:00.000Z",
-};
-
-const grantedSession = {
-	access_token: "e2e-access-token",
-	token_type: "bearer",
-	expires_in: 3600,
-	expires_at: Math.floor(Date.now() / 1000) + 3600,
-	refresh_token: "e2e-refresh-token",
-	user: administrator,
-};
-
-type ProviderResponse = { status: number; body: unknown };
-
-const interceptProvider = async (
-	page: Page,
-	response: ProviderResponse = { status: 200, body: grantedSession }
-): Promise<void> => {
-	await page.route("**/auth/v1/**", async (route) => {
-		const url = route.request().url();
-		if (url.includes("/token?grant_type=password")) {
-			await route.fulfill({
-				status: response.status,
-				contentType: "application/json",
-				body: JSON.stringify(response.body),
-			});
-			return;
-		}
-		if (url.endsWith("/user")) {
-			await route.fulfill({
-				status: 200,
-				contentType: "application/json",
-				body: JSON.stringify(administrator),
-			});
-			return;
-		}
-		if (url.includes("/logout")) {
-			await route.fulfill({ status: 204 });
-			return;
-		}
-		await route.fallback();
+for (const pathname of ["/", "/projects", "/subcontractors", "/example"]) {
+	test(`a visitor to ${pathname} is sent to Sign in`, async ({ page }) => {
+		await page.goto(pathname);
+		await expect(page).toHaveURL(/\/login$/);
+		await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
+		await expect(
+			page.getByRole("navigation", { name: "Console navigation" })
+		).toHaveCount(0);
 	});
-	await page.route("**/api/v1/me", async (route) => {
-		const authorization = route.request().headers()["authorization"];
-		if (authorization !== `Bearer ${grantedSession.access_token}`) {
-			await route.fulfill({
-				status: 401,
-				contentType: "application/json",
-				body: JSON.stringify({
-					error: { code: "UNAUTHORIZED", message: "Missing bearer token" },
-				}),
-			});
-			return;
-		}
-		await route.fulfill({
-			status: 200,
-			contentType: "application/json",
-			body: JSON.stringify({
-				data: { id: administrator.id, email: administrator.email },
-			}),
-		});
-	});
-};
+}
 
-const submitCredentials = async (page: Page): Promise<void> => {
-	await page
-		.getByRole("textbox", { name: "Work email" })
-		.fill("administrator@example.com");
-	await page.getByRole("textbox", { name: "Password" }).fill("correct horse battery staple");
-	await page.getByRole("button", { name: "Enter portal" }).click();
-};
-
-test("a visitor to a guarded route is sent to sign in, then lands on the root", async ({
+test("signing in lands on Projects with Session identity and real Console navigation", async ({
 	page,
 }) => {
 	await interceptProvider(page);
-	await page.goto("/");
+	await page.goto("/subcontractors");
 	await expect(page).toHaveURL(/\/login$/);
 	await expect(page).toHaveTitle("Daedalus");
-	await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
+	await expect(
+		page.getByText("Administrator console", { exact: true })
+	).toBeVisible();
 
 	const providerRequest = page.waitForRequest((request) =>
 		request.url().includes("/token?grant_type=password")
 	);
 	await submitCredentials(page);
 	expect((await providerRequest).postDataJSON()).toMatchObject({
-		email: "administrator@example.com",
+		email: administrator.email,
 		password: "correct horse battery staple",
 	});
-	await expect(page).toHaveURL(/\/$/);
-	await expect(page.getByRole("heading", { name: "Signed in" })).toBeVisible();
+	await expect(page).toHaveURL(/\/projects$/);
+	const sidebar = page.getByRole("complementary", { name: "Sidebar" });
+	const navigation = sidebar.getByRole("navigation", {
+		name: "Console navigation",
+	});
+	await expect(sidebar.getByRole("img", { name: "Daedalus" })).toBeVisible();
+	await expect(sidebar.getByText("Unit Matrix", { exact: true })).toBeVisible();
+	await expect(
+		sidebar.getByText(administrator.email, { exact: true })
+	).toBeVisible();
+	await expect(
+		sidebar.getByText("Administrator", { exact: true })
+	).toBeVisible();
+	await expect(navigation.getByRole("link")).toHaveCount(2);
+	await expect(
+		navigation.getByRole("link", { name: "Projects", exact: true })
+	).toHaveAttribute("aria-current", "page");
+	await expect(
+		navigation.getByRole("link", { name: "Subcontractors" })
+	).not.toHaveAttribute("aria-current", "page");
+	await expect(page.getByRole("main")).toHaveCount(1);
+	await expect(
+		page.getByRole("heading", { level: 1, name: "Projects" })
+	).toBeVisible();
+	await expect(
+		page.getByRole("main").getByText("Portfolio", { exact: true })
+	).toBeVisible();
+	await expect(
+		page
+			.getByRole("main")
+			.getByText("This screen is not built yet.", { exact: true })
+	).toBeVisible();
+
+	await navigation.getByRole("link", { name: "Subcontractors" }).click();
+	await expect(page).toHaveURL(/\/subcontractors$/);
+	await expect(
+		page.getByRole("heading", { level: 1, name: "Subcontractors" })
+	).toBeVisible();
+	await expect(
+		page.getByRole("main").getByText("Directory", { exact: true })
+	).toBeVisible();
+	await expect(
+		page
+			.getByRole("main")
+			.getByText("This screen is not built yet.", { exact: true })
+	).toBeVisible();
+	await expect(
+		navigation.getByRole("link", { name: "Subcontractors" })
+	).toHaveAttribute("aria-current", "page");
+	await expect(
+		navigation.getByRole("link", { name: "Projects", exact: true })
+	).not.toHaveAttribute("aria-current", "page");
 });
 
-test("the root shows the identity the API read from the bearer token", async ({
-	page,
-}) => {
-	await interceptProvider(page);
-	await page.goto("/login");
-	const meRequest = page.waitForRequest((request) =>
-		request.url().includes("/api/v1/me")
-	);
-	await submitCredentials(page);
-	expect((await meRequest).headers()["authorization"]).toBe(
-		`Bearer ${grantedSession.access_token}`
-	);
-	await expect(page.getByText("administrator@example.com")).toBeVisible();
-	await expect(page.getByText(administrator.id)).toBeVisible();
-});
-
-test("a credential rejection is generic and stays on the screen", async ({
+test("a credential rejection is generic and stays on Sign in", async ({
 	page,
 }) => {
 	await interceptProvider(page, {
@@ -159,52 +127,230 @@ test("an unavailable provider is reported as unreachable", async ({ page }) => {
 	await expect(page.getByRole("alert")).toContainText("unreachable");
 });
 
-test("a session survives reload and a new tab, and bypasses sign-in", async ({
+test("a Session survives reload on the current screen and bypasses Sign in in a new tab", async ({
 	context,
 	page,
 }) => {
-	await interceptProvider(page);
-	await page.goto("/login");
-	await submitCredentials(page);
-	await expect(page).toHaveURL(/\/$/);
-
+	await signIn(page);
+	await page.getByRole("link", { name: "Subcontractors" }).click();
+	await expect(page).toHaveURL(/\/subcontractors$/);
 	await page.reload();
-	await expect(page).toHaveURL(/\/$/);
-	await expect(page.getByRole("heading", { name: "Signed in" })).toBeVisible();
+	await expect(page).toHaveURL(/\/subcontractors$/);
+	await expect(
+		page.getByRole("heading", { level: 1, name: "Subcontractors" })
+	).toBeVisible();
+	await expect(
+		page.getByRole("navigation", { name: "Console navigation" })
+	).toBeVisible();
+	await expect(
+		page.getByText(administrator.email, { exact: true })
+	).toBeVisible();
+	await expect(
+		page.getByRole("link", { name: "Subcontractors" })
+	).toHaveAttribute("aria-current", "page");
 
 	const otherPage = await context.newPage();
 	await interceptProvider(otherPage);
 	await otherPage.goto("/login");
-	await expect(otherPage).toHaveURL(/\/$/);
+	await expect(otherPage).toHaveURL(/\/projects$/);
+	await expect(
+		otherPage.getByRole("heading", { level: 1, name: "Projects" })
+	).toBeVisible();
 });
 
-test("logging out returns to sign in", async ({ page }) => {
-	await interceptProvider(page);
-	await page.goto("/login");
-	await submitCredentials(page);
-	await expect(page).toHaveURL(/\/$/);
-
-	const logoutRequest = page.waitForRequest((request) =>
-		request.url().includes("/logout")
-	);
-	await page.getByRole("button", { name: "Log out" }).click();
-	expect((await logoutRequest).method()).toBe("POST");
-	await expect(page).toHaveURL(/\/login$/);
-	await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
-});
-
-test("language selection translates the screen and persists", async ({
+test("Sign out stays busy without repeat requests and returns to Sign in", async ({
 	page,
 }) => {
+	await signIn(page);
+	let finishSignOut!: () => void;
+	const pendingResponse = new Promise<void>((resolve) => {
+		finishSignOut = resolve;
+	});
+	let requests = 0;
+	await page.route("**/auth/v1/logout**", async (route) => {
+		requests += 1;
+		await pendingResponse;
+		await route.fulfill({ status: 204 });
+	});
+	const signOutRequest = page.waitForRequest((request) =>
+		request.url().includes("/logout")
+	);
+	await page.getByRole("button", { name: "Sign out", exact: true }).click();
+	expect((await signOutRequest).method()).toBe("POST");
+	const busyButton = page.getByRole("button", {
+		name: "Signing out…",
+		exact: true,
+	});
+	await expect(busyButton).toBeDisabled();
+	await expect(busyButton).toHaveAttribute("aria-busy", "true");
+	await page.keyboard.press("Enter");
+	await expect(page).toHaveURL(/\/projects$/);
+	expect(requests).toBe(1);
+	finishSignOut();
+	await expect(page).toHaveURL(/\/login$/);
+	await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
+	await page.goto("/subcontractors");
+	await expect(page).toHaveURL(/\/login$/);
+});
+
+test("a failed Sign out keeps the Console available and can be retried", async ({
+	page,
+}) => {
+	await signIn(page);
+	let attempts = 0;
+	await page.route("**/auth/v1/logout**", async (route) => {
+		attempts += 1;
+		if (attempts === 1) {
+			await route.fulfill({
+				status: 500,
+				contentType: "application/json",
+				body: JSON.stringify({ message: "Service unavailable" }),
+			});
+			return;
+		}
+		await route.fulfill({ status: 204 });
+	});
+	await page.getByRole("button", { name: "Sign out", exact: true }).click();
+	await expect(page.getByRole("alert")).toHaveText(
+		"Could not sign out. Try again."
+	);
+	expect(attempts).toBe(1);
+	await expect(page).toHaveURL(/\/projects$/);
+	await expect(
+		page.getByText(administrator.email, { exact: true })
+	).toBeVisible();
+	await expect(
+		page.getByRole("button", { name: "Sign out", exact: true })
+	).toBeEnabled();
+	await page.getByRole("button", { name: "Sign out", exact: true }).click();
+	await expect(page).toHaveURL(/\/login$/);
+});
+
+test("language selection translates Sign in and persists", async ({ page }) => {
 	await page.goto("/login");
 	await page.getByRole("combobox", { name: "Language" }).selectOption("zh-CN");
 	await expect(page.getByRole("heading", { name: "登录" })).toBeVisible();
 	await expect(page.getByRole("textbox", { name: "工作邮箱" })).toBeVisible();
+	await expect(page.getByRole("button", { name: "进入控制台" })).toBeVisible();
 	await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
-
 	await page.reload();
 	await expect(page.getByRole("heading", { name: "登录" })).toBeVisible();
 	await expect(page.getByRole("combobox", { name: "语言" })).toHaveValue(
 		"zh-CN"
 	);
+});
+
+test("the language chosen at Sign in translates the Console, both pages and mobile controls", async ({
+	page,
+}) => {
+	await interceptProvider(page);
+	await page.goto("/login");
+	await page
+		.getByRole("textbox", { name: "Work email" })
+		.fill(administrator.email);
+	await page
+		.getByRole("textbox", { name: "Password" })
+		.fill("correct horse battery staple");
+	await page.getByRole("combobox", { name: "Language" }).selectOption("zh-CN");
+	await page.getByRole("button", { name: "进入控制台" }).click();
+	await expect(page).toHaveURL(/\/projects$/);
+	await expect(page.getByRole("combobox")).toHaveCount(0);
+	const navigation = page.getByRole("navigation", { name: "控制台导航" });
+	await expect(
+		page.getByRole("complementary", { name: "侧边栏" })
+	).toBeVisible();
+	await expect(page.getByText("管理员", { exact: true })).toBeVisible();
+	await expect(
+		page.getByRole("heading", { level: 1, name: "项目", exact: true })
+	).toBeVisible();
+	await expect(
+		page.getByRole("main").getByText("项目组合", { exact: true })
+	).toBeVisible();
+	await expect(
+		page.getByRole("main").getByText("此页面尚未构建。", { exact: true })
+	).toBeVisible();
+	await expect(
+		page.getByRole("button", { name: "退出登录", exact: true })
+	).toBeVisible();
+	await navigation.getByRole("link", { name: "分包商" }).click();
+	await expect(
+		page.getByRole("heading", { level: 1, name: "分包商" })
+	).toBeVisible();
+	await expect(
+		page.getByRole("main").getByText("名录", { exact: true })
+	).toBeVisible();
+	await page.reload();
+	await expect(page).toHaveURL(/\/subcontractors$/);
+	await expect(
+		page.getByRole("heading", { level: 1, name: "分包商" })
+	).toBeVisible();
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.getByRole("button", { name: "菜单", exact: true }).click();
+	await expect(
+		page.getByRole("button", { name: "关闭菜单", exact: true })
+	).toBeVisible();
+	await expect(
+		page.getByRole("complementary", { name: "侧边栏" })
+	).toBeFocused();
+	await page.getByRole("button", { name: "关闭菜单", exact: true }).click();
+	await expect(
+		page.getByRole("button", { name: "菜单", exact: true })
+	).toBeFocused();
+});
+
+test("the phone drawer supports toggle, Escape, backdrop and navigation with focus return", async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await signIn(page);
+	const toggle = page.getByRole("button", { name: "Menu", exact: true });
+	const drawer = page.getByRole("complementary", {
+		name: "Sidebar",
+		includeHidden: true,
+	});
+	await expect(toggle).toHaveAttribute("aria-expanded", "false");
+	await expect(drawer).toBeHidden();
+	await expect(toggle).toHaveAttribute(
+		"aria-controls",
+		(await drawer.getAttribute("id")) ?? ""
+	);
+	await toggle.click();
+	await expect(drawer).toBeFocused();
+	await expect(drawer).toHaveAttribute("data-state", "open");
+	await expect(
+		page.getByRole("button", { name: "Close menu" })
+	).toHaveAttribute("aria-expanded", "true");
+	await page.getByRole("button", { name: "Close menu" }).click();
+	await expect(drawer).toBeHidden();
+	await expect(toggle).toBeFocused();
+
+	await toggle.click();
+	await page.keyboard.press("Tab");
+	await expect(
+		drawer.getByRole("link", { name: "Projects", exact: true })
+	).toBeFocused();
+	await page.keyboard.press("Escape");
+	await expect(drawer).toBeHidden();
+	await expect(toggle).toBeFocused();
+
+	await toggle.click();
+	await page
+		.getByTestId("console-backdrop")
+		.click({ position: { x: 350, y: 400 } });
+	await expect(drawer).toBeHidden();
+	await expect(toggle).toBeFocused();
+
+	await toggle.click();
+	await drawer.getByRole("link", { name: "Subcontractors" }).click();
+	await expect(page).toHaveURL(/\/subcontractors$/);
+	await expect(
+		page.getByRole("heading", { level: 1, name: "Subcontractors" })
+	).toBeVisible();
+	await expect(drawer).toBeHidden();
+	await expect(toggle).toBeFocused();
+	await expect(page.getByRole("main")).toHaveCount(1);
+	await toggle.click();
+	await expect(
+		drawer.getByRole("link", { name: "Subcontractors" })
+	).toHaveAttribute("aria-current", "page");
 });

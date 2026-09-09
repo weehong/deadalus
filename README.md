@@ -52,9 +52,11 @@ pnpm dev              # both servers, in parallel
 ```
 
 Then open <http://localhost:5173>. You are sent to `/login`; sign in with an
-Administrator account provisioned in the Supabase dashboard, and the root shows
-the identity the API read from your token. `/example` (the table, chart and
-form backed by the real API) sits behind the same guard.
+Administrator account provisioned in the Supabase dashboard, and the Console
+opens on `/projects`. Projects and Subcontractors share a sidebar and each
+shows an honest "This screen is not built yet." notice. `/example` (the table,
+chart and form backed by the real API) sits inside the same guarded shell;
+visit it directly, since it is absent from the navigation.
 
 ## Scripts
 
@@ -100,7 +102,7 @@ origin for production builds, where the two are served separately.
 | `/docs`             | Swagger UI                                        |
 | `/openapi.json`     | Generated OpenAPI 3.0 document                    |
 
-## Signing in
+## Sign in and the Console
 
 Identity is Supabase's; the API only verifies it. The browser signs in with
 `@supabase/supabase-js`, mirrors the Session into a Zustand read model, and
@@ -111,11 +113,39 @@ layout. Each API call carries the Session's access token as a bearer header;
 `docs/adr/0001-supabase-authentication.md`; the vocabulary (Administrator,
 Session, Provisioning, Project) is in `CONTEXT.md`.
 
-The screen is built from the Industry design system ported into Tailwind's
+The Console reads the Administrator's email directly from the Session, with
+no frontend `/api/v1/me` request. The backend endpoint and its tests remain as
+the proof of bearer-token verification. A restored Session keeps the current
+Console route after reload; an Administrator visiting `/login` is sent into
+the Console.
+
+| Route | Screen |
+| ----- | ------ |
+| `/` | Redirects to `/projects` |
+| `/projects` | Portfolio / Projects header and a framed not-built notice |
+| `/subcontractors` | Directory / Subcontractors header and the same notice |
+| `/example` | Disposable reference demo, reached directly by URL |
+
+At widths of 768px and up, the Console has a sticky 216px sidebar containing
+the Daedalus wordmark, "Unit Matrix", Projects and Subcontractors navigation,
+and a foot with the account email, Administrator role, language switcher and
+Sign out. The current navigation entry is marked. On smaller screens a
+sticky top bar opens the sidebar as a drawer. The menu toggle, Escape inside
+the drawer, a backdrop click or a route change closes it; focus moves into
+the drawer on open and returns to the toggle on close.
+
+Sign out is an icon button beside the account email. It shows a spinner,
+announces "Signing out…" and disables repeated presses while pending.
+A failure leaves an inline alert for retry; success returns to `/login`.
+
+The screens are built from the Industry design system ported into Tailwind's
 theme layer (`apps/frontend/src/styles/tailwind.css`) and a set of framed
 primitives under `apps/frontend/src/components/ui/`, each with a story and a
-test. Locales are `en-US` and `zh-CN`; the Chinese auth strings are
-machine-translated and flagged for review in the file.
+test. Shared layout primitives under `components/layout/` provide the shell,
+sidebar, centred page container and header with optional actions. Locales are
+`en-US` and `zh-CN`; the Chinese auth and Console strings are machine-translated
+and flagged for review in the file. The sign-in screen says "Administrator
+console" and "Enter console".
 
 ## The example slice is disposable
 
@@ -123,8 +153,11 @@ machine-translated and flagged for review in the file.
 domain arrives:
 
 **Frontend** — `src/features/example/`, `src/routes/_console/example.ts`,
-`src/store/useExampleStore.ts`, the `/example` link in `src/pages/Console.tsx`,
-and the `example` translation keys in `src/assets/locales/*/translations.json`.
+`src/store/useExampleStore.ts`, `e2e/example.spec.ts`, and the `example`
+translation keys in `src/assets/locales/*/translations.json`. Regenerate the
+route tree by starting Vite after removing the route. The demo has
+no navigation entry to remove; the Console shell and its Projects and
+Subcontractors routes stay.
 
 **Backend** — `src/routes/matches.route.ts`,
 `src/controllers/matches.controller.ts`, `src/services/matches.service.ts`,
@@ -160,6 +193,8 @@ Dockerfile before changing either step.
 
 `pnpm test:e2e` on the frontend starts the API as well as Vite, since the
 example page renders live data. The database named by `DATABASE_URL` must be
-reachable. The suite intercepts the Supabase token endpoint and `/api/v1/me`
-at the browser's edge, so it needs no real account. Playwright's browsers need
+reachable. The suite intercepts Supabase's token, user and logout endpoints
+at the browser's edge, so it needs no real account. The Console uses the
+intercepted Session's email; the example still exercises the real matches API
+and database. Playwright's browsers need
 system libraries once per machine: `sudo pnpm --filter @daedalus/frontend exec playwright install-deps`.

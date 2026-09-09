@@ -334,3 +334,112 @@ full vertical slice.
   token endpoint and `/api/v1/me`.
 - **Vocabulary.** `CONTEXT.md` seeds the glossary; **Project** is the top-level
   term here, where the sibling says **Site**.
+
+## 14. The Console shell and content layout
+
+Agreed 2026-09-09 after a requirements interview; every decision below was
+chosen explicitly. Built after §13, from the `unit-matrix-vite` prototype's
+`StaffShell`. Vocabulary: **Console** and **Sign out** join `CONTEXT.md`.
+
+### Reference
+
+The prototype disagrees with itself: `DESIGN_SPEC.md` describes a sticky top
+bar, while the built code and README use a fixed 216px left sidebar. The
+**built code is the reference**. The sidebar carries the brand, the navigation
+entries and an account block pinned to the foot.
+
+### Shell
+
+- From Tailwind's `md` breakpoint (768px) up: a 216px sidebar, sticky for the
+  full viewport height, with the content column beside it. The breakpoint
+  matches the prototype's own three-pane collapse at ~760px, so the Project
+  screen and the shell change shape together.
+- Below `md`: a slim top bar with the wordmark and a menu toggle. The same
+  sidebar opens as an overlay drawer that closes on Escape, on the backdrop,
+  on the toggle, and whenever the route changes. The toggle carries
+  `aria-expanded` and `aria-controls`; focus moves into the drawer on open and
+  back to the toggle on close.
+- The shell owns the page's single `main` landmark. The example page's own
+  `main` becomes a `div`.
+
+### Sidebar contents
+
+| Region | Content |
+| ------ | ------- |
+| Brand  | The Daedalus logo over the sub-label "Unit Matrix" |
+| Nav    | **Projects**, **Subcontractors** — both route to placeholder pages |
+| Foot   | Account block, language switcher, **Sign out** |
+
+- The **account block** shows initials in a hairline square, the email, and
+  the role label "Administrator". It reads the Session's user synchronously;
+  `GET /api/v1/me` returns only id and email, so the prototype's name and
+  "Site staff" chip cannot be reproduced yet. Initials are the first letters
+  of the first two words of the email's local part, or its first two letters
+  when there is one word.
+- The active entry is marked by the router's `aria-current="page"` and styled
+  with the prototype's left accent rule and tinted background.
+- The prototype's **"Subcontractor view"** button is dropped: the
+  Subcontractor flow is not built and the button would lead to a stub.
+- Sign-out failure shows inline alert text under the button, as the
+  placeholder page did.
+
+### Routes
+
+| Route              | Screen |
+| ------------------ | ------ |
+| `/`                | Redirects to `/projects` |
+| `/projects`        | Header row (kicker "Portfolio", heading "Projects") + a framed "not built yet" notice |
+| `/subcontractors`  | Header row (kicker "Directory", heading "Subcontractors") + the same notice |
+| `/example`         | Unchanged, inside the shell, absent from the nav |
+
+The placeholders deliberately say "not built yet" rather than showing a
+domain empty state with disabled search and actions: an empty state would
+promise data models that do not exist.
+
+### Content layout
+
+Two primitives, each with a story, a test and a barrel:
+
+- **Page** — the content column: centred, `max-width: 1400px`, the prototype's
+  padding.
+- **PageHeader** — kicker over the `h1`, an actions slot opposite, wrapping
+  under the heading when narrow.
+
+**Breadcrumb** is deferred until the Project screen, its first consumer.
+
+### Seam
+
+Presentational parts live in `components/layout` and take plain props, so
+stories and tests need neither a router nor a Session:
+
+```
+components/layout/
+  Page/            PageHeader/       ConsoleShell/
+  Sidebar/         Sidebar/NavItem/  Sidebar/AccountBlock/
+components/ui/Placeholder/
+```
+
+`NavItem` is a plain anchor whose active style keys off `aria-current`.
+`features/console/` wires them: `NavLink` is `createLink(NavItem)`,
+`navigation.ts` lists the entries, and `ConsoleLayout` gives the shell the
+router's pathname, the Session's email, the translations and the sign-out
+action. The `_console` layout route renders `ConsoleLayout`.
+
+### Removed
+
+- `pages/Console.tsx` (the identity placeholder) and its `console.*` strings.
+- `features/auth/api.ts` (`useMeQuery`) and the Playwright `/api/v1/me`
+  intercept, which lost their only consumer. The backend `/me` route, its
+  tests and its OpenAPI entry stay as the round-trip proof.
+
+### Copy
+
+- "Log out" becomes **"Sign out"** everywhere, pairing with "Sign in".
+- The sign-in screen says **"Administrator console"** and **"Enter console"**
+  in place of "portal".
+- New zh-CN strings are machine-translated and flagged in the file.
+
+### Not an ADR
+
+Nothing here is hard to reverse: the sidebar can become a top bar by
+replacing one component, and the seam is a refactor. No ADR is recorded.

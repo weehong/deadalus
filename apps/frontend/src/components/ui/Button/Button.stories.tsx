@@ -4,7 +4,7 @@ import { Button } from "./Button";
 const meta = {
 	title: "UI/Button",
 	component: Button,
-	args: { children: "Enter portal" },
+	args: { children: "Enter console" },
 } satisfies Meta<typeof Button>;
 
 export default meta;

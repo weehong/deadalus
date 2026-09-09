@@ -26,7 +26,7 @@ describe("LoginForm", () => {
 		const user = userEvent.setup();
 		const onSubmit = vi.fn();
 		render(<LoginForm onSubmit={onSubmit} />);
-		await user.click(screen.getByRole("button", { name: "Enter portal" }));
+		await user.click(screen.getByRole("button", { name: "Enter console" }));
 		expect(
 			await screen.findByText("Work email is required")
 		).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe("LoginForm", () => {
 		render(<LoginForm onSubmit={onSubmit} />);
 		await user.type(screen.getByLabelText("Work email"), "not-an-email");
 		await user.type(screen.getByLabelText("Password"), "x");
-		await user.click(screen.getByRole("button", { name: "Enter portal" }));
+		await user.click(screen.getByRole("button", { name: "Enter console" }));
 		expect(
 			await screen.findByText("Enter a valid email address")
 		).toBeInTheDocument();

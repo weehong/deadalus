@@ -1,7 +1,7 @@
 {
 	"_comment": "Machine-translated from en-US; flagged for review by a native reader. The example keys are deliberately absent and fall back to English.",
 	"auth": {
-		"brandKicker": "管理员门户",
+		"brandKicker": "管理员控制台",
 		"brandHeadline": "逐个单元，完成家具安装。",
 		"brandBlurb": "设置项目、楼栋、楼层和单元。把项目分配给分包商，再通过现场二维码读取完成情况。",
 		"hierarchy": {
@@ -18,11 +18,11 @@
 		"passwordPlaceholder": "••••••••",
 		"showPassword": "显示密码",
 		"hidePassword": "隐藏密码",
-		"submit": "进入门户",
+		"submit": "进入控制台",
 		"submitting": "正在登录…",
 		"access": "需要访问权限？请联系您的现场管理员。",
-		"logOut": "退出登录",
-		"loggingOut": "正在退出…",
+		"signOut": "退出登录",
+		"signingOut": "正在退出…",
 		"validation": {
 			"emailRequired": "请输入工作邮箱",
 			"emailInvalid": "请输入有效的邮箱地址",
@@ -32,7 +32,7 @@
 			"invalidCredentials": "邮箱或密码不正确。",
 			"rateLimited": "尝试次数过多，请稍后再试。",
 			"unavailable": "无法连接登录服务。请检查网络后重试。",
-			"logOut": "无法退出登录，请重试。",
+			"signOut": "无法退出登录，请重试。",
 			"unknown": "出了点问题，请重试。"
 		},
 		"language": "语言",
@@ -43,15 +43,25 @@
 		"restoringSession": "正在恢复您的会话…"
 	},
 	"console": {
-		"kicker": "控制台",
-		"heading": "已登录",
-		"body": "控制台尚未构建。此页面用于确认登录流程：浏览器持有 Supabase 会话，且 API 已完成验证。",
-		"identityHeading": "API 已确认的身份",
-		"identityPending": "正在通过 API 核对您的身份…",
-		"identityError": "API 无法确认您的身份。",
-		"email": "邮箱",
-		"id": "账号 ID",
-		"exampleLink": "查看示例演示"
+		"subtitle": "Unit Matrix",
+		"sidebar": "侧边栏",
+		"navigationLabel": "控制台导航",
+		"menu": "菜单",
+		"closeMenu": "关闭菜单",
+		"role": "管理员",
+		"notBuilt": "此页面尚未构建。",
+		"navigation": {
+			"projects": "项目",
+			"subcontractors": "分包商"
+		},
+		"projects": {
+			"kicker": "项目组合",
+			"heading": "项目"
+		},
+		"subcontractors": {
+			"kicker": "名录",
+			"heading": "分包商"
+		}
 	},
 	"configuration": {
 		"kicker": "配置错误",

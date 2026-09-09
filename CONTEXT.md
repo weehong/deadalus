@@ -14,6 +14,16 @@ The act of a person authenticating into Daedalus, and the screen on which it
 happens. The route is `/login` for brevity; the visible copy says "Sign in".
 _Avoid_: Login, log in, logon, authenticate (as a user-facing verb)
 
+**Sign out**:
+The act of an Administrator deliberately ending their own Session. The
+counterpart of Sign in.
+_Avoid_: Log out, logout, exit
+
+**Console**:
+The whole of Daedalus that sits behind Sign in: every screen an Administrator
+sees once they hold a Session. Subcontractor screens are not part of it.
+_Avoid_: Portal, dashboard, app, admin area, back office
+
 **Administrator**:
 A person with an account granting access to Daedalus and authority to manage
 project data, assign Items and read progress. The prototype called this role

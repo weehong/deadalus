@@ -1,80 +1,46 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+import { signIn } from "./provider";
 
-/*
- * The example page sits under the Session guard, so each test signs in first
- * through the intercepted provider. Its data still comes from the real API,
- * which needs the database up (see webServer in playwright.config.ts).
- */
-const grantedSession = {
-	access_token: "e2e-access-token",
-	token_type: "bearer",
-	expires_in: 3600,
-	expires_at: Math.floor(Date.now() / 1000) + 3600,
-	refresh_token: "e2e-refresh-token",
-	user: {
-		id: "00000000-0000-4000-8000-000000000001",
-		aud: "authenticated",
-		role: "authenticated",
-		email: "administrator@example.com",
-		app_metadata: {},
-		user_metadata: {},
-		created_at: "2026-01-01T00:00:00.000Z",
-	},
-};
-
-const signIn = async (page: Page): Promise<void> => {
-	await page.route("**/auth/v1/**", async (route) => {
-		const url = route.request().url();
-		if (url.includes("/token?grant_type=password")) {
-			await route.fulfill({
-				status: 200,
-				contentType: "application/json",
-				body: JSON.stringify(grantedSession),
-			});
-			return;
-		}
-		if (url.endsWith("/user")) {
-			await route.fulfill({
-				status: 200,
-				contentType: "application/json",
-				body: JSON.stringify(grantedSession.user),
-			});
-			return;
-		}
-		await route.fallback();
+test("the disposable example is reached by URL inside the Console and uses real API data", async ({
+	page,
+}) => {
+	await signIn(page);
+	const navigation = page.getByRole("navigation", {
+		name: "Console navigation",
 	});
-	await page.route("**/api/v1/me", (route) =>
-		route.fulfill({
-			status: 200,
-			contentType: "application/json",
-			body: JSON.stringify({
-				data: {
-					id: grantedSession.user.id,
-					email: grantedSession.user.email,
-				},
-			}),
-		})
+	await expect(navigation.getByRole("link", { name: /example/i })).toHaveCount(
+		0
 	);
-	await page.goto("/login");
-	await page
-		.getByRole("textbox", { name: "Work email" })
-		.fill("administrator@example.com");
-	await page.getByRole("textbox", { name: "Password" }).fill("correct horse battery staple");
-	await page.getByRole("button", { name: "Enter portal" }).click();
-	await expect(page).toHaveURL(/\/$/);
-};
-
-test("the root renders the signed-in placeholder", async ({ page }) => {
-	await signIn(page);
+	const matchesResponse = page.waitForResponse(
+		(response) =>
+			new URL(response.url()).pathname === "/api/v1/matches" &&
+			response.request().method() === "GET"
+	);
+	await page.goto("/example");
+	expect((await matchesResponse).status()).toBe(200);
+	await expect(page).toHaveURL(/\/example$/);
 	await expect(page).toHaveTitle("Daedalus");
-	await expect(page.getByRole("heading", { name: "Signed in" })).toBeVisible();
-});
-
-test("can navigate to the example page", async ({ page }) => {
-	await signIn(page);
-	await page.getByRole("link", { name: /example/i }).click();
-	await expect(page).toHaveURL(/\/example/);
+	await expect(page.getByRole("main")).toHaveCount(1);
 	await expect(
-		page.getByRole("heading", { level: 1, name: /matches/i })
+		page.getByRole("main").getByRole("heading", { level: 1, name: /matches/i })
 	).toBeVisible();
+	await expect(page.getByRole("table").getByRole("row").nth(1)).toBeVisible();
+	await expect(navigation).toBeVisible();
+	await expect(
+		navigation.getByRole("link", { name: "Projects", exact: true })
+	).not.toHaveAttribute("aria-current", "page");
+	await expect(
+		navigation.getByRole("link", { name: "Subcontractors" })
+	).not.toHaveAttribute("aria-current", "page");
+
+	const sidebar = page.getByRole("complementary", { name: "Sidebar" });
+	await expect(sidebar).toHaveCSS("width", "216px");
+	await page.mouse.wheel(0, 1000);
+	await expect
+		.poll(() => page.evaluate(() => window.scrollY))
+		.toBeGreaterThan(0);
+	await expect.poll(async () => (await sidebar.boundingBox())?.y).toBe(0);
+	await expect(navigation).toBeVisible();
+	await navigation.getByRole("link", { name: "Projects", exact: true }).click();
+	await expect(page).toHaveURL(/\/projects$/);
 });

@@ -13,6 +13,8 @@ import { Route as ConsoleRouteImport } from './routes/_console'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ConsoleIndexRouteImport } from './routes/_console/index'
 import { Route as ConsoleExampleRouteImport } from './routes/_console/example'
+import { Route as ConsoleProjectsRouteImport } from './routes/_console/projects'
+import { Route as ConsoleSubcontractorsRouteImport } from './routes/_console/subcontractors'
 
 const ConsoleRoute = ConsoleRouteImport.update({
   id: '/_console',
@@ -33,15 +35,29 @@ const ConsoleExampleRoute = ConsoleExampleRouteImport.update({
   path: '/example',
   getParentRoute: () => ConsoleRoute,
 } as any)
+const ConsoleProjectsRoute = ConsoleProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleSubcontractorsRoute = ConsoleSubcontractorsRouteImport.update({
+  id: '/subcontractors',
+  path: '/subcontractors',
+  getParentRoute: () => ConsoleRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof ConsoleIndexRoute
   '/login': typeof LoginRoute
   '/example': typeof ConsoleExampleRoute
+  '/projects': typeof ConsoleProjectsRoute
+  '/subcontractors': typeof ConsoleSubcontractorsRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/example': typeof ConsoleExampleRoute
+  '/projects': typeof ConsoleProjectsRoute
+  '/subcontractors': typeof ConsoleSubcontractorsRoute
   '/': typeof ConsoleIndexRoute
 }
 export interface FileRoutesById {
@@ -49,14 +65,23 @@ export interface FileRoutesById {
   '/_console': typeof ConsoleRouteWithChildren
   '/login': typeof LoginRoute
   '/_console/example': typeof ConsoleExampleRoute
+  '/_console/projects': typeof ConsoleProjectsRoute
+  '/_console/subcontractors': typeof ConsoleSubcontractorsRoute
   '/_console/': typeof ConsoleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/example'
+  fullPaths: '/' | '/login' | '/example' | '/projects' | '/subcontractors'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/example' | '/'
-  id: '__root__' | '/_console' | '/login' | '/_console/example' | '/_console/'
+  to: '/login' | '/example' | '/projects' | '/subcontractors' | '/'
+  id:
+    | '__root__'
+    | '/_console'
+    | '/login'
+    | '/_console/example'
+    | '/_console/projects'
+    | '/_console/subcontractors'
+    | '/_console/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -94,16 +119,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleExampleRouteImport
       parentRoute: typeof ConsoleRoute
     }
+    '/_console/projects': {
+      id: '/_console/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ConsoleProjectsRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/_console/subcontractors': {
+      id: '/_console/subcontractors'
+      path: '/subcontractors'
+      fullPath: '/subcontractors'
+      preLoaderRoute: typeof ConsoleSubcontractorsRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
   }
 }
 
 interface ConsoleRouteChildren {
   ConsoleExampleRoute: typeof ConsoleExampleRoute
+  ConsoleProjectsRoute: typeof ConsoleProjectsRoute
+  ConsoleSubcontractorsRoute: typeof ConsoleSubcontractorsRoute
   ConsoleIndexRoute: typeof ConsoleIndexRoute
 }
 
 const ConsoleRouteChildren: ConsoleRouteChildren = {
   ConsoleExampleRoute: ConsoleExampleRoute,
+  ConsoleProjectsRoute: ConsoleProjectsRoute,
+  ConsoleSubcontractorsRoute: ConsoleSubcontractorsRoute,
   ConsoleIndexRoute: ConsoleIndexRoute,
 }
 

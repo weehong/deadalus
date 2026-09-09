@@ -12,9 +12,9 @@ import {
  * Reference page wiring together TanStack Query + Table, React Hook Form + Zod,
  * a Nivo chart, a Zustand store and i18n against the real API
  * (`GET`/`POST /api/v1/matches`). Self-contained and safe to delete: remove
- * `src/features/example`, `src/routes/example.ts`, `src/store/useExampleStore.ts`,
- * the `/example` link in `src/pages/Home.tsx`, and the `example` translation
- * keys. On the backend, the matching slice is `src/{routes,controllers,services,
+ * `src/features/example`, `src/routes/_console/example.ts`,
+ * `src/store/useExampleStore.ts`, and the `example` translation keys. Nothing
+ * links to it; it is reached by URL only. On the backend, the matching slice is `src/{routes,controllers,services,
  * schemas}/matches.*`, its OpenAPI block in `src/openapi/registry.ts`, the
  * `Match` model, and `prisma/seed.ts`.
  */
@@ -38,7 +38,7 @@ export const ExamplePage = (): FunctionComponent => {
 	const matches = matchesQuery.data;
 
 	return (
-		<main className="flex flex-col gap-8 p-8">
+		<div className="flex flex-col gap-8 p-8">
 			<h1 className="text-2xl font-bold">{t("example.title")}</h1>
 			<section className="flex flex-col gap-6 lg:flex-row">
 				<div className="flex-1">
@@ -57,6 +57,6 @@ export const ExamplePage = (): FunctionComponent => {
 				<h2 className="mb-2 font-semibold">{t("example.chartHeading")}</h2>
 				<MatchesChart data={matches} />
 			</section>
-		</main>
+		</div>
 	);
 };

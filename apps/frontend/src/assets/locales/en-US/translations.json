@@ -1,6 +1,6 @@
 {
 	"auth": {
-		"brandKicker": "Administrator portal",
+		"brandKicker": "Administrator console",
 		"brandHeadline": "Furniture fitout, unit by unit.",
 		"brandBlurb": "Set out projects, blocks, storeys and units. Assign items to subcontractors, then read completion back off the QR codes on site.",
 		"hierarchy": {
@@ -17,11 +17,11 @@
 		"passwordPlaceholder": "••••••••",
 		"showPassword": "Show password",
 		"hidePassword": "Hide password",
-		"submit": "Enter portal",
+		"submit": "Enter console",
 		"submitting": "Signing in…",
 		"access": "Need access? Ask your site administrator.",
-		"logOut": "Log out",
-		"loggingOut": "Logging out…",
+		"signOut": "Sign out",
+		"signingOut": "Signing out…",
 		"validation": {
 			"emailRequired": "Work email is required",
 			"emailInvalid": "Enter a valid email address",
@@ -31,7 +31,7 @@
 			"invalidCredentials": "The email or password is incorrect.",
 			"rateLimited": "Too many attempts. Please wait before trying again.",
 			"unavailable": "The sign-in service is unreachable. Check your connection and try again.",
-			"logOut": "Could not log out. Try again.",
+			"signOut": "Could not sign out. Try again.",
 			"unknown": "Something went wrong. Please try again."
 		},
 		"language": "Language",
@@ -42,15 +42,25 @@
 		"restoringSession": "Restoring your session…"
 	},
 	"console": {
-		"kicker": "Console",
-		"heading": "Signed in",
-		"body": "The console is not built yet. This screen confirms the sign-in round trip: the browser holds a Supabase session and the API has verified it.",
-		"identityHeading": "Identity confirmed by the API",
-		"identityPending": "Checking your identity with the API…",
-		"identityError": "The API could not confirm your identity.",
-		"email": "Email",
-		"id": "Account id",
-		"exampleLink": "View the example demo"
+		"subtitle": "Unit Matrix",
+		"sidebar": "Sidebar",
+		"navigationLabel": "Console navigation",
+		"menu": "Menu",
+		"closeMenu": "Close menu",
+		"role": "Administrator",
+		"notBuilt": "This screen is not built yet.",
+		"navigation": {
+			"projects": "Projects",
+			"subcontractors": "Subcontractors"
+		},
+		"projects": {
+			"kicker": "Portfolio",
+			"heading": "Projects"
+		},
+		"subcontractors": {
+			"kicker": "Directory",
+			"heading": "Subcontractors"
+		}
 	},
 	"configuration": {
 		"kicker": "Configuration error",

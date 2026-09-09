@@ -6,7 +6,7 @@ const meta = {
 	component: BrandPanel,
 	parameters: { layout: "fullscreen" },
 	args: {
-		kicker: "Administrator portal",
+		kicker: "Administrator console",
 		headline: "Furniture fitout, unit by unit.",
 		blurb:
 			"Set out projects, blocks, storeys and units. Assign items to subcontractors, then read completion back off the QR codes on site.",

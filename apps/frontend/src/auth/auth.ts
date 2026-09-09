@@ -1,4 +1,8 @@
-import type { Session } from "@supabase/supabase-js";
+import {
+	isAuthApiError,
+	isAuthSessionMissingError,
+	type Session,
+} from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 
 /**
@@ -51,8 +55,35 @@ export const signIn = async (
 };
 
 export const signOut = async (): Promise<void> => {
-	const { error } = await supabase.auth.signOut();
-	if (error) throw new AuthenticationError(mapAuthError(error));
+	const { data, error: sessionError } = await supabase.auth.getSession();
+	if (sessionError && !isAuthSessionMissingError(sessionError))
+		throw new AuthenticationError(mapAuthError(sessionError));
+	if (data.session) {
+		// auth-js 2.115 clears the local Session even when revocation fails.
+		// Revoke first using the same public API and user JWT as the SDK, so a
+		// rejected request leaves the Session intact and Sign out can be retried.
+		const { error } = await supabase.auth.admin.signOut(
+			data.session.access_token,
+			"global"
+		);
+		// Match the SDK: an expired/revoked token or deleted user must still
+		// be able to leave the Console, even though revocation is unnecessary.
+		if (
+			error &&
+			!isAuthSessionMissingError(error) &&
+			!(isAuthApiError(error) && [401, 403, 404].includes(error.status))
+		)
+			throw new AuthenticationError(mapAuthError(error));
+	}
+	// The SDK has no public cleanup-only method. This second, idempotent
+	// request lets it own persistence removal and the SIGNED_OUT broadcast.
+	const { error } = await supabase.auth.signOut({ scope: "local" });
+	if (error) {
+		const { data: remaining } = await supabase.auth.getSession();
+		// Revocation succeeded or the Session was already invalid. A cleanup
+		// request failure is harmless once the local Session is removed.
+		if (remaining.session) throw new AuthenticationError(mapAuthError(error));
+	}
 };
 
 /** Subscribe to the provider's auth-state stream; returns the unsubscribe. */
