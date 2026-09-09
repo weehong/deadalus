@@ -121,3 +121,42 @@ registry.registerPath({
 		},
 	},
 });
+
+registry.registerComponent("securitySchemes", "bearerAuth", {
+	type: "http",
+	scheme: "bearer",
+	bearerFormat: "JWT",
+	description: "A Supabase access token.",
+});
+
+const MeSchema = registry.register(
+	"Me",
+	z.object({
+		id: z
+			.string()
+			.uuid()
+			.openapi({ example: "00000000-0000-4000-8000-000000000001" }),
+		email: z.string().email().optional().openapi({
+			example: "administrator@example.com",
+		}),
+	})
+);
+
+registry.registerPath({
+	method: "get",
+	path: "/api/v1/me",
+	summary: "The signed-in identity",
+	tags: ["Me"],
+	security: [{ bearerAuth: [] }],
+	responses: {
+		200: {
+			description: "The identity carried by the bearer token.",
+			content: {
+				"application/json": { schema: dataEnvelope(MeSchema) },
+			},
+		},
+		401: {
+			description: "The bearer token is missing, invalid, or expired.",
+		},
+	},
+});

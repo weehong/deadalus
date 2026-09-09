@@ -9,68 +9,110 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ExampleRouteImport } from './routes/example'
+import { Route as ConsoleRouteImport } from './routes/_console'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ConsoleIndexRouteImport } from './routes/_console/index'
+import { Route as ConsoleExampleRouteImport } from './routes/_console/example'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ConsoleRoute = ConsoleRouteImport.update({
+  id: '/_console',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ExampleRoute = ExampleRouteImport.update({
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsoleIndexRoute = ConsoleIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleExampleRoute = ConsoleExampleRouteImport.update({
   id: '/example',
   path: '/example',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ConsoleRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/example': typeof ExampleRoute
+  '/': typeof ConsoleIndexRoute
+  '/login': typeof LoginRoute
+  '/example': typeof ConsoleExampleRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/example': typeof ExampleRoute
+  '/login': typeof LoginRoute
+  '/example': typeof ConsoleExampleRoute
+  '/': typeof ConsoleIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/example': typeof ExampleRoute
+  '/_console': typeof ConsoleRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_console/example': typeof ConsoleExampleRoute
+  '/_console/': typeof ConsoleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/example'
+  fullPaths: '/' | '/login' | '/example'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/example'
-  id: '__root__' | '/' | '/example'
+  to: '/login' | '/example' | '/'
+  id: '__root__' | '/_console' | '/login' | '/_console/example' | '/_console/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ExampleRoute: typeof ExampleRoute
+  ConsoleRoute: typeof ConsoleRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_console': {
+      id: '/_console'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof ConsoleRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/example': {
-      id: '/example'
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_console/': {
+      id: '/_console/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof ConsoleIndexRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/_console/example': {
+      id: '/_console/example'
       path: '/example'
       fullPath: '/example'
-      preLoaderRoute: typeof ExampleRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ConsoleExampleRouteImport
+      parentRoute: typeof ConsoleRoute
     }
   }
 }
 
+interface ConsoleRouteChildren {
+  ConsoleExampleRoute: typeof ConsoleExampleRoute
+  ConsoleIndexRoute: typeof ConsoleIndexRoute
+}
+
+const ConsoleRouteChildren: ConsoleRouteChildren = {
+  ConsoleExampleRoute: ConsoleExampleRoute,
+  ConsoleIndexRoute: ConsoleIndexRoute,
+}
+
+const ConsoleRouteWithChildren =
+  ConsoleRoute._addFileChildren(ConsoleRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ExampleRoute: ExampleRoute,
+  ConsoleRoute: ConsoleRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

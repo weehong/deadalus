@@ -32,6 +32,9 @@ const EnvSchema = z.object({
 		.default("false")
 		.transform((value) => value === "true"),
 	DATABASE_URL: z.string().url().optional(),
+	// Supabase project URL. Access tokens issued by its Auth service are
+	// verified against the JWKS published under `/auth/v1/.well-known/jwks.json`.
+	SUPABASE_URL: z.string().url(),
 });
 
 /**

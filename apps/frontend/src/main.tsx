@@ -2,11 +2,12 @@ import { createRouter } from "@tanstack/react-router";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "@/App";
+import { BootLoadingState } from "@/components/ui/LoadingState";
 import { routeTree } from "@/routeTree.gen";
 import "@/styles/tailwind.css";
 import "@/common/i18n";
 
-const router = createRouter({ routeTree });
+const router = createRouter({ routeTree, context: { session: null } });
 
 export type TanstackRouter = typeof router;
 
@@ -22,7 +23,7 @@ if (!rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);
 	root.render(
 		<React.StrictMode>
-			<React.Suspense fallback="loading">
+			<React.Suspense fallback={<BootLoadingState />}>
 				<App router={router} />
 			</React.Suspense>
 		</React.StrictMode>

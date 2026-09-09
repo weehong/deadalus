@@ -5,12 +5,12 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+	readonly VITE_APP_TITLE: string;
 	readonly VITE_APP_ENVIRONMENT: string;
-	/**
-	 * API origin. Empty in development so requests go through the Vite proxy
-	 * (same-origin); set to the real API origin for production builds.
-	 */
+	/** API origin; empty in development because Vite proxies `/api`. */
 	readonly VITE_API_URL: string;
+	readonly VITE_SUPABASE_URL: string;
+	readonly VITE_SUPABASE_ANON_KEY: string;
 	// more env variables...
 }
 

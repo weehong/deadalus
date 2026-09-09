@@ -221,6 +221,9 @@ The frontend's vitest script is named `test:unit`, not `test:unit:run`; a
 
 ## 9. Containers
 
+> **Superseded in part by §13.** `DATABASE_URL` now names the Supabase
+> Postgres; the Docker Postgres below remains a local fallback only.
+
 Docker is used for Postgres only. Both apps run on the host.
 
 ```
@@ -294,3 +297,40 @@ standalone scaffold and lists how the app has since diverged.
 
 **Added:** a root `.gitignore`, despite §2's no-git decision, so the tree is
 correct the moment `git init` is run.
+
+## 13. Sign-in and the Supabase database
+
+Added 2026-09-08, after the scaffold. The sign-in screen from the
+`unit-matrix-vite` design prototype was built fresh in `apps/frontend` as a
+full vertical slice.
+
+- **Identity is Supabase's.** Email and password through `@supabase/supabase-js`
+  in the browser, reusing the sibling `daedalus` repository's project. No user
+  or session table in Prisma. `docs/adr/0001-supabase-authentication.md`.
+- **The API verifies, never trusts.** `requireAuth` checks the bearer token
+  against the project's JWKS with `jose` (ES256, issuer and audience pinned);
+  `GET /api/v1/me` is the round-trip proof. `SUPABASE_URL` is required in the
+  backend env, and the `dev`/`start` scripts now load `.env`, which the
+  scaffold never needed.
+- **One hosted database, one schema of our own.** `DATABASE_URL` is the
+  Supabase session pooler with `?schema=daedalus2`, so Prisma's tables and
+  migration history never touch the `public` schema the sibling manages.
+  `docs/adr/0002-dedicated-schema-on-the-shared-supabase-database.md`.
+- **Routing.** `/login` is public; a pathless `_console` layout guards `/` and
+  `/example`. The boilerplate `Home` is replaced by a placeholder console that
+  shows the identity from `/api/v1/me` and offers log out.
+- **Design system.** The prototype's colour and type tokens are Tailwind theme
+  tokens; spacing uses Tailwind's scale. Primitives (`BlueprintFrame`, `Button`,
+  `Input`, `Field`, `Alert`, `Logo`, `LabelRow`, `LanguageSwitcher`,
+  `BootLoadingState`, `SplitLayout`) each have a story, a test and a barrel.
+- **Locales.** `en` and `es` became `en-US` and `zh-CN`, with detection
+  normalised and Traditional Chinese falling back to English. Chinese exists
+  for the auth, console and configuration strings only, machine-translated.
+- **Tests.** Frontend unit tests use the real translations and jest-dom
+  matchers registered on the frontend's own `expect` (pnpm resolves the
+  `jest-dom/vitest` entry against the backend's vitest 2, so the setup file
+  extends explicitly). Backend integration tests mint ES256 tokens with a
+  generated key and stub the JWKS fetch. Playwright intercepts the provider's
+  token endpoint and `/api/v1/me`.
+- **Vocabulary.** `CONTEXT.md` seeds the glossary; **Project** is the top-level
+  term here, where the sibling says **Site**.

@@ -27,14 +27,34 @@ Node >= 22, pnpm, and Docker (for PostgreSQL).
 
 ```sh
 pnpm install          # once, at the root — single workspace lockfile
-pnpm db:up            # PostgreSQL 16 in Docker on :5432
-pnpm db:migrate       # apply migrations
+cp apps/frontend/.env.example apps/frontend/.env
+cp apps/backend/.env.example apps/backend/.env
+```
+
+Fill in the Supabase values (Project Settings → API in the dashboard):
+
+| File                  | Variable                 | Value                                             |
+| --------------------- | ------------------------ | ------------------------------------------------- |
+| `apps/frontend/.env`  | `VITE_SUPABASE_URL`      | The project URL                                   |
+| `apps/frontend/.env`  | `VITE_SUPABASE_ANON_KEY` | The publishable anonymous key                     |
+| `apps/backend/.env`   | `SUPABASE_URL`           | The same project URL                              |
+| `apps/backend/.env`   | `DATABASE_URL`           | Session-pooler string **with `?schema=daedalus2`** |
+
+The service-role key never enters this repository. `DATABASE_URL` is the
+Supabase Postgres (see `docs/adr/0002-*.md`); leave it at the local fallback to
+develop against Docker instead:
+
+```sh
+pnpm db:up            # only for the local fallback: PostgreSQL 16 in Docker on :5432
+pnpm db:migrate       # apply migrations to whichever database DATABASE_URL names
 pnpm db:seed          # 8 example matches
 pnpm dev              # both servers, in parallel
 ```
 
-Then open <http://localhost:5173/example> — the table, chart and form are
-backed by the real API.
+Then open <http://localhost:5173>. You are sent to `/login`; sign in with an
+Administrator account provisioned in the Supabase dashboard, and the root shows
+the identity the API read from your token. `/example` (the table, chart and
+form backed by the real API) sits behind the same guard.
 
 ## Scripts
 
@@ -75,18 +95,36 @@ origin for production builds, where the two are served separately.
 | Endpoint            | Purpose                                          |
 | ------------------- | ------------------------------------------------ |
 | `/health`, `/ready` | Liveness and readiness probes                     |
+| `/api/v1/me`        | `GET` the signed-in identity (bearer token required) |
 | `/api/v1/matches`   | `GET` list, `POST` create                         |
 | `/docs`             | Swagger UI                                        |
 | `/openapi.json`     | Generated OpenAPI 3.0 document                    |
+
+## Signing in
+
+Identity is Supabase's; the API only verifies it. The browser signs in with
+`@supabase/supabase-js`, mirrors the Session into a Zustand read model, and
+TanStack Router guards every route except `/login` in a pathless `_console`
+layout. Each API call carries the Session's access token as a bearer header;
+`requireAuth` on the backend verifies it against the project's JWKS with
+`jose` and sets `request.user`. The reasoning is in
+`docs/adr/0001-supabase-authentication.md`; the vocabulary (Administrator,
+Session, Provisioning, Project) is in `CONTEXT.md`.
+
+The screen is built from the Industry design system ported into Tailwind's
+theme layer (`apps/frontend/src/styles/tailwind.css`) and a set of framed
+primitives under `apps/frontend/src/components/ui/`, each with a story and a
+test. Locales are `en-US` and `zh-CN`; the Chinese auth strings are
+machine-translated and flagged for review in the file.
 
 ## The example slice is disposable
 
 `Match` exists only to prove the stack end to end. Delete it when your real
 domain arrives:
 
-**Frontend** — `src/features/example/`, `src/routes/example.ts`,
-`src/store/useExampleStore.ts`, the `/example` link in `src/pages/Home.tsx`, and
-the `example` translation keys in `src/assets/locales/*/translations.json`.
+**Frontend** — `src/features/example/`, `src/routes/_console/example.ts`,
+`src/store/useExampleStore.ts`, the `/example` link in `src/pages/Console.tsx`,
+and the `example` translation keys in `src/assets/locales/*/translations.json`.
 
 **Backend** — `src/routes/matches.route.ts`,
 `src/controllers/matches.controller.ts`, `src/services/matches.service.ts`,
@@ -96,8 +134,8 @@ the `matchesRouter` line in `src/routes/index.ts`, the `Match` model in
 
 ## Notes
 
-- **There is no git repository here.** This tree is unversioned by choice (see
-  SPEC.md §2), but a root `.gitignore` is in place for whenever you `git init`.
+- The backend's `dev` and `start` scripts load `.env` through Node's
+  `--env-file-if-exists`. Prisma's CLI reads the same file on its own.
 - Schemas destined for OpenAPI must import `z` from `@/lib/zod.js`, not from
   `zod` directly. Under zod 4 `extendZodWithOpenApi` is not retroactive, so a
   schema built before it runs silently loses `.openapi()`.
@@ -121,4 +159,7 @@ is copied out of the builder's virtual store — see the comments in the
 Dockerfile before changing either step.
 
 `pnpm test:e2e` on the frontend starts the API as well as Vite, since the
-example page renders live data. PostgreSQL must already be up.
+example page renders live data. The database named by `DATABASE_URL` must be
+reachable. The suite intercepts the Supabase token endpoint and `/api/v1/me`
+at the browser's edge, so it needs no real account. Playwright's browsers need
+system libraries once per machine: `sudo pnpm --filter @daedalus/frontend exec playwright install-deps`.

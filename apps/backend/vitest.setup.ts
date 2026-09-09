@@ -7,3 +7,6 @@ process.env["LOG_LEVEL"] ??= "silent";
 // development data. Override via DATABASE_URL when pointing at a real instance.
 process.env["DATABASE_URL"] ??=
 	"postgresql://postgres:postgres@localhost:5432/express_api_test?schema=public";
+// Supabase is only contacted through a stubbed `fetch` in tests; the URL just
+// has to be well-formed so the env schema accepts it.
+process.env["SUPABASE_URL"] ??= "https://example.supabase.co";
