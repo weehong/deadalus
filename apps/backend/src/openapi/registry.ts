@@ -2,8 +2,61 @@ import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 
 import { z } from "@/lib/zod.js";
 import { createMatchBodySchema } from "@/schemas/matches.schema.js";
+import {
+	memberBodySchema,
+	editMemberBodySchema,
+	listSubcontractorsQuerySchema,
+	createSubcontractorBodySchema,
+	renameSubcontractorBodySchema,
+	subcontractorParametersSchema,
+	memberParametersSchema,
+} from "@/schemas/subcontractors.schema.js";
 
 export const registry: OpenAPIRegistry = new OpenAPIRegistry();
+
+const PaginationMetaSchema = registry.register(
+	"PaginationMeta",
+	z.object({
+		page: z.number().int().min(1),
+		pageSize: z.number().int().min(1).max(100),
+		total: z.number().int().min(0),
+	})
+);
+
+const SubcontractorRowSchema = registry.register(
+	"SubcontractorRow",
+	z.object({
+		id: z.string(),
+		name: z.string(),
+		memberCount: z.number().int().min(1),
+		phones: z.array(z.string()),
+	})
+);
+
+registry.registerPath({
+	method: "get",
+	path: "/api/v1/subcontractors",
+	summary: "List the Directory",
+	tags: ["Subcontractors"],
+	security: [{ bearerAuth: [] }],
+	request: { query: listSubcontractorsQuerySchema },
+	responses: {
+		200: {
+			description:
+				"Subcontractors sorted by name, with page metadata. Page size is capped at 100.",
+			content: {
+				"application/json": {
+					schema: z.object({
+						data: z.array(SubcontractorRowSchema),
+						meta: PaginationMetaSchema,
+					}),
+				},
+			},
+		},
+		400: { description: "Invalid pagination." },
+		401: { description: "The bearer token is missing, invalid, or expired." },
+	},
+});
 
 const HealthSchema = registry.register(
 	"HealthStatus",
@@ -157,6 +210,265 @@ registry.registerPath({
 		},
 		401: {
 			description: "The bearer token is missing, invalid, or expired.",
+		},
+	},
+});
+
+const MemberSchema = registry.register(
+	"Member",
+	z.object({ id: z.string(), name: z.string(), phone: z.string() })
+);
+const SubcontractorSchema = registry.register(
+	"Subcontractor",
+	z.object({ id: z.string(), name: z.string(), members: z.array(MemberSchema) })
+);
+registry.registerPath({
+	method: "get",
+	path: "/api/v1/subcontractors/{id}",
+	summary: "Read a Subcontractor",
+	tags: ["Subcontractors"],
+	security: [{ bearerAuth: [] }],
+	request: { params: subcontractorParametersSchema },
+	responses: {
+		200: {
+			description:
+				"The Subcontractor with its Members sorted by name then phone.",
+			content: {
+				"application/json": { schema: dataEnvelope(SubcontractorSchema) },
+			},
+		},
+		401: { description: "The bearer token is missing, invalid, or expired." },
+		404: { description: "The Subcontractor does not exist." },
+	},
+});
+
+registry.registerPath({
+	method: "delete",
+	path: "/api/v1/subcontractors/{id}",
+	summary: "Delete a Subcontractor and its Members",
+	tags: ["Subcontractors"],
+	security: [{ bearerAuth: [] }],
+	request: { params: subcontractorParametersSchema },
+	responses: {
+		204: { description: "The Subcontractor and its Members were deleted." },
+		401: { description: "The bearer token is missing, invalid, or expired." },
+		404: { description: "The Subcontractor does not exist." },
+	},
+});
+
+registry.registerPath({
+	method: "delete",
+	path: "/api/v1/subcontractors/{id}/members/{memberId}",
+	summary: "Remove a Member",
+	tags: ["Subcontractors"],
+	security: [{ bearerAuth: [] }],
+	request: { params: memberParametersSchema },
+	responses: {
+		204: { description: "The Member was removed." },
+		401: { description: "The bearer token is missing, invalid, or expired." },
+		404: { description: "The Member does not exist under this Subcontractor." },
+		409: {
+			description:
+				"LAST_MEMBER: a Subcontractor must keep at least one Member.",
+			content: {
+				"application/json": {
+					schema: z.object({
+						error: z.object({
+							code: z.literal("LAST_MEMBER"),
+							message: z.string(),
+						}),
+					}),
+				},
+			},
+		},
+	},
+});
+
+registry.registerPath({
+	method: "post",
+	path: "/api/v1/subcontractors",
+	summary: "Create a Subcontractor with its first Member",
+	tags: ["Subcontractors"],
+	security: [{ bearerAuth: [] }],
+	request: {
+		body: {
+			content: {
+				"application/json": { schema: createSubcontractorBodySchema },
+			},
+		},
+	},
+	responses: {
+		201: {
+			description: "The created Subcontractor and its first Member.",
+			content: {
+				"application/json": { schema: dataEnvelope(SubcontractorSchema) },
+			},
+		},
+		400: {
+			description:
+				"A required name is blank or the phone cannot be normalized to E.164.",
+		},
+		401: { description: "The bearer token is missing, invalid, or expired." },
+		409: {
+			description:
+				"SUBCONTRACTOR_NAME_TAKEN or MEMBER_PHONE_TAKEN; phone conflicts identify the existing Subcontractor.",
+			content: {
+				"application/json": {
+					schema: z.object({
+						error: z.object({
+							code: z.enum(["SUBCONTRACTOR_NAME_TAKEN", "MEMBER_PHONE_TAKEN"]),
+							message: z.string(),
+							details: z
+								.object({
+									subcontractorId: z.string(),
+									subcontractorName: z.string(),
+								})
+								.optional(),
+						}),
+					}),
+				},
+			},
+		},
+	},
+});
+
+registry.registerPath({
+	method: "patch",
+	path: "/api/v1/subcontractors/{id}",
+	summary: "Rename a Subcontractor",
+	tags: ["Subcontractors"],
+	security: [{ bearerAuth: [] }],
+	request: {
+		params: subcontractorParametersSchema,
+		body: {
+			content: {
+				"application/json": { schema: renameSubcontractorBodySchema },
+			},
+		},
+	},
+	responses: {
+		200: {
+			description: "The renamed Subcontractor with its Members.",
+			content: {
+				"application/json": { schema: dataEnvelope(SubcontractorSchema) },
+			},
+		},
+		400: { description: "The Subcontractor name is missing or blank." },
+		401: { description: "The bearer token is missing, invalid, or expired." },
+		404: { description: "The Subcontractor does not exist." },
+		409: {
+			description:
+				"SUBCONTRACTOR_NAME_TAKEN: another Subcontractor uses this normalized name.",
+			content: {
+				"application/json": {
+					schema: z.object({
+						error: z.object({
+							code: z.literal("SUBCONTRACTOR_NAME_TAKEN"),
+							message: z.string(),
+						}),
+					}),
+				},
+			},
+		},
+	},
+});
+
+registry.registerPath({
+	method: "post",
+	path: "/api/v1/subcontractors/{id}/members",
+	summary: "Add a Member",
+	tags: ["Subcontractors"],
+	security: [{ bearerAuth: [] }],
+	request: {
+		params: subcontractorParametersSchema,
+		body: { content: { "application/json": { schema: memberBodySchema } } },
+	},
+	responses: {
+		201: {
+			description:
+				"The full Subcontractor with Members sorted by name then phone.",
+			content: {
+				"application/json": { schema: dataEnvelope(SubcontractorSchema) },
+			},
+		},
+		400: {
+			description:
+				"Invalid Member input; edits require at least one of name or phone.",
+		},
+		401: { description: "The bearer token is missing, invalid, or expired." },
+		404: {
+			description:
+				"The Subcontractor or Member does not exist under the supplied ids.",
+		},
+		409: {
+			description:
+				"MEMBER_PHONE_TAKEN identifies the Subcontractor holding this phone.",
+			content: {
+				"application/json": {
+					schema: z.object({
+						error: z.object({
+							code: z.literal("MEMBER_PHONE_TAKEN"),
+							message: z.string(),
+							details: z
+								.object({
+									subcontractorId: z.string(),
+									subcontractorName: z.string(),
+								})
+								.optional(),
+						}),
+					}),
+				},
+			},
+		},
+	},
+});
+
+registry.registerPath({
+	method: "patch",
+	path: "/api/v1/subcontractors/{id}/members/{memberId}",
+	summary: "Edit a Member",
+	tags: ["Subcontractors"],
+	security: [{ bearerAuth: [] }],
+	request: {
+		params: memberParametersSchema,
+		body: { content: { "application/json": { schema: editMemberBodySchema } } },
+	},
+	responses: {
+		200: {
+			description:
+				"The full Subcontractor with Members sorted by name then phone.",
+			content: {
+				"application/json": { schema: dataEnvelope(SubcontractorSchema) },
+			},
+		},
+		400: {
+			description:
+				"Invalid Member input; edits require at least one of name or phone.",
+		},
+		401: { description: "The bearer token is missing, invalid, or expired." },
+		404: {
+			description:
+				"The Subcontractor or Member does not exist under the supplied ids.",
+		},
+		409: {
+			description:
+				"MEMBER_PHONE_TAKEN identifies the Subcontractor holding this phone.",
+			content: {
+				"application/json": {
+					schema: z.object({
+						error: z.object({
+							code: z.literal("MEMBER_PHONE_TAKEN"),
+							message: z.string(),
+							details: z
+								.object({
+									subcontractorId: z.string(),
+									subcontractorName: z.string(),
+								})
+								.optional(),
+						}),
+					}),
+				},
+			},
 		},
 	},
 });

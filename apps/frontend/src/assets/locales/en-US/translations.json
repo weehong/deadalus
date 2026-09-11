@@ -75,5 +75,89 @@
 		"chartHeading": "Goals per match",
 		"loading": "Loading matches…",
 		"error": "Failed to load matches"
+	},
+	"subcontractors": {
+		"search": "Search the Directory",
+		"noMatches": "No subcontractors match your search.",
+		"columns": {
+			"name": "Subcontractor",
+			"members": "Members",
+			"phones": "Phone numbers"
+		},
+		"pagination": {
+			"label": "Directory pages",
+			"summary": "Page {{page}} of {{pages}} · {{total}} subcontractors",
+			"previous": "Previous",
+			"next": "Next"
+		},
+		"loading": "Loading subcontractors…",
+		"empty": "No subcontractors yet. Create your first subcontractor to get started.",
+		"emptyAction": "Create the first subcontractor",
+		"error": "Could not load the Directory. Please try again.",
+		"retry": "Retry",
+		"detail": {
+			"kicker": "Subcontractor",
+			"back": "Back to Directory",
+			"members": "Members",
+			"name": "Name",
+			"phone": "Phone number",
+			"loading": "Loading subcontractor…",
+			"error": "Could not load the Subcontractor. Please try again.",
+			"notFound": "Subcontractor not found",
+			"notFoundBody": "This subcontractor no longer exists or could not be found."
+		},
+		"delete": {
+			"action": "Delete",
+			"title": "Delete subcontractor?",
+			"confirmation_one": "Delete {{name}} and its {{count}} Member? This cannot be undone.",
+			"confirmation_other": "Delete {{name}} and its {{count}} Members? This cannot be undone.",
+			"confirm": "Delete subcontractor",
+			"cancel": "Cancel",
+			"error": "Could not delete the Subcontractor. Please try again."
+		},
+		"remove": {
+			"actions": "Actions",
+			"label": "Remove {{name}}",
+			"action": "Remove",
+			"lastMember": "A Subcontractor must keep at least one Member. Add another Member before removing this one.",
+			"error": "Could not remove the Member. Please try again."
+		},
+		"create": {
+			"action": "New subcontractor",
+			"heading": "New subcontractor",
+			"firstMember": "First Member",
+			"submit": "Create subcontractor",
+			"submitting": "Creating…",
+			"error": "Could not create the subcontractor. Please try again."
+		},
+		"form": {
+			"name": "Subcontractor name",
+			"memberName": "Member name",
+			"phone": "Phone number",
+			"cancel": "Cancel",
+			"nameTaken": "A subcontractor with this name already exists.",
+			"phoneTaken": "This phone number belongs to a Member of {{name}}.",
+			"phoneTakenUnknown": "This phone number already belongs to a Member.",
+			"validation": {
+				"nameRequired": "Subcontractor name is required",
+				"memberNameRequired": "Member name is required",
+				"phoneRequired": "Phone number is required",
+				"phoneInvalid": "Enter a valid phone number"
+			}
+		},
+		"rename": {
+			"action": "Rename",
+			"submit": "Save name",
+			"submitting": "Saving…",
+			"error": "Could not rename the subcontractor. Please try again."
+		},
+		"member": {
+			"add": "Add Member",
+			"edit": "Edit Member",
+			"editLabel": "Edit {{name}}",
+			"save": "Save Member",
+			"saving": "Saving…",
+			"error": "Could not save the Member. Please try again."
+		}
 	}
 }

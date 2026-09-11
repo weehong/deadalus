@@ -40,14 +40,15 @@ export function validate(schemas: ValidationSchemas): RequestHandler {
 				continue;
 			}
 
-			// `req.query`/`req.params` are getter-only in Express 5, so we mutate
-			// the existing object in place. Clear stale keys first — a plain
-			// `Object.assign` would leave behind any field the schema removed.
-			const target = request[key] as Record<string, unknown>;
-			for (const existing of Object.keys(target)) {
-				delete target[existing];
-			}
-			Object.assign(target, result.data);
+			// Express 5's query getter parses a fresh object on every access.
+			// Shadow it with the validated value so coercions and stripped keys
+			// survive into controllers (the same replacement works for params).
+			Object.defineProperty(request, key, {
+				value: result.data,
+				writable: true,
+				enumerable: true,
+				configurable: true,
+			});
 		}
 
 		next();

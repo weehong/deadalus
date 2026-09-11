@@ -131,6 +131,9 @@ importers:
       '@fontsource/barlow-condensed':
         specifier: ^5.3.0
         version: 5.3.0
+      '@headlessui/react':
+        specifier: ^2.2.9
+        version: 2.2.10(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.9.1(@standard-schema/spec@1.1.0)(effect@3.21.0)(react-hook-form@7.87.0(react@19.2.8))(zod@4.5.4)
@@ -198,9 +201,6 @@ importers:
       '@eslint/js':
         specifier: ^9.39.1
         version: 9.39.5
-      '@headlessui/react':
-        specifier: ^2.2.9
-        version: 2.2.10(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@19.2.8)

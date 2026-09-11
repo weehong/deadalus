@@ -14,7 +14,9 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ConsoleIndexRouteImport } from './routes/_console/index'
 import { Route as ConsoleExampleRouteImport } from './routes/_console/example'
 import { Route as ConsoleProjectsRouteImport } from './routes/_console/projects'
-import { Route as ConsoleSubcontractorsRouteImport } from './routes/_console/subcontractors'
+import { Route as ConsoleSubcontractorsIndexRouteImport } from './routes/_console/subcontractors.index'
+import { Route as ConsoleSubcontractorsIdRouteImport } from './routes/_console/subcontractors.$id'
+import { Route as ConsoleSubcontractorsNewRouteImport } from './routes/_console/subcontractors.new'
 
 const ConsoleRoute = ConsoleRouteImport.update({
   id: '/_console',
@@ -40,25 +42,41 @@ const ConsoleProjectsRoute = ConsoleProjectsRouteImport.update({
   path: '/projects',
   getParentRoute: () => ConsoleRoute,
 } as any)
-const ConsoleSubcontractorsRoute = ConsoleSubcontractorsRouteImport.update({
-  id: '/subcontractors',
-  path: '/subcontractors',
+const ConsoleSubcontractorsIndexRoute =
+  ConsoleSubcontractorsIndexRouteImport.update({
+    id: '/subcontractors/',
+    path: '/subcontractors/',
+    getParentRoute: () => ConsoleRoute,
+  } as any)
+const ConsoleSubcontractorsIdRoute = ConsoleSubcontractorsIdRouteImport.update({
+  id: '/subcontractors/$id',
+  path: '/subcontractors/$id',
   getParentRoute: () => ConsoleRoute,
 } as any)
+const ConsoleSubcontractorsNewRoute =
+  ConsoleSubcontractorsNewRouteImport.update({
+    id: '/subcontractors/new',
+    path: '/subcontractors/new',
+    getParentRoute: () => ConsoleRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof ConsoleIndexRoute
   '/login': typeof LoginRoute
   '/example': typeof ConsoleExampleRoute
   '/projects': typeof ConsoleProjectsRoute
-  '/subcontractors': typeof ConsoleSubcontractorsRoute
+  '/subcontractors/$id': typeof ConsoleSubcontractorsIdRoute
+  '/subcontractors/new': typeof ConsoleSubcontractorsNewRoute
+  '/subcontractors/': typeof ConsoleSubcontractorsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/example': typeof ConsoleExampleRoute
   '/projects': typeof ConsoleProjectsRoute
-  '/subcontractors': typeof ConsoleSubcontractorsRoute
   '/': typeof ConsoleIndexRoute
+  '/subcontractors/$id': typeof ConsoleSubcontractorsIdRoute
+  '/subcontractors/new': typeof ConsoleSubcontractorsNewRoute
+  '/subcontractors': typeof ConsoleSubcontractorsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -66,22 +84,40 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_console/example': typeof ConsoleExampleRoute
   '/_console/projects': typeof ConsoleProjectsRoute
-  '/_console/subcontractors': typeof ConsoleSubcontractorsRoute
   '/_console/': typeof ConsoleIndexRoute
+  '/_console/subcontractors/$id': typeof ConsoleSubcontractorsIdRoute
+  '/_console/subcontractors/new': typeof ConsoleSubcontractorsNewRoute
+  '/_console/subcontractors/': typeof ConsoleSubcontractorsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/example' | '/projects' | '/subcontractors'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/example'
+    | '/projects'
+    | '/subcontractors/$id'
+    | '/subcontractors/new'
+    | '/subcontractors/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/example' | '/projects' | '/subcontractors' | '/'
+  to:
+    | '/login'
+    | '/example'
+    | '/projects'
+    | '/'
+    | '/subcontractors/$id'
+    | '/subcontractors/new'
+    | '/subcontractors'
   id:
     | '__root__'
     | '/_console'
     | '/login'
     | '/_console/example'
     | '/_console/projects'
-    | '/_console/subcontractors'
     | '/_console/'
+    | '/_console/subcontractors/$id'
+    | '/_console/subcontractors/new'
+    | '/_console/subcontractors/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -126,11 +162,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleProjectsRouteImport
       parentRoute: typeof ConsoleRoute
     }
-    '/_console/subcontractors': {
-      id: '/_console/subcontractors'
+    '/_console/subcontractors/': {
+      id: '/_console/subcontractors/'
       path: '/subcontractors'
-      fullPath: '/subcontractors'
-      preLoaderRoute: typeof ConsoleSubcontractorsRouteImport
+      fullPath: '/subcontractors/'
+      preLoaderRoute: typeof ConsoleSubcontractorsIndexRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/_console/subcontractors/$id': {
+      id: '/_console/subcontractors/$id'
+      path: '/subcontractors/$id'
+      fullPath: '/subcontractors/$id'
+      preLoaderRoute: typeof ConsoleSubcontractorsIdRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/_console/subcontractors/new': {
+      id: '/_console/subcontractors/new'
+      path: '/subcontractors/new'
+      fullPath: '/subcontractors/new'
+      preLoaderRoute: typeof ConsoleSubcontractorsNewRouteImport
       parentRoute: typeof ConsoleRoute
     }
   }
@@ -139,15 +189,19 @@ declare module '@tanstack/react-router' {
 interface ConsoleRouteChildren {
   ConsoleExampleRoute: typeof ConsoleExampleRoute
   ConsoleProjectsRoute: typeof ConsoleProjectsRoute
-  ConsoleSubcontractorsRoute: typeof ConsoleSubcontractorsRoute
   ConsoleIndexRoute: typeof ConsoleIndexRoute
+  ConsoleSubcontractorsIdRoute: typeof ConsoleSubcontractorsIdRoute
+  ConsoleSubcontractorsNewRoute: typeof ConsoleSubcontractorsNewRoute
+  ConsoleSubcontractorsIndexRoute: typeof ConsoleSubcontractorsIndexRoute
 }
 
 const ConsoleRouteChildren: ConsoleRouteChildren = {
   ConsoleExampleRoute: ConsoleExampleRoute,
   ConsoleProjectsRoute: ConsoleProjectsRoute,
-  ConsoleSubcontractorsRoute: ConsoleSubcontractorsRoute,
   ConsoleIndexRoute: ConsoleIndexRoute,
+  ConsoleSubcontractorsIdRoute: ConsoleSubcontractorsIdRoute,
+  ConsoleSubcontractorsNewRoute: ConsoleSubcontractorsNewRoute,
+  ConsoleSubcontractorsIndexRoute: ConsoleSubcontractorsIndexRoute,
 }
 
 const ConsoleRouteWithChildren =

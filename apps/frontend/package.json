@@ -34,6 +34,7 @@
   "dependencies": {
     "@fontsource/barlow": "^5.3.0",
     "@fontsource/barlow-condensed": "^5.3.0",
+    "@headlessui/react": "^2.2.9",
     "@hookform/resolvers": "^5.2.2",
     "@nivo/bar": "^0.99.0",
     "@nivo/core": "^0.99.0",
@@ -58,7 +59,6 @@
   "devDependencies": {
     "@eslint/compat": "^2.0.0",
     "@eslint/js": "^9.39.1",
-    "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
     "@hookform/devtools": "^4.4.0",
     "@playwright/test": "^1.57.0",

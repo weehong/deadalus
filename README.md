@@ -41,21 +41,25 @@ Fill in the Supabase values (Project Settings → API in the dashboard):
 | `apps/backend/.env`   | `DATABASE_URL`           | Session-pooler string **with `?schema=daedalus2`** |
 
 The service-role key never enters this repository. `DATABASE_URL` is the
-Supabase Postgres (see `docs/adr/0002-*.md`); leave it at the local fallback to
-develop against Docker instead:
+Supabase Postgres (see `docs/adr/0002-*.md`). For local Docker development,
+explicitly set `DATABASE_URL` with `?schema=daedalus2` as well. The current
+local defaults still select `public`; correcting them is tracked in
+[ticket 10](.scratch/subcontractors/issues/10-align-local-database-schema.md).
+Do not run migrations against those defaults.
 
 ```sh
 pnpm db:up            # only for the local fallback: PostgreSQL 16 in Docker on :5432
 pnpm db:migrate       # apply migrations to whichever database DATABASE_URL names
-pnpm db:seed          # 8 example matches
+pnpm db:seed          # 8 example matches and 3 Subcontractors with Members
 pnpm dev              # both servers, in parallel
 ```
 
 Then open <http://localhost:5173>. You are sent to `/login`; sign in with an
 Administrator account provisioned in the Supabase dashboard, and the Console
-opens on `/projects`. Projects and Subcontractors share a sidebar and each
-shows an honest "This screen is not built yet." notice. `/example` (the table,
-chart and form backed by the real API) sits inside the same guarded shell;
+opens on `/projects`. Projects shows a not-built notice. Subcontractors opens
+the searchable, paged Directory, with creation and Member management.
+`/example` (the table, chart and form backed by the real API) sits inside the
+same guarded shell;
 visit it directly, since it is absent from the navigation.
 
 ## Scripts
@@ -123,7 +127,9 @@ the Console.
 | ----- | ------ |
 | `/` | Redirects to `/projects` |
 | `/projects` | Portfolio / Projects header and a framed not-built notice |
-| `/subcontractors` | Directory / Subcontractors header and the same notice |
+| `/subcontractors` | Searchable, paged Directory with a New subcontractor action |
+| `/subcontractors/new` | Create a Subcontractor with its first Member |
+| `/subcontractors/$id` | Rename, manage Members, and confirm deletion |
 | `/example` | Disposable reference demo, reached directly by URL |
 
 At widths of 768px and up, the Console has a sticky 216px sidebar containing
@@ -146,6 +152,14 @@ sidebar, centred page container and header with optional actions. Locales are
 `en-US` and `zh-CN`; the Chinese auth and Console strings are machine-translated
 and flagged for review in the file. The sign-in screen says "Administrator
 console" and "Enter console".
+
+The Directory is global across Projects. Subcontractor names are unique after
+case and whitespace normalization; Member phones are globally unique and
+stored in E.164. Each Subcontractor keeps at least one Member. Deleting a
+Subcontractor removes its Members after confirmation. The API guards every
+Subcontractor route and scopes Member operations through the Subcontractor.
+See the [finished spec](docs/specs/0002-subcontractor-directory.md) and
+[62-story verification record](docs/specs/0002-subcontractor-directory-verification.md).
 
 ## The example slice is disposable
 

@@ -68,5 +68,88 @@
 		"heading": "Daedalus 无法启动",
 		"body": "尚未配置 Supabase。以下环境变量缺失：",
 		"hint": "在 apps/frontend 中将 .env.example 复制为 .env，填入 Supabase 项目设置，然后重启开发服务器。"
+	},
+	"subcontractors": {
+		"search": "搜索名录",
+		"noMatches": "没有与搜索条件匹配的分包商。",
+		"columns": {
+			"name": "分包商",
+			"members": "成员",
+			"phones": "电话号码"
+		},
+		"pagination": {
+			"label": "名录分页",
+			"summary": "第 {{page}} 页，共 {{pages}} 页 · {{total}} 个分包商",
+			"previous": "上一页",
+			"next": "下一页"
+		},
+		"loading": "正在加载分包商…",
+		"empty": "暂无分包商。创建第一个分包商以开始使用。",
+		"emptyAction": "创建第一个分包商",
+		"error": "无法加载名录。请重试。",
+		"retry": "重试",
+		"detail": {
+			"kicker": "分包商",
+			"back": "返回名录",
+			"members": "成员",
+			"name": "姓名",
+			"phone": "电话号码",
+			"loading": "正在加载分包商…",
+			"error": "无法加载分包商。请重试。",
+			"notFound": "未找到分包商",
+			"notFoundBody": "此分包商已不存在或无法找到。"
+		},
+		"delete": {
+			"action": "删除",
+			"title": "删除分包商？",
+			"confirmation": "删除 {{name}} 及其 {{count}} 名成员？此操作无法撤销。",
+			"confirm": "删除分包商",
+			"cancel": "取消",
+			"error": "无法删除分包商。请重试。"
+		},
+		"remove": {
+			"actions": "操作",
+			"label": "移除{{name}}",
+			"action": "移除",
+			"lastMember": "分包商必须保留至少一名成员。请先添加另一名成员，再移除此成员。",
+			"error": "无法移除成员。请重试。"
+		},
+		"create": {
+			"action": "新建分包商",
+			"heading": "新建分包商",
+			"firstMember": "首位成员",
+			"submit": "创建分包商",
+			"submitting": "正在创建…",
+			"error": "无法创建分包商，请重试。"
+		},
+		"form": {
+			"name": "分包商名称",
+			"memberName": "成员姓名",
+			"phone": "电话号码",
+			"cancel": "取消",
+			"nameTaken": "此名称的分包商已存在。",
+			"phoneTaken": "此电话号码属于 {{name}} 的一位成员。",
+			"phoneTakenUnknown": "此电话号码已属于一位成员。",
+			"validation": {
+				"nameRequired": "请输入分包商名称",
+				"memberNameRequired": "请输入成员姓名",
+				"phoneRequired": "请输入电话号码",
+				"phoneInvalid": "请输入有效的电话号码"
+			}
+		},
+		"rename": {
+			"action": "重命名",
+			"submit": "保存名称",
+			"submitting": "正在保存…",
+			"error": "无法重命名分包商。请重试。"
+		},
+		"member": {
+			"add": "添加成员",
+			"edit": "编辑成员",
+			"editLabel": "编辑{{name}}",
+			"save": "保存成员",
+			"saving": "正在保存…",
+			"error": "无法保存成员。请重试。"
+		}
 	}
 }

@@ -213,4 +213,9 @@ eslintConfig.map((config) => {
   config.files = ["src/**/*.ts", "src/**/*.tsx"]
 })
 
+// Build output carries its own eslint-disable comments for rules this config never defines.
+eslintConfig.push({
+  ignores: ["dist/**", "storybook-static/**", "playwright-report/**", "test-results/**", "coverage/**"],
+})
+
 export default eslintConfig

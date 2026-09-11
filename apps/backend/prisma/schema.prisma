@@ -26,3 +26,27 @@ model Match {
 
   @@map("matches")
 }
+
+model Subcontractor {
+  id        String   @id @default(cuid())
+  name      String
+  nameKey   String   @unique
+  members   Member[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("subcontractors")
+}
+
+model Member {
+  id              String        @id @default(cuid())
+  subcontractorId String
+  subcontractor   Subcontractor @relation(fields: [subcontractorId], references: [id], onDelete: Cascade)
+  name            String
+  phone           String        @unique
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([subcontractorId])
+  @@map("members")
+}

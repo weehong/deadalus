@@ -443,3 +443,49 @@ action. The `_console` layout route renders `ConsoleLayout`.
 
 Nothing here is hard to reverse: the sidebar can become a top bar by
 replacing one component, and the seam is a refactor. No ADR is recorded.
+
+
+## 15. The Subcontractor Directory and its Members
+
+Built 2026-09-10. This section supersedes section 14's Subcontractors
+placeholder; Projects retains its not-built notice. The approved design is
+recorded in [spec 0002](docs/specs/0002-subcontractor-directory.md), with
+[verification for all 62 stories](docs/specs/0002-subcontractor-directory-verification.md).
+
+The Console now has a global Directory at `/subcontractors`, with alphabetical
+paging, Member counts and stored phones. Search waits 300 ms before querying
+Subcontractor names, Member names and phone digits, and resets to page 1.
+`/subcontractors/new` creates a Subcontractor and its first Member atomically.
+`/subcontractors/$id` shows Members and supports inline rename, add and edit,
+Member removal, and confirmed Subcontractor deletion. All screens have English
+and Chinese copy; Chinese remains flagged for native review.
+
+The API mounts all eight operations behind verified Session tokens. Member
+reads and writes always include their Subcontractor id. Name identity is
+trimmed, whitespace-collapsed and lowercased with a unique derived key; phones
+are normalized on the server to E.164, defaulting only there to +65, and are
+unique across all Members. Stable 409 codes identify taken names, taken phones
+and refusal to remove the last Member. Creation uses a nested database write;
+removal uses a serializable transaction with up to three attempts on a
+serialization conflict. Subcontractor deletion cascades to Members.
+
+Implementation refinements preserve the approved behavior: SQL LIKE wildcards
+are escaped for literal substring search, the name key is derived by the
+service on every create and rename and created with its unique index in the
+same migration as the tables, and the fetch helper has a separate operation
+for empty 204 responses. The Dialog
+primitive uses HeadlessUI for its accessible name, focus containment, Escape
+handling and trigger focus restoration. Query invalidation refreshes the
+Directory and affected detail after mutations. No Assignment check is built.
+
+Migrations and verification target the dedicated `daedalus2` schema. Local
+fallback URLs that still select `public` are an existing inconsistency recorded
+in [ticket 10](.scratch/subcontractors/issues/10-align-local-database-schema.md);
+set `DATABASE_URL` explicitly with `schema=daedalus2` before local migration or
+seed commands. The isolated local database was verified; the hosted Supabase
+database was not contacted.
+
+The handoff's Playwright dependency limitation was stale: Chromium, Firefox and
+WebKit run on this host without installing system packages. Final combined
+results and the distinction between HTTP mocks, browser fakes and real database
+checks are recorded in the verification document.

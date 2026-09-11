@@ -5,6 +5,7 @@ import {
 	signIn,
 	submitCredentials,
 } from "./provider";
+import { interceptSubcontractors } from "./subcontractors-api";
 
 for (const pathname of ["/", "/projects", "/subcontractors", "/example"]) {
 	test(`a visitor to ${pathname} is sent to Sign in`, async ({ page }) => {
@@ -21,6 +22,7 @@ test("signing in lands on Projects with Session identity and real Console naviga
 	page,
 }) => {
 	await interceptProvider(page);
+	await interceptSubcontractors(page);
 	await page.goto("/subcontractors");
 	await expect(page).toHaveURL(/\/login$/);
 	await expect(page).toHaveTitle("Daedalus");
@@ -77,11 +79,7 @@ test("signing in lands on Projects with Session identity and real Console naviga
 	await expect(
 		page.getByRole("main").getByText("Directory", { exact: true })
 	).toBeVisible();
-	await expect(
-		page
-			.getByRole("main")
-			.getByText("This screen is not built yet.", { exact: true })
-	).toBeVisible();
+	await expect(page.getByRole("table")).toBeVisible();
 	await expect(
 		navigation.getByRole("link", { name: "Subcontractors" })
 	).toHaveAttribute("aria-current", "page");
@@ -131,6 +129,7 @@ test("a Session survives reload on the current screen and bypasses Sign in in a 
 	context,
 	page,
 }) => {
+	await interceptSubcontractors(page);
 	await signIn(page);
 	await page.getByRole("link", { name: "Subcontractors" }).click();
 	await expect(page).toHaveURL(/\/subcontractors$/);
@@ -244,6 +243,7 @@ test("the language chosen at Sign in translates the Console, both pages and mobi
 	page,
 }) => {
 	await interceptProvider(page);
+	await interceptSubcontractors(page);
 	await page.goto("/login");
 	await page
 		.getByRole("textbox", { name: "Work email" })
@@ -302,6 +302,7 @@ test("the phone drawer supports toggle, Escape, backdrop and navigation with foc
 	page,
 }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
+	await interceptSubcontractors(page);
 	await signIn(page);
 	const toggle = page.getByRole("button", { name: "Menu", exact: true });
 	const drawer = page.getByRole("complementary", {
