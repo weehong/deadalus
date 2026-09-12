@@ -1,163 +1,392 @@
 {
-	"auth": {
-		"brandKicker": "Administrator console",
-		"brandHeadline": "Furniture fitout, unit by unit.",
-		"brandBlurb": "Set out projects, blocks, storeys and units. Assign items to subcontractors, then read completion back off the QR codes on site.",
-		"hierarchy": {
-			"projects": "Projects",
-			"blocks": "Blocks",
-			"storeys": "Storeys",
-			"units": "Units"
-		},
-		"heading": "Sign in",
-		"subtitle": "Administrator accounts only. Subcontractors use the QR code on the unit.",
-		"email": "Work email",
-		"emailPlaceholder": "name@company.com",
-		"password": "Password",
-		"passwordPlaceholder": "••••••••",
-		"showPassword": "Show password",
-		"hidePassword": "Hide password",
-		"submit": "Enter console",
-		"submitting": "Signing in…",
-		"access": "Need access? Ask your site administrator.",
-		"signOut": "Sign out",
-		"signingOut": "Signing out…",
-		"validation": {
-			"emailRequired": "Work email is required",
-			"emailInvalid": "Enter a valid email address",
-			"passwordRequired": "Password is required"
-		},
-		"errors": {
-			"invalidCredentials": "The email or password is incorrect.",
-			"rateLimited": "Too many attempts. Please wait before trying again.",
-			"unavailable": "The sign-in service is unreachable. Check your connection and try again.",
-			"signOut": "Could not sign out. Try again.",
-			"unknown": "Something went wrong. Please try again."
-		},
-		"language": "Language",
-		"english": "English",
-		"chinese": "简体中文"
-	},
-	"loading": {
-		"restoringSession": "Restoring your session…"
-	},
-	"console": {
-		"subtitle": "Unit Matrix",
-		"sidebar": "Sidebar",
-		"navigationLabel": "Console navigation",
-		"menu": "Menu",
-		"closeMenu": "Close menu",
-		"role": "Administrator",
-		"notBuilt": "This screen is not built yet.",
-		"navigation": {
-			"projects": "Projects",
-			"subcontractors": "Subcontractors"
-		},
-		"projects": {
-			"kicker": "Portfolio",
-			"heading": "Projects"
-		},
-		"subcontractors": {
-			"kicker": "Directory",
-			"heading": "Subcontractors"
-		}
-	},
-	"configuration": {
-		"kicker": "Configuration error",
-		"heading": "Daedalus could not start",
-		"body": "Supabase is not configured. The following environment variables are missing:",
-		"hint": "Copy .env.example to .env in apps/frontend, fill in the Supabase project settings, then restart the development server."
-	},
-	"example": {
-		"title": "Matches Builder Example",
-		"tableHeading": "Matches table",
-		"formHeading": "Add a match",
-		"chartHeading": "Goals per match",
-		"loading": "Loading matches…",
-		"error": "Failed to load matches"
-	},
-	"subcontractors": {
-		"search": "Search the Directory",
-		"noMatches": "No subcontractors match your search.",
-		"columns": {
-			"name": "Subcontractor",
-			"members": "Members",
-			"phones": "Phone numbers"
-		},
-		"pagination": {
-			"label": "Directory pages",
-			"summary": "Page {{page}} of {{pages}} · {{total}} subcontractors",
-			"previous": "Previous",
-			"next": "Next"
-		},
-		"loading": "Loading subcontractors…",
-		"empty": "No subcontractors yet. Create your first subcontractor to get started.",
-		"emptyAction": "Create the first subcontractor",
-		"error": "Could not load the Directory. Please try again.",
-		"retry": "Retry",
-		"detail": {
-			"kicker": "Subcontractor",
-			"back": "Back to Directory",
-			"members": "Members",
-			"name": "Name",
-			"phone": "Phone number",
-			"loading": "Loading subcontractor…",
-			"error": "Could not load the Subcontractor. Please try again.",
-			"notFound": "Subcontractor not found",
-			"notFoundBody": "This subcontractor no longer exists or could not be found."
-		},
-		"delete": {
-			"action": "Delete",
-			"title": "Delete subcontractor?",
-			"confirmation_one": "Delete {{name}} and its {{count}} Member? This cannot be undone.",
-			"confirmation_other": "Delete {{name}} and its {{count}} Members? This cannot be undone.",
-			"confirm": "Delete subcontractor",
-			"cancel": "Cancel",
-			"error": "Could not delete the Subcontractor. Please try again."
-		},
-		"remove": {
-			"actions": "Actions",
-			"label": "Remove {{name}}",
-			"action": "Remove",
-			"lastMember": "A Subcontractor must keep at least one Member. Add another Member before removing this one.",
-			"error": "Could not remove the Member. Please try again."
-		},
-		"create": {
-			"action": "New subcontractor",
-			"heading": "New subcontractor",
-			"firstMember": "First Member",
-			"submit": "Create subcontractor",
-			"submitting": "Creating…",
-			"error": "Could not create the subcontractor. Please try again."
-		},
-		"form": {
-			"name": "Subcontractor name",
-			"memberName": "Member name",
-			"phone": "Phone number",
-			"cancel": "Cancel",
-			"nameTaken": "A subcontractor with this name already exists.",
-			"phoneTaken": "This phone number belongs to a Member of {{name}}.",
-			"phoneTakenUnknown": "This phone number already belongs to a Member.",
-			"validation": {
-				"nameRequired": "Subcontractor name is required",
-				"memberNameRequired": "Member name is required",
-				"phoneRequired": "Phone number is required",
-				"phoneInvalid": "Enter a valid phone number"
-			}
-		},
-		"rename": {
-			"action": "Rename",
-			"submit": "Save name",
-			"submitting": "Saving…",
-			"error": "Could not rename the subcontractor. Please try again."
-		},
-		"member": {
-			"add": "Add Member",
-			"edit": "Edit Member",
-			"editLabel": "Edit {{name}}",
-			"save": "Save Member",
-			"saving": "Saving…",
-			"error": "Could not save the Member. Please try again."
-		}
-	}
+  "console": {
+    "subtitle": "Unit Matrix",
+    "sidebar": "Sidebar",
+    "navigationLabel": "Console navigation",
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "role": "Administrator",
+    "navigation": {
+      "projects": "Projects",
+      "subcontractors": "Subcontractors"
+    },
+    "projects": {
+      "kicker": "Portfolio",
+      "heading": "Projects"
+    },
+    "subcontractors": {
+      "kicker": "Directory",
+      "heading": "Subcontractors"
+    }
+  },
+  "configuration": {
+    "kicker": "Configuration error",
+    "heading": "Daedalus could not start",
+    "body": "Supabase is not configured. The following environment variables are missing:",
+    "hint": "Copy .env.example to .env in apps/frontend, fill in the Supabase project settings, then restart the development server."
+  },
+  "example": {
+    "title": "Matches Builder Example",
+    "tableHeading": "Matches table",
+    "formHeading": "Add a match",
+    "chartHeading": "Goals per match",
+    "loading": "Loading matches…",
+    "error": "Failed to load matches"
+  },
+  "subcontractors": {
+    "search": "Search the Directory",
+    "noMatches": "No subcontractors match your search.",
+    "columns": {
+      "name": "Subcontractor",
+      "members": "Members",
+      "phones": "Phone numbers"
+    },
+    "pagination": {
+      "label": "Directory pages",
+      "summary": "Page {{page}} of {{pages}} · {{total}} subcontractors",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "loading": "Loading subcontractors…",
+    "empty": "No subcontractors yet. Create your first subcontractor to get started.",
+    "emptyAction": "Create the first subcontractor",
+    "error": "Could not load the Directory. Please try again.",
+    "retry": "Retry",
+    "detail": {
+      "kicker": "Subcontractor",
+      "back": "Back to Directory",
+      "members": "Members",
+      "name": "Name",
+      "phone": "Phone number",
+      "loading": "Loading subcontractor…",
+      "error": "Could not load the Subcontractor. Please try again.",
+      "notFound": "Subcontractor not found",
+      "notFoundBody": "This subcontractor no longer exists or could not be found."
+    },
+    "delete": {
+      "action": "Delete",
+      "title": "Delete subcontractor?",
+      "confirmation_one": "Delete {{name}} and its {{count}} Member? This cannot be undone.",
+      "confirmation_other": "Delete {{name}} and its {{count}} Members? This cannot be undone.",
+      "confirm": "Delete subcontractor",
+      "cancel": "Cancel",
+      "error": "Could not delete the Subcontractor. Please try again."
+    },
+    "remove": {
+      "actions": "Actions",
+      "label": "Remove {{name}}",
+      "action": "Remove",
+      "lastMember": "A Subcontractor must keep at least one Member. Add another Member before removing this one.",
+      "error": "Could not remove the Member. Please try again."
+    },
+    "create": {
+      "action": "New subcontractor",
+      "heading": "New subcontractor",
+      "firstMember": "First Member",
+      "submit": "Create subcontractor",
+      "submitting": "Creating…",
+      "error": "Could not create the subcontractor. Please try again."
+    },
+    "form": {
+      "name": "Subcontractor name",
+      "memberName": "Member name",
+      "phone": "Phone number",
+      "cancel": "Cancel",
+      "nameTaken": "A subcontractor with this name already exists.",
+      "phoneTaken": "This phone number belongs to a Member of {{name}}.",
+      "phoneTakenUnknown": "This phone number already belongs to a Member.",
+      "validation": {
+        "nameRequired": "Subcontractor name is required",
+        "memberNameRequired": "Member name is required",
+        "phoneRequired": "Phone number is required",
+        "phoneInvalid": "Enter a valid phone number"
+      }
+    },
+    "rename": {
+      "action": "Rename",
+      "submit": "Save name",
+      "submitting": "Saving…",
+      "error": "Could not rename the subcontractor. Please try again."
+    },
+    "member": {
+      "add": "Add Member",
+      "edit": "Edit Member",
+      "editLabel": "Edit {{name}}",
+      "save": "Save Member",
+      "saving": "Saving…",
+      "error": "Could not save the Member. Please try again."
+    }
+  },
+  "loading": {
+    "restoringSession": "Restoring your session…"
+  },
+  "projects": {
+    "unitTypes": {
+      "add": "Add Unit Type",
+      "edit": "Edit Unit Type",
+      "delete": "Delete Unit Type",
+      "save": "Save Unit Type",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "optional": "Optional",
+      "codeRequired": "Enter a Unit Type code.",
+      "codeTooLong": "Use at most 40 characters.",
+      "descriptionTooLong": "Use at most 120 characters.",
+      "codeTaken": "A Unit Type with this code already exists.",
+      "error": "Could not save the Unit Type. Try again.",
+      "inUse": "Cannot delete: {{count}} Units still use this Unit Type.",
+      "deleteTitle": "Delete Unit Type",
+      "deleteConfirmation": "Delete Unit Type {{code}}?",
+      "deleteConfirm": "Delete",
+      "deleteError": "Could not delete the Unit Type. Try again.",
+      "inUse_one": "Cannot delete: {{count}} Unit still uses this Unit Type.",
+      "inUse_other": "Cannot delete: {{count}} Units still use this Unit Type."
+    },
+    "edit": {
+      "action": "Edit project",
+      "submit": "Save changes",
+      "submitting": "Saving…",
+      "error": "Could not save the project. Please try again."
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Project",
+      "blocks": "Blocks",
+      "storeys": "Storeys",
+      "units": "Units"
+    },
+    "blocks": {
+      "add": "Add Block",
+      "many": "Add many",
+      "name": "Block name",
+      "rename": "Rename",
+      "save": "Save name",
+      "delete": "Delete",
+      "deleteTitle": "Delete Block",
+      "deleteConfirm": "Delete Block {{name}} and its {{storeys}} storeys and {{units}} units?",
+      "clash": "Names already exist: {{names}}",
+      "error": "Could not save the Blocks. Please try again."
+    },
+    "loading": "Loading projects…",
+    "batch": {
+      "title": "Add many",
+      "mode": "Name entry mode",
+      "range": "Range",
+      "list": "List",
+      "prefix": "Prefix",
+      "suffix": "Suffix",
+      "from": "From",
+      "to": "To",
+      "pad": "Zero-pad width",
+      "names": "Names, one per line",
+      "count": "{{count}} names",
+      "preview": "Name preview",
+      "existing": "Already exists",
+      "repeated": "Repeated",
+      "invalid": "Enter 1 to 500 names of 1 to 60 characters. Use an ascending range.",
+      "pending": "Adding…",
+      "submit": "Add names",
+      "cancel": "Cancel"
+    },
+    "detail": {
+      "back": "Back to Projects",
+      "loading": "Loading project…",
+      "error": "The project could not be loaded.",
+      "notFound": "Project not found",
+      "notFoundBody": "This project no longer exists. Return to Projects to choose another.",
+      "tabs": "Project sections",
+      "structure": "Structure",
+      "unitTypes": "Unit Types",
+      "blocks": "Blocks",
+      "storeys": "Storeys",
+      "units": "Units",
+      "storeysOf": "Storeys · Block {{name}}",
+      "unitsOf": "Units · Block {{block}} · Storey {{name}}",
+      "blockCounts": "{{storeys}} storeys · {{units}} units",
+      "unitCount": "{{count}} units",
+      "emptyBlocks": "No Blocks yet. Add the first Block to set out this project.",
+      "emptyStoreys": "No Storeys yet. Add a Storey to this Block.",
+      "selectBlock": "Select a Block to see its Storeys.",
+      "emptyUnits": "No Units yet. Add a Unit to this Storey.",
+      "selectStorey": "Select a Storey to see its Units.",
+      "description": "Description",
+      "actions": "Actions",
+      "emptyTypes": "No Unit Types yet. Add a Unit Type to build the catalogue.",
+      "noType": "No Unit Type"
+    },
+    "upload": {
+      "file": "Workbook",
+      "parsing": "Reading workbook…",
+      "invalid": "Choose one .xls or .xlsx workbook, no larger than 10 MB.",
+      "counts": "{{storeys}} Storeys · {{units}} Units · Stacks {{first}}–{{last}}",
+      "title": "Upload Unit Matrix",
+      "blockName": "Block {{index}} name",
+      "warnings": {
+        "EMPTY_STOREY": "Storey {{label}} was omitted because it has no Units.",
+        "DUPLICATE_STOREY": "The later row labelled {{label}} was omitted because that Storey already appeared.",
+        "NON_CONSECUTIVE_STACKS": "Stack numbers are not consecutive; the workbook numbers were kept.",
+        "INFERRED_STACKS": "No stack row was found; columns were numbered from 1.",
+        "EMPTY_BLOCK": "This Block has no Units; review it before including it."
+      },
+      "warningCount_one": "{{count}} warning",
+      "invalidBlock": "Enter a Block name of 1 to 60 characters.",
+      "warningCount_other": "{{count}} warnings",
+      "parse": "Preview workbook",
+      "sheetOption": "{{name}} · {{count}} Blocks",
+      "missing": "Choose a workbook to upload.",
+      "empty": "No Blocks were found on this sheet.",
+      "summary": "Imported {{blocks}} Blocks, {{storeys}} Storeys and {{units}} Units; created {{types}} Unit Types.",
+      "error": "The workbook could not be uploaded. Try again.",
+      "matrix": "Unit Matrix · {{name}}",
+      "hasBlocks": "This Project has {{count}} Blocks. Delete them before uploading a Unit Matrix.",
+      "caps": "Commit at most 50 Blocks and 10,000 Units.",
+      "commit": "Commit Blocks",
+      "includeBlock": "Include Block {{index}}",
+      "commitError": "The Blocks could not be committed. Review the preview and try again.",
+      "duplicateBlock": "This Block name is repeated.",
+      "sheet": "Sheet",
+      "hint": "Choose an .xls or .xlsx workbook, up to 10 MB.",
+      "storey": "Storey",
+      "unreadable": "This file could not be read as an Excel workbook. Choose a valid .xls or .xlsx workbook.",
+      "editor": {
+        "promptStorey": "Name of the new Storey",
+        "promptStack": "Number of the new Stack",
+        "invalidStack": "Enter a whole, non-negative Stack number.",
+        "addStack": "Add Stack",
+        "addStorey": "Add Storey",
+        "insertLeft": "Insert Stack left of {{stack}}",
+        "insertRight": "Insert Stack right of {{stack}}",
+        "removeStack": "Remove Stack {{stack}}",
+        "storeyName": "Storey name, row {{row}}",
+        "insertAbove": "Insert Storey above {{storey}}",
+        "insertBelow": "Insert Storey below {{storey}}",
+        "removeStorey": "Remove Storey {{storey}}",
+        "cell": "Storey {{storey}}, Stack {{stack}}",
+        "newTypes": "Unit Types to create",
+        "noNewTypes": "No new Unit Types.",
+        "omitted": "Empty Storeys omitted: {{names}}",
+        "leave": "Discard this unsaved Unit Matrix?",
+        "replace": "Replace this unsaved Unit Matrix? Your edits will be discarded.",
+        "errorAt": "{{block}} · row {{row}} · Stack {{stack}}: {{message}}",
+        "errors": {
+          "noBlocks": "Select at least one Block.",
+          "caps": "Select at most 50 Blocks and 10,000 Units.",
+          "invalidBlock": "Block names must contain 1 to 60 characters.",
+          "duplicateBlock": "Block names must be unique.",
+          "invalidStorey": "Storey names must contain 1 to 60 characters.",
+          "duplicateStorey": "Storey names must be unique within a Block.",
+          "invalidUnit": "Unit names must contain 1 to 60 characters.",
+          "duplicateUnit": "Two filled cells create the same Unit name in this Storey.",
+          "invalidCode": "Unit Type codes must contain 1 to 40 characters."
+        }
+      }
+    },
+    "storeys": {
+      "add": "Add Storey",
+      "many": "Add many",
+      "name": "Storey name",
+      "rename": "Rename",
+      "save": "Save name",
+      "delete": "Delete",
+      "deleteTitle": "Delete Storey",
+      "deleteConfirm": "Delete Storey {{name}} and its {{units}} units?",
+      "clash": "Names already exist: {{names}}",
+      "error": "Could not save the Storeys. Please try again."
+    },
+    "create": {
+      "heading": "New project",
+      "submit": "Create project",
+      "submitting": "Creating…",
+      "error": "Could not create the project. Please try again."
+    },
+    "pagination": {
+      "label": "Project pages",
+      "summary": "Page {{page}} of {{pages}} · {{total}} projects",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "retry": "Retry",
+    "empty": "No projects yet. Create your first project to get started.",
+    "error": "Projects could not be loaded.",
+    "search": "Search Projects",
+    "noMatches": "No projects match your search.",
+    "delete": {
+      "action": "Delete project",
+      "title": "Delete project?",
+      "confirmation": "Delete {{name}} and its {{blockCount}} Blocks, {{storeyCount}} Storeys and {{unitCount}} Units? All Unit Types will also be removed. This cannot be undone.",
+      "confirm": "Delete project",
+      "cancel": "Cancel",
+      "error": "Could not delete the project. Please try again."
+    },
+    "units": {
+      "add": "Add",
+      "many": "Add many",
+      "name": "Unit name",
+      "type": "Unit Type",
+      "edit": "Edit",
+      "save": "Save",
+      "delete": "Delete",
+      "deleteTitle": "Delete Unit",
+      "deleteConfirm": "Delete Unit {{name}}?",
+      "clash": "Names already exist: {{names}}",
+      "error": "Could not save Units. Please try again.",
+      "storeys": "Storeys to add Units to",
+      "selectAll": "Select all Storeys",
+      "storeyLimit": "Select 1 to 200 Storeys.",
+      "total_one": "{{count}} unit across {{storeys}} storeys (maximum 2000)",
+      "total_other": "{{count}} units across {{storeys}} storeys (maximum 2000)"
+    },
+    "form": {
+      "name": "Project name",
+      "code": "Project code",
+      "cancel": "Cancel",
+      "nameTaken": "A project with this name already exists.",
+      "codeTaken": "A project with this code already exists.",
+      "validation": {
+        "nameRequired": "Project name is required",
+        "nameTooLong": "Use 60 characters or fewer",
+        "codeRequired": "Project code is required",
+        "codeInvalid": "Use 2 to 12 letters, digits or hyphens"
+      }
+    }
+  },
+  "auth": {
+    "brandKicker": "Administrator console",
+    "brandHeadline": "Furniture fitout, unit by unit.",
+    "brandBlurb": "Set out projects, blocks, storeys and units. Assign items to subcontractors, then read completion back off the QR codes on site.",
+    "hierarchy": {
+      "projects": "Projects",
+      "blocks": "Blocks",
+      "storeys": "Storeys",
+      "units": "Units"
+    },
+    "heading": "Sign in",
+    "subtitle": "Administrator accounts only. Subcontractors use the QR code on the unit.",
+    "email": "Work email",
+    "emailPlaceholder": "name@company.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submit": "Enter console",
+    "submitting": "Signing in…",
+    "access": "Need access? Ask your site administrator.",
+    "signOut": "Sign out",
+    "signingOut": "Signing out…",
+    "validation": {
+      "emailRequired": "Work email is required",
+      "emailInvalid": "Enter a valid email address",
+      "passwordRequired": "Password is required"
+    },
+    "errors": {
+      "invalidCredentials": "The email or password is incorrect.",
+      "rateLimited": "Too many attempts. Please wait before trying again.",
+      "unavailable": "The sign-in service is unreachable. Check your connection and try again.",
+      "signOut": "Could not sign out. Try again.",
+      "unknown": "Something went wrong. Please try again."
+    },
+    "language": "Language",
+    "english": "English",
+    "chinese": "简体中文"
+  }
 }

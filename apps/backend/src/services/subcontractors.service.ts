@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { subcontractorNameKey } from "@/lib/subcontractor-name.js";
+import { nameKey } from "@/lib/name-key.js";
 import { HttpError } from "@/lib/http-error.js";
 import { prisma } from "@/lib/prisma.js";
 import type {
@@ -203,7 +203,7 @@ export async function createSubcontractor(
 		return await prisma.subcontractor.create({
 			data: {
 				name: input.name,
-				nameKey: subcontractorNameKey(input.name),
+				nameKey: nameKey(input.name),
 				members: { create: input.member },
 			},
 			select: subcontractorSelect,
@@ -220,7 +220,7 @@ export async function renameSubcontractor(
 	try {
 		return await prisma.subcontractor.update({
 			where: { id },
-			data: { name: input.name, nameKey: subcontractorNameKey(input.name) },
+			data: { name: input.name, nameKey: nameKey(input.name) },
 			select: subcontractorSelect,
 		});
 	} catch (error) {

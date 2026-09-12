@@ -50,13 +50,14 @@ Do not run migrations against those defaults.
 ```sh
 pnpm db:up            # only for the local fallback: PostgreSQL 16 in Docker on :5432
 pnpm db:migrate       # apply migrations to whichever database DATABASE_URL names
-pnpm db:seed          # 8 example matches and 3 Subcontractors with Members
+pnpm db:seed          # deterministic matches, Subcontractors and a sample Project
 pnpm dev              # both servers, in parallel
 ```
 
 Then open <http://localhost:5173>. You are sent to `/login`; sign in with an
 Administrator account provisioned in the Supabase dashboard, and the Console
-opens on `/projects`. Projects shows a not-built notice. Subcontractors opens
+opens on `/projects`, a searchable list with development counts and a New project
+action. Open a Project to manage its Structure and Unit Types. Subcontractors opens
 the searchable, paged Directory, with creation and Member management.
 `/example` (the table, chart and form backed by the real API) sits inside the
 same guarded shell;
@@ -77,7 +78,7 @@ Run from the repository root; each fans out across both apps.
 | `pnpm db:up`     | Start PostgreSQL                                            |
 | `pnpm db:down`   | Stop it                                                     |
 | `pnpm db:migrate`| `prisma migrate dev` on the backend                         |
-| `pnpm db:seed`   | Reseed example matches (idempotent)                         |
+| `pnpm db:seed`   | Reseed deterministic matches, Directory and Project (idempotent) |
 
 Target one app with `pnpm --filter @daedalus/backend <script>`.
 
@@ -126,7 +127,10 @@ the Console.
 | Route | Screen |
 | ----- | ------ |
 | `/` | Redirects to `/projects` |
-| `/projects` | Portfolio / Projects header and a framed not-built notice |
+| `/projects` | Searchable, paged Projects with Block, Storey and Unit counts |
+| `/projects/new` | Create a Project with a unique name and code |
+| `/projects/$id` | Structure panes, Project edit and confirmed deletion |
+| `/projects/$id/unit-types` | Manage the Project's Unit Type catalogue |
 | `/subcontractors` | Searchable, paged Directory with a New subcontractor action |
 | `/subcontractors/new` | Create a Subcontractor with its first Member |
 | `/subcontractors/$id` | Rename, manage Members, and confirm deletion |
@@ -161,6 +165,34 @@ Subcontractor route and scopes Member operations through the Subcontractor.
 See the [finished spec](docs/specs/0002-subcontractor-directory.md) and
 [62-story verification record](docs/specs/0002-subcontractor-directory-verification.md).
 
+## Projects and Structure
+
+Projects are sorted by name and searchable by name or code. Each Project has a
+unique name and an uppercase code of 2–12 letters, digits or hyphens. Its
+Structure tab has Blocks, Storeys of the selected Block, and Units of the
+selected Storey. Selection stays in the URL, and the panes stack on a phone.
+
+Every pane supports Add, Add many, rename and confirmed deletion. Add many
+previews a numeric range (prefix, padding and suffix) or pasted names, marks
+existing/repeated names, and creates the entire batch atomically in creation
+order. A batch accepts up to 500 names; Units can target up to 200 Storeys of
+one Block with at most 2,000 Units in total and an optional Unit Type. A server
+clash refuses the entire batch and lists the names to correct.
+
+The Unit Types tab lists codes, descriptions and usage counts. Codes are unique
+within their Project ignoring case and whitespace; developer qualifiers remain
+part of the code. Units can change or clear their type inline. Deleting a type
+in use is refused with the count. Deleting a Project, Block or Storey names the
+descendants that will also go, and cascades only after confirmation.
+
+All Project routes require a verified Session and scope children through their
+Project. Create and edit responses contain the full Project; deletes return
+204 and trigger fresh queries. OpenAPI documents the contract at `/openapi.json`.
+English and Chinese copy is available; Chinese is flagged for native review.
+The idempotent seed includes one Project with 2 Blocks, 4 Storeys, 8 Units and
+2 Unit Types. See the [approved spec](.scratch/projects/spec.md) and
+[49-story evidence matrix](.scratch/projects/verification/ticket-09.md).
+
 ## The example slice is disposable
 
 `Match` exists only to prove the stack end to end. Delete it when your real
@@ -177,7 +209,8 @@ Subcontractors routes stay.
 `src/controllers/matches.controller.ts`, `src/services/matches.service.ts`,
 `src/schemas/matches.schema.ts`, the `Match` block in `src/openapi/registry.ts`,
 the `matchesRouter` line in `src/routes/index.ts`, the `Match` model in
-`prisma/schema.prisma`, `prisma/seed.ts`, and the `matches.*` tests.
+`prisma/schema.prisma`, the Match-only section of `prisma/seed.ts`, and the `matches.*` tests. Keep the
+Directory and Project seed data.
 
 ## Notes
 
@@ -212,3 +245,47 @@ at the browser's edge, so it needs no real account. The Console uses the
 intercepted Session's email; the example still exercises the real matches API
 and database. Playwright's browsers need
 system libraries once per machine: `sudo pnpm --filter @daedalus/frontend exec playwright install-deps`.
+
+
+## Upload a developer's Unit Matrix
+
+For a Project with no Blocks, open **Structure → Upload Unit Matrix**. Choose
+one `.xls` or `.xlsx` workbook up to 10 MB and select **Preview workbook**. The
+preview opens the first sheet with detected Blocks; use the sheet picker to
+choose another. Parsing creates no Project data.
+
+Review each Block's Storey and Unit counts, Stack range, warnings and new Unit
+Type codes. Rename or untick Blocks, then expand a Block to change or clear
+cells, rename Storeys, and add or remove Storeys and Stacks. Edits survive sheet
+switches; replacing a preview or leaving it asks for confirmation. Preview edits
+are held in the page, so save them by committing before closing it.
+
+Commit is available only after hard errors are corrected and at least one Block
+is included. It atomically creates the selected Structure, reuses existing Unit
+Types by their code key and returns to Structure with counts and the names of
+Storeys omitted after editing. Empty Storeys produce no Units; a cell merged
+across Stacks produces one Unit named by the first Stack. Qualifiers such as
+`(p)`, `(M)` and `-PH` remain part of the Unit Type code. The upload action is
+disabled once a Project has Blocks; importing revisions into an existing
+Structure is outside this feature.
+
+Both endpoints require a verified Session:
+
+| Endpoint | Contract |
+| --- | --- |
+| `POST /api/v1/projects/:id/unit-matrix/parse` | One multipart `file`; returns all sheets and their detected Blocks without persistence. |
+| `POST /api/v1/projects/:id/structure` | JSON `blocks → storeys → units`, with optional `unitTypeCode`; returns the full Project with status 201. |
+
+The commit accepts 1–50 Blocks and at most 10,000 Units. Names are 1–60
+characters and Unit Type codes are 1–40. Duplicate sibling names are refused.
+A Project that already has Blocks receives `409 PROJECT_HAS_BLOCKS`, including
+its current Block count. `/openapi.json` and `/docs` expose both request and
+response schemas.
+
+The backend reads workbooks with SheetJS 0.20.3 from its pinned CDN tarball;
+see [ADR-0007](docs/adr/0007-sheetjs-from-its-own-cdn.md). Tests synthesize layout
+fixtures; developer workbooks are not stored in the repository. The original
+12-Block / 1193-Unit and 4-Block / 638-Unit schedules were checked directly,
+excluding the restored sibling workbook. See the
+[upload story and verification record](.scratch/projects/verification/ticket-14.md)
+for automated coverage, database evidence and remaining verification limits.

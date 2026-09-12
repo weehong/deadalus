@@ -50,3 +50,81 @@ model Member {
   @@index([subcontractorId])
   @@map("members")
 }
+
+model Project {
+  id        String     @id @default(cuid())
+  name      String
+  nameKey   String     @unique
+  code      String     @unique
+  blocks    Block[]
+  unitTypes UnitType[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("projects")
+}
+
+model Block {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name      String
+  nameKey   String
+  position  Int
+  storeys   Storey[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, nameKey])
+  @@index([projectId, position, id])
+  @@map("blocks")
+}
+
+model Storey {
+  id        String   @id @default(cuid())
+  blockId   String
+  block     Block    @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  name      String
+  nameKey   String
+  position  Int
+  units     Unit[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([blockId, nameKey])
+  @@index([blockId, position, id])
+  @@map("storeys")
+}
+
+model Unit {
+  id         String    @id @default(cuid())
+  storeyId   String
+  storey     Storey    @relation(fields: [storeyId], references: [id], onDelete: Cascade)
+  unitTypeId String?
+  unitType   UnitType? @relation(fields: [unitTypeId], references: [id], onDelete: Restrict)
+  name       String
+  nameKey    String
+  position   Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([storeyId, nameKey])
+  @@index([storeyId, position, id])
+  @@index([unitTypeId])
+  @@map("units")
+}
+
+model UnitType {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  code        String
+  codeKey     String
+  description String?
+  units       Unit[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([projectId, codeKey])
+  @@map("unit_types")
+}

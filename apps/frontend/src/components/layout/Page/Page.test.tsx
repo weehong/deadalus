@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Placeholder } from "@/components/ui/Placeholder";
 import { Page } from "./Page";
 
 describe("Page", () => {
@@ -17,7 +16,7 @@ describe("Page", () => {
 			<main>
 				<Page>
 					<PageHeader heading="Projects" kicker="Portfolio" />
-					<Placeholder>This screen is not built yet.</Placeholder>
+					<p>Project content</p>
 				</Page>
 			</main>
 		);
@@ -26,6 +25,6 @@ describe("Page", () => {
 		expect(screen.getByRole("main")).toContainElement(
 			screen.getByRole("heading", { level: 1, name: "Projects" })
 		);
-		expect(screen.getByText("This screen is not built yet.")).toBeVisible();
+		expect(screen.getByText("Project content")).toBeVisible();
 	});
 });

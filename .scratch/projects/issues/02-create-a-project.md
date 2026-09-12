@@ -8,14 +8,24 @@ Spec: `.scratch/projects/spec.md`.
 
 **Blocked by:** 01 (Projects list, paged and searchable)
 
-**Status:** ready-for-agent
+**Status:** complete
 
-- [ ] The create route returns 201 with the full Project; 400 with field errors for a blank name, a blank code, or a code outside the pattern or length; 409 `PROJECT_NAME_TAKEN`; 409 `PROJECT_CODE_TAKEN`; 401 without a token; all covered at the HTTP seam
-- [ ] The code is stored upper-cased and trimmed regardless of how it was typed
-- [ ] The create route appears in the OpenAPI document
-- [ ] The form at `/projects/new` has required fields with associated errors, live upper-casing of the code, busy state, inline server failure, Cancel, and lands on the new Project's route on success, in both locales
-- [ ] The 409 codes map to field errors on name and code
-- [ ] The e2e fake implements create with both 409s and the e2e spec covers the happy path, blank fields, a bad code, taken name and taken code
-- [ ] New form components have a story and a test beside them
+- [x] The create route returns 201 with the full Project; 400 with field errors for a blank name, a blank code, or a code outside the pattern or length; 409 `PROJECT_NAME_TAKEN`; 409 `PROJECT_CODE_TAKEN`; 401 without a token; all covered at the HTTP seam
+- [x] The code is stored upper-cased and trimmed regardless of how it was typed
+- [x] The create route appears in the OpenAPI document
+- [x] The form at `/projects/new` has required fields with associated errors, live upper-casing of the code, busy state, inline server failure, Cancel, and lands on the new Project's route on success, in both locales
+- [x] The 409 codes map to field errors on name and code
+- [x] The e2e fake implements create with both 409s and the e2e spec covers the happy path, blank fields, a bad code, taken name and taken code
+- [x] New form components have a story and a test beside them
 
 ## Comments
+
+### Implementation evidence
+
+- Implemented the guarded POST route, normalized edge schema, shared full Project response, constraint-to-409 translation, and generated OpenAPI contract.
+- Added ProjectForm, creation page/API/cache mutation, route, English and machine-translated Chinese copy, story and component tests.
+- Targeted backend HTTP suite: 17 passed; backend typecheck and changed-file lint passed.
+- Targeted ProjectForm suite: 10 passed; changed frontend source lint passed.
+- Six browser scenarios and fake creation with both conflicts are written. Browser execution and frontend typecheck await integration with ticket 03's Project detail routes; no casts or placeholder routes were added to bypass that dependency.
+
+Coordinator integration: standards and spec reviewed, identified issues corrected (New project action, browser error intercept, observable ordering test, parent names in Units heading). Combined root lint, typecheck and unit/integration suites pass. Production frontend bundle builds. Integrated Projects/create/detail Playwright suite passes 48/48 across Chromium, Firefox and WebKit. No staging or commits.

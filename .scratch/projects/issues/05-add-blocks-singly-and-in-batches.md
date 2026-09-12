@@ -8,14 +8,16 @@ Spec: `.scratch/projects/spec.md`.
 
 **Blocked by:** 03 (Open a Project's screen)
 
-**Status:** ready-for-agent
+**Status:** complete
 
-- [ ] The add route creates the batch in one transaction with sequential positions; 400 for an empty list, over 500 names, a blank name or a repeated name; 409 `BLOCK_NAME_TAKEN` listing every clashing name as given; 404 for an unknown Project; 401 without a token; covered at the HTTP seam
-- [ ] Rename returns 409 on a sibling clash and 404 for a Block of another Project; delete returns 204 and cascades
-- [ ] All three routes appear in the OpenAPI document
-- [ ] The name generator handles prefix, suffix, zero-padding, a reversed range and the list mode's trimming and blank-line dropping; unit-tested
-- [ ] `BatchNamesForm` shows the live preview with count, marks existing and repeated names, disables submit while marked, shows a busy state and an inline server failure, in both locales; story and test beside it
-- [ ] The single Add form creates one Block and clears; Rename and Delete work in place with the dialog naming counts and handling focus
-- [ ] The e2e fake implements the three routes with the 409 and the e2e spec covers a single add, a range batch, a list batch, a marked clash blocking submit, a server clash message, rename and delete
+- [x] The add route creates the batch in one transaction with sequential positions; 400 for an empty list, over 500 names, a blank name or a repeated name; 409 `BLOCK_NAME_TAKEN` listing every clashing name as given; 404 for an unknown Project; 401 without a token; covered at the HTTP seam
+- [x] Rename returns 409 on a sibling clash and 404 for a Block of another Project; delete returns 204 and cascades
+- [x] All three routes appear in the OpenAPI document
+- [x] The name generator handles prefix, suffix, zero-padding, a reversed range and the list mode's trimming and blank-line dropping; unit-tested
+- [x] `BatchNamesForm` shows the live preview with count, marks existing and repeated names, disables submit while marked, shows a busy state and an inline server failure, in both locales; story and test beside it
+- [x] The single Add form creates one Block and clears; Rename and Delete work in place with the dialog naming counts and handling focus
+- [x] The e2e fake implements the three routes with the 409 and the e2e spec covers a single add, a range batch, a list batch, a marked clash blocking submit, a server clash message, rename and delete
 
 ## Comments
+
+Coordinator review/integration: root lint, typecheck and unit/integration checks pass; all 6 Blocks browser cases pass across three engines. Real-database HTTP probe passes 11 checks including two concurrent disjoint batches with positions 0..3, concurrent duplicate batches yielding 201/409, and all-or-nothing clash refusal; also rechecks Project create/read/edit/typed cascade. Temporary data cleaned up. Shared helpers reviewed for reuse by tickets 06 and 07. No staging or commits.

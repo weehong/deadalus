@@ -8,13 +8,22 @@ Spec: `.scratch/projects/spec.md`. ADR-0005 applies to the Unit Type reference.
 
 **Blocked by:** 06 (Add Storeys singly and in batches), 08 (Unit Types tab)
 
-**Status:** ready-for-agent
+**Status:** complete
 
-- [ ] The add route creates names times Storeys Units in one transaction with per-Storey positions; 400 for batch validation failures and for exceeding the product cap; 404 for a Storey outside the Block or a Unit Type outside the Project; 409 `UNIT_NAME_TAKEN` listing clashes once each; covered at the HTTP seam
-- [ ] Edit accepts name, Unit Type or both, clears the type on `null`, returns 409 on a sibling clash and 404 for a Unit or Unit Type of another Project; delete returns 204
-- [ ] All three routes appear in the OpenAPI document
-- [ ] The Units batch form shows the Storey checkboxes with select-all, the Unit Type select, the multiplied count, and markers against every ticked Storey; story and test beside it
-- [ ] Unit cards show name and type code; inline edit changes name and type; delete works with the dialog and focus handling; in both locales
-- [ ] The e2e fake implements the three routes and the e2e spec covers a batch into three ticked Storeys with a Unit Type, a clash in one of them blocking submit, a single add, editing a Unit's type, clearing it, rename and delete
+- [x] The add route creates names times Storeys Units in one transaction with per-Storey positions; 400 for batch validation failures and for exceeding the product cap; 404 for a Storey outside the Block or a Unit Type outside the Project; 409 `UNIT_NAME_TAKEN` listing clashes once each; covered at the HTTP seam
+- [x] Edit accepts name, Unit Type or both, clears the type on `null`, returns 409 on a sibling clash and 404 for a Unit or Unit Type of another Project; delete returns 204
+- [x] All three routes appear in the OpenAPI document
+- [x] The Units batch form shows the Storey checkboxes with select-all, the Unit Type select, the multiplied count, and markers against every ticked Storey; story and test beside it
+- [x] Unit cards show name and type code; inline edit changes name and type; delete works with the dialog and focus handling; in both locales
+- [x] The e2e fake implements the three routes and the e2e spec covers a batch into three ticked Storeys with a Unit Type, a clash in one of them blocking submit, a single add, editing a Unit's type, clearing it, rename and delete
 
 ## Comments
+
+- Implementation ready for integration review in the isolated ticket07 worktree.
+  All six acceptance areas are implemented; targeted evidence is recorded in
+  `.scratch/projects/verification/ticket-07.md`. Main-agent combined and real
+  database checks remain before marking complete.
+
+Parent integration: standards/spec review complete; combined root lint/typecheck/tests pass and all 18 Units/Blocks/Storeys browser cases pass across three engines. Real database checks pass for ordered typed batches, concurrent disjoint batches, atomic clashes, edit/type clearing/delete, competing Unit Type deletion, and the 2,000-Unit cap (324 ms).
+
+One initial concurrent pair produced an uncaptured 500; enhanced diagnostic reruns passed all live checks and 230 focused concurrent pairs. Installed Prisma runtime inspection found an explicit serialization/deadlock COMMIT error form without P2034. Added a narrowly bounded retry for that Prisma error form and 12 regression cases; generic unknown/connection errors are never retried. The original failure cannot be conclusively attributed because its body was not captured. All ten real database scenarios pass again after the fix.

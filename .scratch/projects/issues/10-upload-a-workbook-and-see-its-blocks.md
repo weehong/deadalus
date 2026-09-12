@@ -8,15 +8,19 @@ Spec: `.scratch/projects/spec.md`, section "Unit Matrix upload". ADR-0007 applie
 
 **Blocked by:** 03 (Open a Project's screen)
 
-**Status:** ready-for-agent
+**Status:** complete
 
-- [ ] SheetJS 0.20.3 is declared as the pinned CDN tarball with a comment naming ADR-0007; the lockfile carries its integrity hash; install and audit pass
-- [ ] The parser returns the Block shape for a single grid, two Blocks side by side sharing a floor column, a cell merged across two stacks (one code and a null), formula floor labels read from cached values, numeric labels padded and text labels kept, Storeys lowest first, and a sheet with no grid returning no Blocks; every fixture is synthesised in the test
-- [ ] The parse route refuses a request without a token (401), returns 404 for an unknown Project, 400 for a missing file, a `.csv` and a file over 10 MB, 400 `UNIT_MATRIX_UNREADABLE` for a text file named `.xlsx`, and 200 with every sheet for a valid workbook; covered at the HTTP seam with supertest `attach`; the route appears in the OpenAPI document
-- [ ] The upload action appears on the empty Blocks pane and in the Structure tab's actions and opens the upload route under the Project layout with Projects active in the sidebar
-- [ ] The screen shows a busy state while parsing, then the sheet select and the accordion with counts, stack range and the read-only matrix as a real table with row and column headers; parse failures show inline
-- [ ] The accordion and matrix are presentational components with a story and a test beside each
-- [ ] The e2e fake implements the parse route and the e2e spec covers upload, sheet switch, opening a second Block, a parse failure, the unauthenticated redirect and the phone-width layout with the table in its own horizontal scroll container
-- [ ] All copy exists in both locales, zh-CN flagged as machine-translated
+- [x] SheetJS 0.20.3 is declared as the pinned CDN tarball with a comment naming ADR-0007; the lockfile carries its integrity hash; install and audit pass
+- [x] The parser returns the Block shape for a single grid, two Blocks side by side sharing a floor column, a cell merged across two stacks (one code and a null), formula floor labels read from cached values, numeric labels padded and text labels kept, Storeys lowest first, and a sheet with no grid returning no Blocks; every fixture is synthesised in the test
+- [x] The parse route refuses a request without a token (401), returns 404 for an unknown Project, 400 for a missing file, a `.csv` and a file over 10 MB, 400 `UNIT_MATRIX_UNREADABLE` for a text file named `.xlsx`, and 200 with every sheet for a valid workbook; covered at the HTTP seam with supertest `attach`; the route appears in the OpenAPI document
+- [x] The upload action appears on the empty Blocks pane and in the Structure tab's actions and opens the upload route under the Project layout with Projects active in the sidebar
+- [x] The screen shows a busy state while parsing, then the sheet select and the accordion with counts, stack range and the read-only matrix as a real table with row and column headers; parse failures show inline
+- [x] The accordion and matrix are presentational components with a story and a test beside each
+- [x] The e2e fake implements the parse route and the e2e spec covers upload, sheet switch, opening a second Block, a parse failure, the unauthenticated redirect and the phone-width layout with the table in its own horizontal scroll container
+- [x] All copy exists in both locales, zh-CN flagged as machine-translated
 
 ## Comments
+
+Implementation complete in isolated worktree; awaiting integration review. Targeted evidence: `../verification/ticket-10.md`. Audit remains at the recorded baseline of 15 advisories with zero new package/advisory pairs.
+
+Coordinator review/integration: preserved Block controls while adding tab and empty-pane upload links. Root lint/typecheck/unit/integration checks pass; integrated upload + Blocks browser suite passes 18 cases across all three engines with normal workspace fonts. Frontend build passes. Dependency audit introduces zero advisories; the full audit remains nonzero on the recorded baseline findings. No staging or commits.

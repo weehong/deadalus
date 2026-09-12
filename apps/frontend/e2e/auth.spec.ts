@@ -5,6 +5,7 @@ import {
 	signIn,
 	submitCredentials,
 } from "./provider";
+import { interceptProjects } from "./projects-api";
 import { interceptSubcontractors } from "./subcontractors-api";
 
 for (const pathname of ["/", "/projects", "/subcontractors", "/example"]) {
@@ -23,6 +24,7 @@ test("signing in lands on Projects with Session identity and real Console naviga
 }) => {
 	await interceptProvider(page);
 	await interceptSubcontractors(page);
+	await interceptProjects(page);
 	await page.goto("/subcontractors");
 	await expect(page).toHaveURL(/\/login$/);
 	await expect(page).toHaveTitle("Daedalus");
@@ -65,11 +67,8 @@ test("signing in lands on Projects with Session identity and real Console naviga
 	await expect(
 		page.getByRole("main").getByText("Portfolio", { exact: true })
 	).toBeVisible();
-	await expect(
-		page
-			.getByRole("main")
-			.getByText("This screen is not built yet.", { exact: true })
-	).toBeVisible();
+	await expect(page.getByRole("table")).toBeVisible();
+	await expect(page.getByText("Page 1 of 2 · 21 projects")).toBeVisible();
 
 	await navigation.getByRole("link", { name: "Subcontractors" }).click();
 	await expect(page).toHaveURL(/\/subcontractors$/);
@@ -195,6 +194,7 @@ test("Sign out stays busy without repeat requests and returns to Sign in", async
 test("a failed Sign out keeps the Console available and can be retried", async ({
 	page,
 }) => {
+	await interceptProjects(page);
 	await signIn(page);
 	let attempts = 0;
 	await page.route("**/auth/v1/logout**", async (route) => {
@@ -244,6 +244,7 @@ test("the language chosen at Sign in translates the Console, both pages and mobi
 }) => {
 	await interceptProvider(page);
 	await interceptSubcontractors(page);
+	await interceptProjects(page);
 	await page.goto("/login");
 	await page
 		.getByRole("textbox", { name: "Work email" })
@@ -266,9 +267,8 @@ test("the language chosen at Sign in translates the Console, both pages and mobi
 	await expect(
 		page.getByRole("main").getByText("项目组合", { exact: true })
 	).toBeVisible();
-	await expect(
-		page.getByRole("main").getByText("此页面尚未构建。", { exact: true })
-	).toBeVisible();
+	await expect(page.getByRole("table")).toBeVisible();
+	await expect(page.getByRole("searchbox", { name: "搜索项目" })).toBeVisible();
 	await expect(
 		page.getByRole("button", { name: "退出登录", exact: true })
 	).toBeVisible();

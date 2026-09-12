@@ -8,15 +8,19 @@ Spec: `.scratch/projects/spec.md`, section "Unit Matrix upload". ADR-0005 and AD
 
 **Blocked by:** 08 (Manage the Project's Unit Types), 10 (Upload a Unit Matrix workbook and see the Blocks it holds)
 
-**Status:** ready-for-agent
+**Status:** complete
 
-- [ ] The commit route refuses a request without a token (401), returns 404 for an unknown Project, 409 `PROJECT_HAS_BLOCKS` with the count when any Block exists, and 400 for an empty Blocks array, more than 50 Blocks, more than 10,000 Units, a blank or over-long name or code, and duplicate sibling names at each level with the duplicates under `details`
-- [ ] A valid body creates every Unit Type, Block, Storey and Unit in one transaction with positions in array order and returns 201 with the full Project; a code matching an existing Unit Type by code key reuses it; covered at the HTTP seam with Prisma mocked, asserting the transaction's call shape; the route appears in the OpenAPI document
-- [ ] The matrix-to-Structure conversion is a pure function with a unit test covering a filled cell, a null cell and a merged-cell null
-- [ ] Block headers have an editable name and an include tick; duplicate or blank names show an error at the header and disable Commit
-- [ ] Commit sends only ticked Blocks with a busy state, lands on the Structure tab with the first Block selected and a summary of the counts, and shows a 409 inline
-- [ ] The upload action is disabled with a hint while the Project has Blocks
-- [ ] The e2e fake implements the commit route with the 409 and the e2e spec covers rename, untick, a duplicate name blocking Commit, a successful commit with the summary, the 409 and the disabled action
-- [ ] All copy exists in both locales
+- [x] The commit route refuses a request without a token (401), returns 404 for an unknown Project, 409 `PROJECT_HAS_BLOCKS` with the count when any Block exists, and 400 for an empty Blocks array, more than 50 Blocks, more than 10,000 Units, a blank or over-long name or code, and duplicate sibling names at each level with the duplicates under `details`
+- [x] A valid body creates every Unit Type, Block, Storey and Unit in one transaction with positions in array order and returns 201 with the full Project; a code matching an existing Unit Type by code key reuses it; covered at the HTTP seam with Prisma mocked, asserting the transaction's call shape; the route appears in the OpenAPI document
+- [x] The matrix-to-Structure conversion is a pure function with a unit test covering a filled cell, a null cell and a merged-cell null
+- [x] Block headers have an editable name and an include tick; duplicate or blank names show an error at the header and disable Commit
+- [x] Commit sends only ticked Blocks with a busy state, lands on the Structure tab with the first Block selected and a summary of the counts, and shows a 409 inline
+- [x] The upload action is disabled with a hint while the Project has Blocks
+- [x] The e2e fake implements the commit route with the 409 and the e2e spec covers rename, untick, a duplicate name blocking Commit, a successful commit with the summary, the 409 and the disabled action
+- [x] All copy exists in both locales
 
 ## Comments
+
+- Implementation and targeted evidence are recorded in `.scratch/projects/verification/ticket-11.md`; main integration and combined verification pending.
+
+Parent integration: standards/spec review complete. Combined root lint, typecheck and tests pass; all 21 upload/commit browser cases pass across Chromium, Firefox and WebKit. Real database HTTP checks pass for existing Unit Type reuse, populated Project refusal, simultaneous commits, concurrent Unit Type creation, and 10,000 Units with long Unicode names (3,182,445-byte request; 3.34-second commit). Temporary Projects cleaned up. Import summary snapshots remain unchanged after manual addition/deletion and selection fallback.

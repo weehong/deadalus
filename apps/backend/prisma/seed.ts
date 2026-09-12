@@ -1,4 +1,4 @@
-import { subcontractorNameKey } from "../src/lib/subcontractor-name.js";
+import { nameKey, unitTypeCodeKey } from "../src/lib/name-key.js";
 import { prisma } from "../src/lib/prisma.js";
 
 /**
@@ -110,20 +110,90 @@ async function main(): Promise<void> {
 			create: {
 				id,
 				name,
-				nameKey: subcontractorNameKey(name),
+				nameKey: nameKey(name),
 				members: { create: member },
 			},
 			update: {
 				name,
-				nameKey: subcontractorNameKey(name),
+				nameKey: nameKey(name),
 				members: {
 					upsert: { where: { id: member.id }, create: member, update: member },
 				},
 			},
 		});
 	}
+	await prisma.$transaction(async (transaction) => {
+		const projectId = "seed-project-01";
+		const project = {
+			name: "Evergreen Gardens",
+			nameKey: nameKey("Evergreen Gardens"),
+			code: "EG2",
+		};
+		await transaction.project.upsert({
+			where: { id: projectId },
+			create: { id: projectId, ...project },
+			update: project,
+		});
+		for (const [index, code] of ["AS1", "BP2(p) (M)"].entries()) {
+			const id = `seed-unit-type-${index + 1}`;
+			const data = {
+				projectId,
+				code,
+				codeKey: unitTypeCodeKey(code),
+				description: index === 0 ? "1 Bedroom + Study" : null,
+			};
+			await transaction.unitType.upsert({
+				where: { id },
+				create: { id, ...data },
+				update: data,
+			});
+		}
+		for (const [blockIndex, name] of ["A", "B"].entries()) {
+			const blockId = `seed-block-${blockIndex + 1}`;
+			const block = {
+				projectId,
+				name,
+				nameKey: nameKey(name),
+				position: blockIndex + 1,
+			};
+			await transaction.block.upsert({
+				where: { id: blockId },
+				create: { id: blockId, ...block },
+				update: block,
+			});
+			for (const [storeyIndex, storeyName] of ["01", "02"].entries()) {
+				const storeyId = `${blockId}-storey-${storeyIndex + 1}`;
+				const storey = {
+					blockId,
+					name: storeyName,
+					nameKey: nameKey(storeyName),
+					position: storeyIndex + 1,
+				};
+				await transaction.storey.upsert({
+					where: { id: storeyId },
+					create: { id: storeyId, ...storey },
+					update: storey,
+				});
+				for (const [unitIndex, unitName] of ["01", "02"].entries()) {
+					const unitId = `${storeyId}-unit-${unitIndex + 1}`;
+					const unit = {
+						storeyId,
+						name: unitName,
+						nameKey: nameKey(unitName),
+						position: unitIndex + 1,
+						unitTypeId: `seed-unit-type-${unitIndex + 1}`,
+					};
+					await transaction.unit.upsert({
+						where: { id: unitId },
+						create: { id: unitId, ...unit },
+						update: unit,
+					});
+				}
+			}
+		}
+	});
 	process.stdout.write(
-		`Seeded ${MATCHES.length.toString()} matches and ${subcontractors.length.toString()} Subcontractors.\n`
+		`Seeded ${MATCHES.length.toString()} matches and ${subcontractors.length.toString()} Subcontractors, plus one Project with 2 Blocks, 4 Storeys, 8 Units and 2 Unit Types.\n`
 	);
 }
 

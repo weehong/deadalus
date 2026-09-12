@@ -38,7 +38,18 @@ export function createApp(): Application {
 	app.use(helmet());
 	app.use(cors({ origin: resolveCorsOrigin() }));
 	app.use(compression());
-	app.use(express.json());
+	// Structure JSON is parsed after the router's token check with its own bound.
+	const defaultJson = express.json();
+	app.use((request, response, next) => {
+		if (
+			request.method === "POST" &&
+			/^\/api\/v1\/projects\/[^/]+\/structure\/?$/.test(request.path)
+		) {
+			next();
+			return;
+		}
+		defaultJson(request, response, next);
+	});
 	app.use(express.urlencoded({ extended: true }));
 	app.use(requestLogger);
 	app.use(

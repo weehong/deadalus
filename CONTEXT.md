@@ -86,16 +86,18 @@ Project may have different numbers of them.
 _Avoid_: Tower (as the term), building (as the term)
 
 **Storey**:
-One horizontal level of a Block, labelled G, 01, 02. A numeric label is
-padded to two digits; a label with letters (G, B1, M) stays as written.
-Storeys stand in building order, lowest first, whichever way a schedule
-prints them. It contains Units.
+One horizontal level of a Block, labelled G, 01, 02. In a Unit Matrix, a
+numeric label is padded to two digits; a label with letters (G, B1, M) stays
+as written. Storeys taken from a schedule stand lowest first, whichever way
+it prints them. Manually named Storeys keep their chosen names and order.
+A Storey contains Units.
 _Avoid_: Level, floor
 
 **Unit**:
 A bounded space on a Storey — a flat or a group of rooms — with its own Items
 and progress records. The thing a QR label identifies. A Unit is named by its
-Stack number, padded to two digits (01, 02, 114); its full label (#12-01) is
+Stack number when taken from a Unit Matrix, padded to two digits (01, 02,
+114); manually named Units keep their chosen names. Its full label (#12-01) is
 composed from its Storey and its name for display, never parsed. A Unit may
 be of one Unit Type.
 _Avoid_: Tenancy, space, room, apartment number (as the term)

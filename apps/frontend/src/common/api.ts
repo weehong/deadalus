@@ -40,7 +40,9 @@ async function apiRequest(path: string, init?: RequestInit): Promise<Response> {
 	const response = await fetch(`${API_URL}${path}`, {
 		...init,
 		headers: {
-			"Content-Type": "application/json",
+			...(init?.body instanceof FormData
+				? {}
+				: { "Content-Type": "application/json" }),
 			...(token ? { Authorization: `Bearer ${token}` } : {}),
 			...init?.headers,
 		},

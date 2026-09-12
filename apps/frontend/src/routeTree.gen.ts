@@ -13,10 +13,15 @@ import { Route as ConsoleRouteImport } from './routes/_console'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ConsoleIndexRouteImport } from './routes/_console/index'
 import { Route as ConsoleExampleRouteImport } from './routes/_console/example'
-import { Route as ConsoleProjectsRouteImport } from './routes/_console/projects'
+import { Route as ConsoleProjectsIndexRouteImport } from './routes/_console/projects.index'
+import { Route as ConsoleProjectsIdRouteImport } from './routes/_console/projects.$id'
+import { Route as ConsoleProjectsNewRouteImport } from './routes/_console/projects.new'
 import { Route as ConsoleSubcontractorsIndexRouteImport } from './routes/_console/subcontractors.index'
 import { Route as ConsoleSubcontractorsIdRouteImport } from './routes/_console/subcontractors.$id'
 import { Route as ConsoleSubcontractorsNewRouteImport } from './routes/_console/subcontractors.new'
+import { Route as ConsoleProjectsIdIndexRouteImport } from './routes/_console/projects.$id.index'
+import { Route as ConsoleProjectsIdUnitTypesRouteImport } from './routes/_console/projects.$id.unit-types'
+import { Route as ConsoleProjectsIdUploadRouteImport } from './routes/_console/projects.$id.upload'
 
 const ConsoleRoute = ConsoleRouteImport.update({
   id: '/_console',
@@ -37,9 +42,19 @@ const ConsoleExampleRoute = ConsoleExampleRouteImport.update({
   path: '/example',
   getParentRoute: () => ConsoleRoute,
 } as any)
-const ConsoleProjectsRoute = ConsoleProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
+const ConsoleProjectsIndexRoute = ConsoleProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleProjectsIdRoute = ConsoleProjectsIdRouteImport.update({
+  id: '/projects/$id',
+  path: '/projects/$id',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleProjectsNewRoute = ConsoleProjectsNewRouteImport.update({
+  id: '/projects/new',
+  path: '/projects/new',
   getParentRoute: () => ConsoleRoute,
 } as any)
 const ConsoleSubcontractorsIndexRoute =
@@ -59,35 +74,65 @@ const ConsoleSubcontractorsNewRoute =
     path: '/subcontractors/new',
     getParentRoute: () => ConsoleRoute,
   } as any)
+const ConsoleProjectsIdIndexRoute = ConsoleProjectsIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ConsoleProjectsIdRoute,
+} as any)
+const ConsoleProjectsIdUnitTypesRoute =
+  ConsoleProjectsIdUnitTypesRouteImport.update({
+    id: '/unit-types',
+    path: '/unit-types',
+    getParentRoute: () => ConsoleProjectsIdRoute,
+  } as any)
+const ConsoleProjectsIdUploadRoute = ConsoleProjectsIdUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => ConsoleProjectsIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof ConsoleIndexRoute
   '/login': typeof LoginRoute
   '/example': typeof ConsoleExampleRoute
-  '/projects': typeof ConsoleProjectsRoute
+  '/projects/$id': typeof ConsoleProjectsIdRouteWithChildren
+  '/projects/new': typeof ConsoleProjectsNewRoute
   '/subcontractors/$id': typeof ConsoleSubcontractorsIdRoute
   '/subcontractors/new': typeof ConsoleSubcontractorsNewRoute
+  '/projects/': typeof ConsoleProjectsIndexRoute
   '/subcontractors/': typeof ConsoleSubcontractorsIndexRoute
+  '/projects/$id/unit-types': typeof ConsoleProjectsIdUnitTypesRoute
+  '/projects/$id/upload': typeof ConsoleProjectsIdUploadRoute
+  '/projects/$id/': typeof ConsoleProjectsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/example': typeof ConsoleExampleRoute
-  '/projects': typeof ConsoleProjectsRoute
   '/': typeof ConsoleIndexRoute
+  '/projects/new': typeof ConsoleProjectsNewRoute
   '/subcontractors/$id': typeof ConsoleSubcontractorsIdRoute
   '/subcontractors/new': typeof ConsoleSubcontractorsNewRoute
+  '/projects': typeof ConsoleProjectsIndexRoute
   '/subcontractors': typeof ConsoleSubcontractorsIndexRoute
+  '/projects/$id/unit-types': typeof ConsoleProjectsIdUnitTypesRoute
+  '/projects/$id/upload': typeof ConsoleProjectsIdUploadRoute
+  '/projects/$id': typeof ConsoleProjectsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_console': typeof ConsoleRouteWithChildren
   '/login': typeof LoginRoute
   '/_console/example': typeof ConsoleExampleRoute
-  '/_console/projects': typeof ConsoleProjectsRoute
   '/_console/': typeof ConsoleIndexRoute
+  '/_console/projects/$id': typeof ConsoleProjectsIdRouteWithChildren
+  '/_console/projects/new': typeof ConsoleProjectsNewRoute
   '/_console/subcontractors/$id': typeof ConsoleSubcontractorsIdRoute
   '/_console/subcontractors/new': typeof ConsoleSubcontractorsNewRoute
+  '/_console/projects/': typeof ConsoleProjectsIndexRoute
   '/_console/subcontractors/': typeof ConsoleSubcontractorsIndexRoute
+  '/_console/projects/$id/unit-types': typeof ConsoleProjectsIdUnitTypesRoute
+  '/_console/projects/$id/upload': typeof ConsoleProjectsIdUploadRoute
+  '/_console/projects/$id/': typeof ConsoleProjectsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -95,29 +140,43 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/example'
-    | '/projects'
+    | '/projects/$id'
+    | '/projects/new'
     | '/subcontractors/$id'
     | '/subcontractors/new'
+    | '/projects/'
     | '/subcontractors/'
+    | '/projects/$id/unit-types'
+    | '/projects/$id/upload'
+    | '/projects/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/example'
-    | '/projects'
     | '/'
+    | '/projects/new'
     | '/subcontractors/$id'
     | '/subcontractors/new'
+    | '/projects'
     | '/subcontractors'
+    | '/projects/$id/unit-types'
+    | '/projects/$id/upload'
+    | '/projects/$id'
   id:
     | '__root__'
     | '/_console'
     | '/login'
     | '/_console/example'
-    | '/_console/projects'
     | '/_console/'
+    | '/_console/projects/$id'
+    | '/_console/projects/new'
     | '/_console/subcontractors/$id'
     | '/_console/subcontractors/new'
+    | '/_console/projects/'
     | '/_console/subcontractors/'
+    | '/_console/projects/$id/unit-types'
+    | '/_console/projects/$id/upload'
+    | '/_console/projects/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -155,11 +214,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleExampleRouteImport
       parentRoute: typeof ConsoleRoute
     }
-    '/_console/projects': {
-      id: '/_console/projects'
+    '/_console/projects/': {
+      id: '/_console/projects/'
       path: '/projects'
-      fullPath: '/projects'
-      preLoaderRoute: typeof ConsoleProjectsRouteImport
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ConsoleProjectsIndexRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/_console/projects/$id': {
+      id: '/_console/projects/$id'
+      path: '/projects/$id'
+      fullPath: '/projects/$id'
+      preLoaderRoute: typeof ConsoleProjectsIdRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/_console/projects/new': {
+      id: '/_console/projects/new'
+      path: '/projects/new'
+      fullPath: '/projects/new'
+      preLoaderRoute: typeof ConsoleProjectsNewRouteImport
       parentRoute: typeof ConsoleRoute
     }
     '/_console/subcontractors/': {
@@ -183,24 +256,64 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleSubcontractorsNewRouteImport
       parentRoute: typeof ConsoleRoute
     }
+    '/_console/projects/$id/': {
+      id: '/_console/projects/$id/'
+      path: '/'
+      fullPath: '/projects/$id/'
+      preLoaderRoute: typeof ConsoleProjectsIdIndexRouteImport
+      parentRoute: typeof ConsoleProjectsIdRoute
+    }
+    '/_console/projects/$id/unit-types': {
+      id: '/_console/projects/$id/unit-types'
+      path: '/unit-types'
+      fullPath: '/projects/$id/unit-types'
+      preLoaderRoute: typeof ConsoleProjectsIdUnitTypesRouteImport
+      parentRoute: typeof ConsoleProjectsIdRoute
+    }
+    '/_console/projects/$id/upload': {
+      id: '/_console/projects/$id/upload'
+      path: '/upload'
+      fullPath: '/projects/$id/upload'
+      preLoaderRoute: typeof ConsoleProjectsIdUploadRouteImport
+      parentRoute: typeof ConsoleProjectsIdRoute
+    }
   }
 }
 
+interface ConsoleProjectsIdRouteChildren {
+  ConsoleProjectsIdUnitTypesRoute: typeof ConsoleProjectsIdUnitTypesRoute
+  ConsoleProjectsIdUploadRoute: typeof ConsoleProjectsIdUploadRoute
+  ConsoleProjectsIdIndexRoute: typeof ConsoleProjectsIdIndexRoute
+}
+
+const ConsoleProjectsIdRouteChildren: ConsoleProjectsIdRouteChildren = {
+  ConsoleProjectsIdUnitTypesRoute: ConsoleProjectsIdUnitTypesRoute,
+  ConsoleProjectsIdUploadRoute: ConsoleProjectsIdUploadRoute,
+  ConsoleProjectsIdIndexRoute: ConsoleProjectsIdIndexRoute,
+}
+
+const ConsoleProjectsIdRouteWithChildren =
+  ConsoleProjectsIdRoute._addFileChildren(ConsoleProjectsIdRouteChildren)
+
 interface ConsoleRouteChildren {
   ConsoleExampleRoute: typeof ConsoleExampleRoute
-  ConsoleProjectsRoute: typeof ConsoleProjectsRoute
   ConsoleIndexRoute: typeof ConsoleIndexRoute
+  ConsoleProjectsIdRoute: typeof ConsoleProjectsIdRouteWithChildren
+  ConsoleProjectsNewRoute: typeof ConsoleProjectsNewRoute
   ConsoleSubcontractorsIdRoute: typeof ConsoleSubcontractorsIdRoute
   ConsoleSubcontractorsNewRoute: typeof ConsoleSubcontractorsNewRoute
+  ConsoleProjectsIndexRoute: typeof ConsoleProjectsIndexRoute
   ConsoleSubcontractorsIndexRoute: typeof ConsoleSubcontractorsIndexRoute
 }
 
 const ConsoleRouteChildren: ConsoleRouteChildren = {
   ConsoleExampleRoute: ConsoleExampleRoute,
-  ConsoleProjectsRoute: ConsoleProjectsRoute,
   ConsoleIndexRoute: ConsoleIndexRoute,
+  ConsoleProjectsIdRoute: ConsoleProjectsIdRouteWithChildren,
+  ConsoleProjectsNewRoute: ConsoleProjectsNewRoute,
   ConsoleSubcontractorsIdRoute: ConsoleSubcontractorsIdRoute,
   ConsoleSubcontractorsNewRoute: ConsoleSubcontractorsNewRoute,
+  ConsoleProjectsIndexRoute: ConsoleProjectsIndexRoute,
   ConsoleSubcontractorsIndexRoute: ConsoleSubcontractorsIndexRoute,
 }
 

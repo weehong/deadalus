@@ -1,155 +1,382 @@
 {
-	"_comment": "Machine-translated from en-US; flagged for review by a native reader. The example keys are deliberately absent and fall back to English.",
-	"auth": {
-		"brandKicker": "管理员控制台",
-		"brandHeadline": "逐个单元，完成家具安装。",
-		"brandBlurb": "设置项目、楼栋、楼层和单元。把项目分配给分包商，再通过现场二维码读取完成情况。",
-		"hierarchy": {
-			"projects": "项目",
-			"blocks": "楼栋",
-			"storeys": "楼层",
-			"units": "单元"
-		},
-		"heading": "登录",
-		"subtitle": "仅限管理员账号。分包商请使用单元上的二维码。",
-		"email": "工作邮箱",
-		"emailPlaceholder": "name@company.com",
-		"password": "密码",
-		"passwordPlaceholder": "••••••••",
-		"showPassword": "显示密码",
-		"hidePassword": "隐藏密码",
-		"submit": "进入控制台",
-		"submitting": "正在登录…",
-		"access": "需要访问权限？请联系您的现场管理员。",
-		"signOut": "退出登录",
-		"signingOut": "正在退出…",
-		"validation": {
-			"emailRequired": "请输入工作邮箱",
-			"emailInvalid": "请输入有效的邮箱地址",
-			"passwordRequired": "请输入密码"
-		},
-		"errors": {
-			"invalidCredentials": "邮箱或密码不正确。",
-			"rateLimited": "尝试次数过多，请稍后再试。",
-			"unavailable": "无法连接登录服务。请检查网络后重试。",
-			"signOut": "无法退出登录，请重试。",
-			"unknown": "出了点问题，请重试。"
-		},
-		"language": "语言",
-		"english": "English",
-		"chinese": "简体中文"
-	},
-	"loading": {
-		"restoringSession": "正在恢复您的会话…"
-	},
-	"console": {
-		"subtitle": "Unit Matrix",
-		"sidebar": "侧边栏",
-		"navigationLabel": "控制台导航",
-		"menu": "菜单",
-		"closeMenu": "关闭菜单",
-		"role": "管理员",
-		"notBuilt": "此页面尚未构建。",
-		"navigation": {
-			"projects": "项目",
-			"subcontractors": "分包商"
-		},
-		"projects": {
-			"kicker": "项目组合",
-			"heading": "项目"
-		},
-		"subcontractors": {
-			"kicker": "名录",
-			"heading": "分包商"
-		}
-	},
-	"configuration": {
-		"kicker": "配置错误",
-		"heading": "Daedalus 无法启动",
-		"body": "尚未配置 Supabase。以下环境变量缺失：",
-		"hint": "在 apps/frontend 中将 .env.example 复制为 .env，填入 Supabase 项目设置，然后重启开发服务器。"
-	},
-	"subcontractors": {
-		"search": "搜索名录",
-		"noMatches": "没有与搜索条件匹配的分包商。",
-		"columns": {
-			"name": "分包商",
-			"members": "成员",
-			"phones": "电话号码"
-		},
-		"pagination": {
-			"label": "名录分页",
-			"summary": "第 {{page}} 页，共 {{pages}} 页 · {{total}} 个分包商",
-			"previous": "上一页",
-			"next": "下一页"
-		},
-		"loading": "正在加载分包商…",
-		"empty": "暂无分包商。创建第一个分包商以开始使用。",
-		"emptyAction": "创建第一个分包商",
-		"error": "无法加载名录。请重试。",
-		"retry": "重试",
-		"detail": {
-			"kicker": "分包商",
-			"back": "返回名录",
-			"members": "成员",
-			"name": "姓名",
-			"phone": "电话号码",
-			"loading": "正在加载分包商…",
-			"error": "无法加载分包商。请重试。",
-			"notFound": "未找到分包商",
-			"notFoundBody": "此分包商已不存在或无法找到。"
-		},
-		"delete": {
-			"action": "删除",
-			"title": "删除分包商？",
-			"confirmation": "删除 {{name}} 及其 {{count}} 名成员？此操作无法撤销。",
-			"confirm": "删除分包商",
-			"cancel": "取消",
-			"error": "无法删除分包商。请重试。"
-		},
-		"remove": {
-			"actions": "操作",
-			"label": "移除{{name}}",
-			"action": "移除",
-			"lastMember": "分包商必须保留至少一名成员。请先添加另一名成员，再移除此成员。",
-			"error": "无法移除成员。请重试。"
-		},
-		"create": {
-			"action": "新建分包商",
-			"heading": "新建分包商",
-			"firstMember": "首位成员",
-			"submit": "创建分包商",
-			"submitting": "正在创建…",
-			"error": "无法创建分包商，请重试。"
-		},
-		"form": {
-			"name": "分包商名称",
-			"memberName": "成员姓名",
-			"phone": "电话号码",
-			"cancel": "取消",
-			"nameTaken": "此名称的分包商已存在。",
-			"phoneTaken": "此电话号码属于 {{name}} 的一位成员。",
-			"phoneTakenUnknown": "此电话号码已属于一位成员。",
-			"validation": {
-				"nameRequired": "请输入分包商名称",
-				"memberNameRequired": "请输入成员姓名",
-				"phoneRequired": "请输入电话号码",
-				"phoneInvalid": "请输入有效的电话号码"
-			}
-		},
-		"rename": {
-			"action": "重命名",
-			"submit": "保存名称",
-			"submitting": "正在保存…",
-			"error": "无法重命名分包商。请重试。"
-		},
-		"member": {
-			"add": "添加成员",
-			"edit": "编辑成员",
-			"editLabel": "编辑{{name}}",
-			"save": "保存成员",
-			"saving": "正在保存…",
-			"error": "无法保存成员。请重试。"
-		}
-	}
+  "console": {
+    "subtitle": "Unit Matrix",
+    "sidebar": "侧边栏",
+    "navigationLabel": "控制台导航",
+    "menu": "菜单",
+    "closeMenu": "关闭菜单",
+    "role": "管理员",
+    "navigation": {
+      "projects": "项目",
+      "subcontractors": "分包商"
+    },
+    "projects": {
+      "kicker": "项目组合",
+      "heading": "项目"
+    },
+    "subcontractors": {
+      "kicker": "名录",
+      "heading": "分包商"
+    }
+  },
+  "configuration": {
+    "kicker": "配置错误",
+    "heading": "Daedalus 无法启动",
+    "body": "尚未配置 Supabase。以下环境变量缺失：",
+    "hint": "在 apps/frontend 中将 .env.example 复制为 .env，填入 Supabase 项目设置，然后重启开发服务器。"
+  },
+  "subcontractors": {
+    "search": "搜索名录",
+    "noMatches": "没有与搜索条件匹配的分包商。",
+    "columns": {
+      "name": "分包商",
+      "members": "成员",
+      "phones": "电话号码"
+    },
+    "pagination": {
+      "label": "名录分页",
+      "summary": "第 {{page}} 页，共 {{pages}} 页 · {{total}} 个分包商",
+      "previous": "上一页",
+      "next": "下一页"
+    },
+    "loading": "正在加载分包商…",
+    "empty": "暂无分包商。创建第一个分包商以开始使用。",
+    "emptyAction": "创建第一个分包商",
+    "error": "无法加载名录。请重试。",
+    "retry": "重试",
+    "detail": {
+      "kicker": "分包商",
+      "back": "返回名录",
+      "members": "成员",
+      "name": "姓名",
+      "phone": "电话号码",
+      "loading": "正在加载分包商…",
+      "error": "无法加载分包商。请重试。",
+      "notFound": "未找到分包商",
+      "notFoundBody": "此分包商已不存在或无法找到。"
+    },
+    "delete": {
+      "action": "删除",
+      "title": "删除分包商？",
+      "confirmation": "删除 {{name}} 及其 {{count}} 名成员？此操作无法撤销。",
+      "confirm": "删除分包商",
+      "cancel": "取消",
+      "error": "无法删除分包商。请重试。"
+    },
+    "remove": {
+      "actions": "操作",
+      "label": "移除{{name}}",
+      "action": "移除",
+      "lastMember": "分包商必须保留至少一名成员。请先添加另一名成员，再移除此成员。",
+      "error": "无法移除成员。请重试。"
+    },
+    "create": {
+      "action": "新建分包商",
+      "heading": "新建分包商",
+      "firstMember": "首位成员",
+      "submit": "创建分包商",
+      "submitting": "正在创建…",
+      "error": "无法创建分包商，请重试。"
+    },
+    "form": {
+      "name": "分包商名称",
+      "memberName": "成员姓名",
+      "phone": "电话号码",
+      "cancel": "取消",
+      "nameTaken": "此名称的分包商已存在。",
+      "phoneTaken": "此电话号码属于 {{name}} 的一位成员。",
+      "phoneTakenUnknown": "此电话号码已属于一位成员。",
+      "validation": {
+        "nameRequired": "请输入分包商名称",
+        "memberNameRequired": "请输入成员姓名",
+        "phoneRequired": "请输入电话号码",
+        "phoneInvalid": "请输入有效的电话号码"
+      }
+    },
+    "rename": {
+      "action": "重命名",
+      "submit": "保存名称",
+      "submitting": "正在保存…",
+      "error": "无法重命名分包商。请重试。"
+    },
+    "member": {
+      "add": "添加成员",
+      "edit": "编辑成员",
+      "editLabel": "编辑{{name}}",
+      "save": "保存成员",
+      "saving": "正在保存…",
+      "error": "无法保存成员。请重试。"
+    }
+  },
+  "loading": {
+    "restoringSession": "正在恢复您的会话…"
+  },
+  "projects": {
+    "unitTypes": {
+      "add": "添加户型",
+      "edit": "编辑户型",
+      "delete": "删除户型",
+      "save": "保存户型",
+      "saving": "正在保存…",
+      "cancel": "取消",
+      "optional": "选填",
+      "codeRequired": "请输入户型代码。",
+      "codeTooLong": "最多使用 40 个字符。",
+      "descriptionTooLong": "最多使用 120 个字符。",
+      "codeTaken": "已存在使用此代码的户型。",
+      "error": "无法保存户型。请重试。",
+      "inUse": "无法删除：仍有 {{count}} 个单位使用此户型。",
+      "deleteTitle": "删除户型",
+      "deleteConfirmation": "删除户型 {{code}}？",
+      "deleteConfirm": "删除",
+      "deleteError": "无法删除户型。请重试。"
+    },
+    "edit": {
+      "action": "编辑项目",
+      "submit": "保存更改",
+      "submitting": "正在保存…",
+      "error": "无法保存项目，请重试。"
+    },
+    "columns": {
+      "code": "代码",
+      "name": "项目",
+      "blocks": "楼栋",
+      "storeys": "楼层",
+      "units": "单元"
+    },
+    "blocks": {
+      "add": "添加楼栋",
+      "many": "批量添加",
+      "name": "楼栋名称",
+      "rename": "重命名",
+      "save": "保存名称",
+      "delete": "删除",
+      "deleteTitle": "删除楼栋",
+      "deleteConfirm": "删除楼栋 {{name}} 及其 {{storeys}} 个楼层和 {{units}} 个单位？",
+      "clash": "名称已存在：{{names}}",
+      "error": "无法保存楼栋。请重试。"
+    },
+    "loading": "正在加载项目…",
+    "batch": {
+      "title": "批量添加",
+      "mode": "名称输入方式",
+      "range": "范围",
+      "list": "列表",
+      "prefix": "前缀",
+      "suffix": "后缀",
+      "from": "起始",
+      "to": "结束",
+      "pad": "补零宽度",
+      "names": "名称，每行一个",
+      "count": "{{count}} 个名称",
+      "preview": "名称预览",
+      "existing": "已存在",
+      "repeated": "重复",
+      "invalid": "请输入 1 至 500 个名称，每个名称 1 至 60 个字符。范围必须递增。",
+      "pending": "正在添加…",
+      "submit": "添加名称",
+      "cancel": "取消"
+    },
+    "detail": {
+      "back": "返回项目",
+      "loading": "正在加载项目…",
+      "error": "无法加载此项目。",
+      "notFound": "未找到项目",
+      "notFoundBody": "此项目已不存在。返回项目列表以选择其他项目。",
+      "tabs": "项目页面",
+      "structure": "结构",
+      "unitTypes": "户型",
+      "blocks": "楼栋",
+      "storeys": "楼层",
+      "units": "单位",
+      "storeysOf": "楼层 · 楼栋 {{name}}",
+      "unitsOf": "单位 · 楼栋 {{block}} · 楼层 {{name}}",
+      "blockCounts": "{{storeys}} 个楼层 · {{units}} 个单位",
+      "unitCount": "{{count}} 个单位",
+      "emptyBlocks": "暂无楼栋。添加第一个楼栋以设置此项目。",
+      "emptyStoreys": "暂无楼层。请为此楼栋添加楼层。",
+      "selectBlock": "选择楼栋以查看其楼层。",
+      "emptyUnits": "暂无单位。请为此楼层添加单位。",
+      "selectStorey": "选择楼层以查看其单位。",
+      "description": "描述",
+      "actions": "操作",
+      "emptyTypes": "暂无户型。添加户型以建立目录。",
+      "noType": "未设置户型"
+    },
+    "upload": {
+      "file": "工作簿",
+      "parsing": "正在读取工作簿…",
+      "invalid": "请选择一个不超过 10 MB 的 .xls 或 .xlsx 工作簿。",
+      "counts": "{{storeys}} 层 · {{units}} 个单位 · 竖列 {{first}}–{{last}}",
+      "title": "上传单位矩阵",
+      "blockName": "楼座 {{index}} 名称",
+      "warnings": {
+        "EMPTY_STOREY": "楼层 {{label}} 没有单元，已省略。",
+        "DUPLICATE_STOREY": "楼层 {{label}} 已出现，已省略后面的重复行。",
+        "NON_CONSECUTIVE_STACKS": "竖列编号不连续；已保留工作簿中的编号。",
+        "INFERRED_STACKS": "未找到竖列编号行；已从 1 开始为各列编号。",
+        "EMPTY_BLOCK": "此楼栋没有单元；请在纳入前检查。"
+      },
+      "warningCount_one": "{{count}} 条警告",
+      "invalidBlock": "请输入 1 至 60 个字符的楼座名称。",
+      "warningCount_other": "{{count}} 条警告",
+      "parse": "预览工作簿",
+      "sheetOption": "{{name}} · {{count}} 栋",
+      "missing": "请选择要上传的工作簿。",
+      "empty": "此工作表中未找到楼栋。",
+      "summary": "已导入 {{blocks}} 个楼座、{{storeys}} 个楼层和 {{units}} 个单元；新增 {{types}} 种单元类型。",
+      "error": "无法上传工作簿。请重试。",
+      "matrix": "单位矩阵 · {{name}}",
+      "hasBlocks": "此项目已有 {{count}} 个楼座。请先删除楼座，再上传单元矩阵。",
+      "caps": "每次最多提交 50 个楼座和 10,000 个单元。",
+      "commit": "提交楼座",
+      "includeBlock": "包含楼座 {{index}}",
+      "commitError": "无法提交楼座。请检查预览后重试。",
+      "duplicateBlock": "此楼座名称重复。",
+      "sheet": "工作表",
+      "hint": "选择 .xls 或 .xlsx 工作簿，最大 10 MB。",
+      "storey": "楼层",
+      "unreadable": "无法将此文件读取为 Excel 工作簿。请选择有效的 .xls 或 .xlsx 工作簿。",
+      "editor": {
+        "promptStorey": "新楼层名称",
+        "promptStack": "新列编号",
+        "invalidStack": "请输入非负整数列编号。",
+        "addStack": "添加列",
+        "addStorey": "添加楼层",
+        "insertLeft": "在 {{stack}} 左侧插入列",
+        "insertRight": "在 {{stack}} 右侧插入列",
+        "removeStack": "移除列 {{stack}}",
+        "storeyName": "楼层名称，第 {{row}} 行",
+        "insertAbove": "在 {{storey}} 上方插入楼层",
+        "insertBelow": "在 {{storey}} 下方插入楼层",
+        "removeStorey": "移除楼层 {{storey}}",
+        "cell": "楼层 {{storey}}，列 {{stack}}",
+        "newTypes": "将创建的单元类型",
+        "noNewTypes": "没有新单元类型。",
+        "omitted": "已省略空楼层：{{names}}",
+        "leave": "放弃此未保存的单元矩阵？",
+        "replace": "替换此未保存的单元矩阵？您的修改将被丢弃。",
+        "errorAt": "{{block}} · 第 {{row}} 行 · 列 {{stack}}：{{message}}",
+        "errors": {
+          "noBlocks": "请至少选择一个楼栋。",
+          "caps": "最多选择 50 个楼栋和 10,000 个单元。",
+          "invalidBlock": "楼栋名称必须包含 1 至 60 个字符。",
+          "duplicateBlock": "楼栋名称必须唯一。",
+          "invalidStorey": "楼层名称必须包含 1 至 60 个字符。",
+          "duplicateStorey": "楼栋内楼层名称必须唯一。",
+          "invalidUnit": "单元名称必须包含 1 至 60 个字符。",
+          "duplicateUnit": "此楼层的两个已填单元格会生成相同的单元名称。",
+          "invalidCode": "单元类型代码必须包含 1 至 40 个字符。"
+        }
+      }
+    },
+    "storeys": {
+      "add": "添加楼层",
+      "many": "批量添加",
+      "name": "楼层名称",
+      "rename": "重命名",
+      "save": "保存名称",
+      "delete": "删除",
+      "deleteTitle": "删除楼层",
+      "deleteConfirm": "删除楼层 {{name}} 及其 {{units}} 个单位？",
+      "clash": "名称已存在：{{names}}",
+      "error": "无法保存楼层。请重试。"
+    },
+    "create": {
+      "heading": "新建项目",
+      "submit": "创建项目",
+      "submitting": "正在创建…",
+      "error": "无法创建项目，请重试。"
+    },
+    "pagination": {
+      "label": "项目分页",
+      "summary": "第 {{page}} 页，共 {{pages}} 页 · {{total}} 个项目",
+      "previous": "上一页",
+      "next": "下一页"
+    },
+    "retry": "重试",
+    "empty": "暂无项目。创建第一个项目以开始使用。",
+    "error": "无法加载项目。",
+    "search": "搜索项目",
+    "noMatches": "没有与搜索条件匹配的项目。",
+    "delete": {
+      "action": "删除项目",
+      "title": "删除项目？",
+      "confirmation": "删除 {{name}} 及其 {{blockCount}} 栋楼、{{storeyCount}} 个楼层和 {{unitCount}} 个单位？所有单位类型也将被删除。此操作无法撤销。",
+      "confirm": "删除项目",
+      "cancel": "取消",
+      "error": "无法删除项目，请重试。"
+    },
+    "units": {
+      "add": "添加",
+      "many": "批量添加",
+      "name": "单元名称",
+      "type": "单元类型",
+      "edit": "编辑",
+      "save": "保存",
+      "delete": "删除",
+      "deleteTitle": "删除单元",
+      "deleteConfirm": "删除单元 {{name}}？",
+      "clash": "名称已存在：{{names}}",
+      "error": "无法保存单元。请重试。",
+      "storeys": "添加单元的楼层",
+      "selectAll": "选择全部楼层",
+      "storeyLimit": "请选择 1 至 200 个楼层。",
+      "total_one": "{{storeys}} 个楼层，共 {{count}} 个单元（最多 2000 个）",
+      "total_other": "{{storeys}} 个楼层，共 {{count}} 个单元（最多 2000 个）"
+    },
+    "form": {
+      "name": "项目名称",
+      "code": "项目代码",
+      "cancel": "取消",
+      "nameTaken": "已存在同名项目。",
+      "codeTaken": "已存在使用此代码的项目。",
+      "validation": {
+        "nameRequired": "请输入项目名称",
+        "nameTooLong": "请使用不超过60个字符",
+        "codeRequired": "请输入项目代码",
+        "codeInvalid": "请使用2至12个字母、数字或连字符"
+      }
+    }
+  },
+  "auth": {
+    "brandKicker": "管理员控制台",
+    "brandHeadline": "逐个单元，完成家具安装。",
+    "brandBlurb": "设置项目、楼栋、楼层和单元。把项目分配给分包商，再通过现场二维码读取完成情况。",
+    "hierarchy": {
+      "projects": "项目",
+      "blocks": "楼栋",
+      "storeys": "楼层",
+      "units": "单元"
+    },
+    "heading": "登录",
+    "subtitle": "仅限管理员账号。分包商请使用单元上的二维码。",
+    "email": "工作邮箱",
+    "emailPlaceholder": "name@company.com",
+    "password": "密码",
+    "passwordPlaceholder": "••••••••",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
+    "submit": "进入控制台",
+    "submitting": "正在登录…",
+    "access": "需要访问权限？请联系您的现场管理员。",
+    "signOut": "退出登录",
+    "signingOut": "正在退出…",
+    "validation": {
+      "emailRequired": "请输入工作邮箱",
+      "emailInvalid": "请输入有效的邮箱地址",
+      "passwordRequired": "请输入密码"
+    },
+    "errors": {
+      "invalidCredentials": "邮箱或密码不正确。",
+      "rateLimited": "尝试次数过多，请稍后再试。",
+      "unavailable": "无法连接登录服务。请检查网络后重试。",
+      "signOut": "无法退出登录，请重试。",
+      "unknown": "出了点问题，请重试。"
+    },
+    "language": "语言",
+    "english": "English",
+    "chinese": "简体中文"
+  },
+  "_comment": "Machine-translated from en-US; flagged for review by a native reader. The example keys are deliberately absent and fall back to English."
 }

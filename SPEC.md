@@ -338,7 +338,8 @@ full vertical slice.
 ## 14. The Console shell and content layout
 
 Agreed 2026-09-09 after a requirements interview; every decision below was
-chosen explicitly. Built after §13, from the `unit-matrix-vite` prototype's
+chosen explicitly. Its placeholder screens were superseded by §§15–16.
+Built after §13, from the `unit-matrix-vite` prototype's
 `StaffShell`. Vocabulary: **Console** and **Sign out** join `CONTEXT.md`.
 
 ### Reference
@@ -448,7 +449,7 @@ replacing one component, and the seam is a refactor. No ADR is recorded.
 ## 15. The Subcontractor Directory and its Members
 
 Built 2026-09-10. This section supersedes section 14's Subcontractors
-placeholder; Projects retains its not-built notice. The approved design is
+placeholder; section 16 also supersedes the Projects notice. The approved design is
 recorded in [spec 0002](docs/specs/0002-subcontractor-directory.md), with
 [verification for all 62 stories](docs/specs/0002-subcontractor-directory-verification.md).
 
@@ -489,3 +490,111 @@ The handoff's Playwright dependency limitation was stale: Chromium, Firefox and
 WebKit run on this host without installing system packages. Final combined
 results and the distinction between HTTP mocks, browser fakes and real database
 checks are recorded in the verification document.
+
+
+## 16. Projects and their Structure
+
+Built 2026-09-11 from the [approved Projects spec](.scratch/projects/spec.md).
+This section supersedes section 14's Projects placeholder. The unused
+Placeholder component and both `console.notBuilt` locale keys are removed.
+The [story matrix](.scratch/projects/verification/ticket-09.md) records evidence
+for stories 1–49; upload has its own verification record.
+
+The Console opens on a searchable, paged Projects list ordered by normalized
+name with code and descendant counts. Creation requires a unique trimmed name
+and a unique uppercase code of 2–12 letters, digits or hyphens. The detail screen
+has the Project name/code, back navigation, edit/delete actions, and Structure
+and Unit Types tabs. The selected Block and Storey are URL state. On phones the
+three labelled panes stack vertically with the selected parents in headings.
+
+Each pane creates one row or an atomic batch from a numeric range or pasted
+list. The preview lists all generated names and marks sibling clashes and
+repetitions before submission. Server validation accepts 1–500 names; Unit
+batches target 1–200 Storeys of one Block with a 2,000 Unit product limit.
+All names are trimmed free text of 1–60 characters. Sibling identity collapses
+whitespace and ignores case. Positions append in supplied order inside a
+serializable transaction with bounded retries, and reads order by position
+then id. Stable 409 codes list every clashing name without partial creation.
+Rename never reparents a row; Unit editing may also set or clear its Unit Type.
+
+Unit Types are the per-Project catalogue in ADR-0005. Code identity ignores
+case and all whitespace; qualifier text is preserved per ADR-0006. The optional
+description can be cleared. The catalogue is ordered by code key and shows
+derived Unit counts. A foreign Project's child or Unit Type is a 404. A type
+in use cannot be deleted, including a concurrent use detected by the database.
+Confirmed Project/Block/Storey deletion cascades. Project deletion removes
+Blocks before the Project in one transaction so typed Units do not trigger
+the Unit Type Restrict foreign key during PostgreSQL cascade ordering.
+
+All 17 manual-Structure API operations mount behind verified bearer-token
+authentication and appear with request/response schemas in `/openapi.json`.
+Creates and edits return the full Project; successful deletes return 204, as
+the more specific API contract requires despite story 45's broad wording.
+The client caches full responses and invalidates list counts; deletes refetch.
+Forms, errors and dialogs are translated into both locales, with Chinese
+flagged for native review. Native table/list/form semantics and shared Dialog
+focus handling are checked at component and browser seams.
+
+The additive migration and idempotent seed were exercised against the configured
+`daedalus2` database. Constraint, cascade, concurrency and capacity observations
+are recorded separately from mocked HTTP and browser-edge fake evidence in the
+story matrix and prerequisite record. Existing dependency advisories remain
+follow-up work; this feature introduced no new advisory pair. Final combined
+verification is recorded after all implementation tickets are integrated.
+
+## 17. Developer Unit Matrix upload
+
+Built 2026-09-11, following Projects section 16. The approved design remains in
+[the Projects spec](.scratch/projects/spec.md), with
+[stories 50–62 and verification](.scratch/projects/verification/ticket-14.md).
+The upload route `/projects/$id/upload` sits under the Project layout and is
+reached from Structure when the Project has no Blocks.
+
+The guarded multipart parse route accepts one `.xls` or `.xlsx` file up to
+10 MB and returns every sheet as plain JSON without persistence. SheetJS is a
+server-only dependency pinned to the CDN URL in ADR-0007; Multer uses bounded
+memory storage. Cached formula values, horizontal merged Units, shared Storey
+columns, multiple bands and bottom-aligned Blocks are handled. Empty and repeated
+Storeys are dropped with labelled warnings; count and schematic rows are ignored.
+Workbook dimensions, merge processing and delayed-label searches have work bounds.
+
+Ticket 13 refines the older spec's no-stack-row rejection: a convincing grid
+under a merged header can infer Stacks from 1 and emits `INFERRED_STACKS` for
+review. Irregular Stack numbering and empty Blocks are retained with warnings.
+The other stable codes are `EMPTY_STOREY`, `DUPLICATE_STOREY`,
+`NON_CONSECUTIVE_STACKS` and `EMPTY_BLOCK`. Warning labels preserve the original
+Storey text, while the client translates codes rather than server prose. The
+[specific clarification and original workbook totals](.scratch/projects/issues/13-read-the-awkward-layouts-with-warnings.md)
+record why this differs from the older generic detection rule.
+
+The preview chooses the first sheet containing Blocks. It shows one expanded
+Block at a time, counts, Stack ranges, warnings and new Unit Type codes. The
+Administrator can rename or exclude Blocks, edit or clear cells, rename Storeys,
+and insert or remove Storeys and Stacks. Edits survive sheet switches and failed
+replacement parses. Confirmation protects replacement and unsaved navigation;
+these drafts remain page state and are not durable saved drafts.
+
+The client translates non-empty cells into Units named by their padded Stack,
+leaves merged followers absent, and omits Storeys cleared by editing. It lists
+hard errors at their row or cell and disables Commit until they are resolved.
+The authenticated JSON commit route independently validates 1–50 Blocks, names
+of 1–60 characters, codes of 1–40 characters, the 10,000-Unit cap and duplicate
+sibling name keys. It uses an 8 MB request bound after authentication; other
+JSON routes retain their existing default bound.
+
+A Serializable transaction rechecks that the Project is empty, reuses Unit Types
+by uppercase whitespace-free code key, creates missing Types with their first
+spelling, and creates all rows in array order using bounded batches. Qualifiers
+remain in the code as required by ADR-0006. A competing commit receives
+`409 PROJECT_HAS_BLOCKS` after the winner is visible; concurrent Type creation
+is retried and reused. Success returns the full Project, refreshes queries and
+navigates to Structure. Import counts and edited-out Storey labels are snapshots
+preserved even after later manual Structure changes.
+
+Both parse and commit are registered with generated OpenAPI schemas. English
+and Chinese upload keys have matching interpolation fields, with Chinese flagged
+for native review. All parser fixtures are synthesized; the original developer
+files were read directly without repository copies. Source workbook totals,
+actual database atomicity/concurrency checks, and combined browser verification
+are recorded separately from mocked HTTP and browser evidence in the verification
+record. Uploading revisions into a populated Structure remains outside scope.

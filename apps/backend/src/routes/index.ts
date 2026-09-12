@@ -4,6 +4,7 @@ import { healthRouter } from "@/routes/health.route.js";
 import { matchesRouter } from "@/routes/matches.route.js";
 import { meRouter } from "@/routes/me.route.js";
 import { subcontractorsRouter } from "@/routes/subcontractors.route.js";
+import { projectsRouter } from "@/routes/projects.route.js";
 
 /**
  * Root application router. Health/readiness probes live at the top level;
@@ -17,4 +18,5 @@ const v1Router: Router = Router();
 v1Router.use("/matches", matchesRouter);
 v1Router.use("/me", meRouter);
 v1Router.use("/subcontractors", subcontractorsRouter);
+v1Router.use("/projects", projectsRouter);
 apiRouter.use("/api/v1", v1Router);
