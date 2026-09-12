@@ -1,5 +1,6 @@
 import { Router } from "express";
 
+import { fieldRouter } from "@/routes/field.route.js";
 import { healthRouter } from "@/routes/health.route.js";
 import { matchesRouter } from "@/routes/matches.route.js";
 import { meRouter } from "@/routes/me.route.js";
@@ -19,4 +20,5 @@ v1Router.use("/matches", matchesRouter);
 v1Router.use("/me", meRouter);
 v1Router.use("/subcontractors", subcontractorsRouter);
 v1Router.use("/projects", projectsRouter);
+v1Router.use("/field", fieldRouter);
 apiRouter.use("/api/v1", v1Router);

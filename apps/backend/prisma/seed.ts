@@ -148,6 +148,7 @@ async function main(): Promise<void> {
 				update: data,
 			});
 		}
+		const unitIds: Array<string> = [];
 		for (const [blockIndex, name] of ["A", "B"].entries()) {
 			const blockId = `seed-block-${blockIndex + 1}`;
 			const block = {
@@ -188,12 +189,141 @@ async function main(): Promise<void> {
 						create: { id: unitId, ...unit },
 						update: unit,
 					});
+					unitIds.push(unitId);
 				}
 			}
 		}
+		// Items and Progression (ADR-0008): Catalogue Items, an Item in the
+		// seeded Units, two Assignments and a few Progress entries, all with
+		// fixed ids so a re-run replaces rather than duplicates. Entries are
+		// append-only, so the seeded Items' entries are replaced wholesale and
+		// each Item's stored Progression is its latest seeded entry.
+		const catalogueItems = [
+			{ id: "seed-catalogue-item-1", name: "Kitchen cabinet" },
+			{ id: "seed-catalogue-item-2", name: "Wardrobe" },
+			{ id: "seed-catalogue-item-3", name: "Sink" },
+		];
+		for (const { id, name } of catalogueItems) {
+			const data = { projectId, name, nameKey: nameKey(name) };
+			await transaction.catalogueItem.upsert({
+				where: { id },
+				create: { id, ...data },
+				update: data,
+			});
+		}
+		const inBlockA = (unitId: string): boolean =>
+			unitId.startsWith("seed-block-1-");
+		/** Kitchen cabinet and Wardrobe in every Unit; Sink in Block A, Storey 01 only. */
+		const holds = (unitId: string, catalogueItemId: string): boolean =>
+			catalogueItemId !== "seed-catalogue-item-3" ||
+			unitId.startsWith("seed-block-1-storey-1-");
+		/** Block A's Kitchen cabinets go to Acme Fitout and its Wardrobes to Beacon Joinery. */
+		const assignedTo = new Map([
+			["seed-catalogue-item-1", "seed-subcontractor-01"],
+			["seed-catalogue-item-2", "seed-subcontractor-02"],
+		]);
+		const items = unitIds.flatMap((unitId) =>
+			catalogueItems
+				.filter(({ id }) => holds(unitId, id))
+				.map(({ id: catalogueItemId }, index) => ({
+					id: `${unitId}-item-${index + 1}`,
+					unitId,
+					catalogueItemId,
+					subcontractorId: inBlockA(unitId)
+						? (assignedTo.get(catalogueItemId) ?? null)
+						: null,
+				}))
+		);
+		const administrator = {
+			enteredByKind: "administrator" as const,
+			enteredById: "seed-administrator",
+			enteredByName: "administrator@example.com",
+			subcontractorName: null,
+		};
+		const alex = {
+			enteredByKind: "member" as const,
+			enteredById: "seed-member-01",
+			enteredByName: "Alex Tan",
+			subcontractorName: "Acme Fitout",
+		};
+		const mei = {
+			enteredByKind: "member" as const,
+			enteredById: "seed-member-02",
+			enteredByName: "Mei Lim",
+			subcontractorName: "Beacon Joinery",
+		};
+		const entries = [
+			{
+				id: "seed-entry-01",
+				itemId: "seed-block-1-storey-1-unit-1-item-1",
+				value: 40,
+				note: "Carcass fixed",
+				...administrator,
+				createdAt: new Date("2026-09-03T09:00:00.000Z"),
+			},
+			{
+				id: "seed-entry-02",
+				itemId: "seed-block-1-storey-1-unit-1-item-1",
+				value: 75,
+				note: null,
+				...alex,
+				createdAt: new Date("2026-09-08T10:30:00.000Z"),
+			},
+			{
+				id: "seed-entry-03",
+				itemId: "seed-block-1-storey-1-unit-2-item-1",
+				value: 20,
+				note: null,
+				...alex,
+				createdAt: new Date("2026-09-08T10:45:00.000Z"),
+			},
+			{
+				id: "seed-entry-04",
+				itemId: "seed-block-1-storey-2-unit-1-item-2",
+				value: 50,
+				note: "Doors hung",
+				...mei,
+				createdAt: new Date("2026-09-09T14:00:00.000Z"),
+			},
+			{
+				id: "seed-entry-05",
+				itemId: "seed-block-1-storey-2-unit-2-item-2",
+				value: 100,
+				note: null,
+				...administrator,
+				createdAt: new Date("2026-09-10T16:20:00.000Z"),
+			},
+		];
+		/** The Item's Progression is its latest entry by createdAt then id, and 0 with none. */
+		const progressionOf = (itemId: string): number =>
+			entries
+				.filter((entry) => entry.itemId === itemId)
+				.sort(
+					(a, b) =>
+						b.createdAt.getTime() - a.createdAt.getTime() ||
+						b.id.localeCompare(a.id)
+				)[0]?.value ?? 0;
+		for (const { id, ...item } of items) {
+			const data = {
+				...item,
+				assignedAt: item.subcontractorId
+					? new Date("2026-09-01T09:00:00.000Z")
+					: null,
+				progression: progressionOf(id),
+			};
+			await transaction.item.upsert({
+				where: { id },
+				create: { id, ...data },
+				update: data,
+			});
+		}
+		await transaction.progressEntry.deleteMany({
+			where: { itemId: { in: items.map((item) => item.id) } },
+		});
+		await transaction.progressEntry.createMany({ data: entries });
 	});
 	process.stdout.write(
-		`Seeded ${MATCHES.length.toString()} matches and ${subcontractors.length.toString()} Subcontractors, plus one Project with 2 Blocks, 4 Storeys, 8 Units and 2 Unit Types.\n`
+		`Seeded ${MATCHES.length.toString()} matches and ${subcontractors.length.toString()} Subcontractors, plus one Project with 2 Blocks, 4 Storeys, 8 Units, 2 Unit Types, 3 Catalogue Items, 18 Items, 8 Assignments and 5 Progress entries.\n`
 	);
 }
 

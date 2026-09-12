@@ -12,6 +12,9 @@ export interface ProjectRow {
 	blockCount: number;
 	storeyCount: number;
 	unitCount: number;
+	itemCount: number;
+	/** The plain average of every Item beneath the Project; null with no Items. */
+	progression: number | null;
 }
 export interface ProjectsListing {
 	data: Array<ProjectRow>;

@@ -2,6 +2,10 @@ import { HttpError } from "@/lib/http-error.js";
 import { nameKey } from "@/lib/name-key.js";
 import type { Project } from "@/schemas/project-detail.schema.js";
 import { projectSelect, toProject } from "@/services/project-read.js";
+import {
+	readProjectRollups,
+	readUnitItemRows,
+} from "@/services/progression.service.js";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma.js";
 import type {
@@ -16,6 +20,9 @@ export interface ProjectRow {
 	readonly blockCount: number;
 	readonly storeyCount: number;
 	readonly unitCount: number;
+	readonly itemCount: number;
+	/** The plain average of every Item beneath the Project; null with no Items. */
+	readonly progression: number | null;
 }
 export interface ProjectListing {
 	readonly rows: Array<ProjectRow>;
@@ -54,11 +61,14 @@ export async function listProjects(
 		}),
 		prisma.project.count({ where }),
 	]);
+	const rollups = await readProjectRollups(records.map((record) => record.id));
 	return {
 		rows: records.map((record) => ({
 			id: record.id,
 			code: record.code,
 			name: record.name,
+			itemCount: rollups.get(record.id)?.itemCount ?? 0,
+			progression: rollups.get(record.id)?.progression ?? null,
 			blockCount: record.blocks.length,
 			storeyCount: record.blocks.reduce(
 				(total, block) => total + block.storeys.length,
@@ -128,16 +138,15 @@ export async function editProject(
 	input: EditProjectBody
 ): Promise<Project> {
 	try {
-		return toProject(
-			await prisma.project.update({
-				where: { id },
-				data: {
-					...input,
-					...(input.name !== undefined ? { nameKey: nameKey(input.name) } : {}),
-				},
-				select: projectSelect,
-			})
-		);
+		const record = await prisma.project.update({
+			where: { id },
+			data: {
+				...input,
+				...(input.name !== undefined ? { nameKey: nameKey(input.name) } : {}),
+			},
+			select: projectSelect,
+		});
+		return toProject(record, await readUnitItemRows(id));
 	} catch (error) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&

@@ -17,11 +17,13 @@ import {
 export const SUBCONTRACTORS_KEY = ["subcontractors"] as const;
 
 export const useSubcontractorsQuery = (
-	parameters: DirectoryParameters
+	parameters: DirectoryParameters,
+	options: { enabled?: boolean } = {}
 ): UseQueryResult<DirectoryPage, Error> =>
 	useQuery({
 		queryKey: [...SUBCONTRACTORS_KEY, "list", parameters],
 		queryFn: (): Promise<DirectoryPage> => fetchSubcontractors(parameters),
+		enabled: options.enabled ?? true,
 		retry: false,
 	});
 

@@ -92,7 +92,9 @@ test("batches Units across three Storeys, blocks any selected clash, adds one, e
 	await expect(row.getByText("No Unit Type")).toBeVisible();
 	await expect(row.getByRole("button", { name: "Edit" })).toBeFocused();
 	await row.getByRole("button", { name: "Delete" }).click();
-	await expect(page.getByRole("dialog")).toContainText("Delete Unit Corner?");
+	await expect(page.getByRole("dialog")).toContainText(
+		"Delete Unit Corner and its 0 Items and 0 Progress entries?"
+	);
 	await page
 		.getByRole("dialog")
 		.getByRole("button", { name: "Delete", exact: true })

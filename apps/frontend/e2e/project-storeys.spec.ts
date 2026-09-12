@@ -45,24 +45,24 @@ test("adds Storey ranges within each Block, marks clashes, renames and deletes",
 	await expect(pane.getByRole("button", { name: "Add names" })).toBeDisabled();
 	await pane.getByRole("button", { name: "Cancel" }).click();
 	const row = pane.getByRole("listitem").filter({
-		has: page.getByRole("button", { name: "01 0 units", exact: true }),
+		has: page.getByRole("button", { name: "01 0 units No Items", exact: true }),
 	});
 	await row.getByRole("button", { name: "Rename" }).click();
 	await row.getByLabel("Storey name").fill("G");
 	await row.getByLabel("Storey name").press("Enter");
 	const renamed = pane.getByRole("listitem").filter({
-		has: page.getByRole("button", { name: "G 0 units", exact: true }),
+		has: page.getByRole("button", { name: "G 0 units No Items", exact: true }),
 	});
 	await renamed.getByRole("button", { name: "Delete" }).click();
 	await expect(page.getByRole("dialog")).toContainText(
-		"Delete Storey G and its 0 units?"
+		"Delete Storey G and its 0 Units, 0 Items and 0 Progress entries?"
 	);
 	await page
 		.getByRole("dialog")
 		.getByRole("button", { name: "Delete", exact: true })
 		.click();
 	await expect(
-		pane.getByRole("button", { name: "G 0 units", exact: true })
+		pane.getByRole("button", { name: "G 0 units No Items", exact: true })
 	).toHaveCount(0);
 	await expect(
 		pane.getByRole("button", { name: "02 0 units" })

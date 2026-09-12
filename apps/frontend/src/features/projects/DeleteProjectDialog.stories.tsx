@@ -9,6 +9,8 @@ const meta = {
 		blockCount: 2,
 		storeyCount: 3,
 		unitCount: 4,
+		itemCount: 5,
+		entryCount: 6,
 		pending: false,
 		error: false,
 		onCancel: (): void => {},

@@ -97,6 +97,16 @@ export const SubcontractorPage = ({
 	) : null;
 	const notFound =
 		query.error instanceof ApiRequestError && query.error.status === 404;
+	const refusal =
+		deletion.error instanceof ApiRequestError &&
+		deletion.error.code === "SUBCONTRACTOR_HAS_ASSIGNMENTS"
+			? z
+					.object({ itemCount: z.number().int().nonnegative() })
+					.safeParse(deletion.error.details)
+			: undefined;
+	const assignedItemCount = refusal?.success
+		? refusal.data.itemCount
+		: undefined;
 	return (
 		<Page>
 			<Link
@@ -221,7 +231,8 @@ export const SubcontractorPage = ({
 			)}
 			{query.data && (
 				<DeleteSubcontractorDialog
-					error={deletion.isError}
+					assignedItemCount={assignedItemCount}
+					error={deletion.isError && assignedItemCount === undefined}
 					memberCount={query.data.members.length}
 					name={query.data.name}
 					open={deleteOpen}

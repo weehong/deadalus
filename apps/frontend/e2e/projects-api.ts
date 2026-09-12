@@ -1,7 +1,21 @@
 import { handleUnits } from "./units-api";
 import { handleStructure } from "./structure-api";
 import { handleUnitTypes } from "./unit-types-api";
+import {
+	fullProject,
+	handleApplyCatalogueItem,
+	handleCatalogueItems,
+	handleRemoveCatalogueItem,
+	type FakeCatalogueItem,
+	type FakeItem,
+} from "./catalogue-items-api";
 import { unitMatrixFixture } from "./unit-matrix-api";
+import { handleAssignments } from "./assignments-api";
+import { handleProgressEntries } from "./progress-entries-api";
+import {
+	directoryFixtures,
+	type FakeSubcontractor,
+} from "./subcontractors-api";
 import type { Page } from "@playwright/test";
 
 export interface FakeUnit {
@@ -9,6 +23,8 @@ export interface FakeUnit {
 	name: string;
 	position: number;
 	unitTypeId: string | null;
+	/** Items this Unit holds; absent means none. */
+	items?: Array<FakeItem>;
 }
 export interface FakeStorey {
 	id: string;
@@ -33,6 +49,8 @@ export interface FakeProject {
 	name: string;
 	blocks: Array<FakeBlock>;
 	unitTypes: Array<FakeUnitType>;
+	/** The Item Catalogue; absent means empty. */
+	catalogueItems?: Array<FakeCatalogueItem>;
 }
 
 export const projectFixtures = (): Array<FakeProject> =>
@@ -68,7 +86,9 @@ export const projectFixtures = (): Array<FakeProject> =>
 // This fake independently implements the browser API contract, never backend internals.
 export const interceptProjects = async (
 	page: Page,
-	records: Array<FakeProject> = projectFixtures()
+	records: Array<FakeProject> = projectFixtures(),
+	/** The Directory the Assignment routes resolve Subcontractors against. */
+	directory: Array<FakeSubcontractor> = directoryFixtures()
 ): Promise<void> => {
 	await page.route("**/api/v1/projects**", async (route) => {
 		const request = route.request();
@@ -188,18 +208,7 @@ export const interceptProjects = async (
 			}
 			await route.fulfill({
 				status: request.method() === "POST" ? 201 : 200,
-				json: {
-					data: {
-						...project,
-						unitTypes: project.unitTypes.map((type) => ({
-							...type,
-							unitCount: project.blocks
-								.flatMap((block) => block.storeys)
-								.flatMap((storey) => storey.units)
-								.filter((unit) => unit.unitTypeId === type.id).length,
-						})),
-					},
-				},
+				json: { data: fullProject(project) },
 			});
 			return;
 		}
@@ -294,18 +303,7 @@ export const interceptProjects = async (
 			}
 			await route.fulfill({
 				status: request.method() === "POST" ? 201 : 200,
-				json: {
-					data: {
-						...project,
-						unitTypes: project.unitTypes.map((type) => ({
-							...type,
-							unitCount: project.blocks
-								.flatMap((block) => block.storeys)
-								.flatMap((storey) => storey.units)
-								.filter((unit) => unit.unitTypeId === type.id).length,
-						})),
-					},
-				},
+				json: { data: fullProject(project) },
 			});
 			return;
 		}
@@ -330,6 +328,11 @@ export const interceptProjects = async (
 		}
 		if (await handleStructure(route, records)) return;
 		if (await handleUnitTypes(route, records)) return;
+		if (await handleProgressEntries(route, records, directory)) return;
+		if (await handleAssignments(route, records, directory)) return;
+		if (await handleApplyCatalogueItem(route, records)) return;
+		if (await handleRemoveCatalogueItem(route, records)) return;
+		if (await handleCatalogueItems(route, records)) return;
 		if (request.method() === "POST" && url.pathname === "/api/v1/projects") {
 			const body: unknown = request.postDataJSON();
 			const input = body as { name?: unknown; code?: unknown };
@@ -374,7 +377,10 @@ export const interceptProjects = async (
 				unitTypes: [],
 			};
 			records.push(project);
-			await route.fulfill({ status: 201, json: { data: project } });
+			await route.fulfill({
+				status: 201,
+				json: { data: fullProject(project) },
+			});
 			return;
 		}
 		if (request.method() === "GET" && url.pathname === "/api/v1/projects") {
@@ -405,6 +411,8 @@ export const interceptProjects = async (
 							id: record.id,
 							code: record.code,
 							name: record.name,
+							itemCount: fullProject(record).itemCount,
+							progression: fullProject(record).progression,
 							blockCount: record.blocks.length,
 							storeyCount: record.blocks.flatMap((block) => block.storeys)
 								.length,
@@ -479,46 +487,7 @@ export const interceptProjects = async (
 					record.name = name;
 					record.code = code;
 				}
-				const ordered = <T extends { id: string; position: number }>(
-					items: Array<T>
-				): Array<T> =>
-					[...items].sort(
-						(left, right) =>
-							left.position - right.position || left.id.localeCompare(right.id)
-					);
-				const units = record.blocks
-					.flatMap((block) => block.storeys)
-					.flatMap((storey) => storey.units);
-				await route.fulfill({
-					json: {
-						data: {
-							...record,
-							blocks: ordered(record.blocks).map((block) => ({
-								...block,
-								storeys: ordered(block.storeys).map((storey) => ({
-									...storey,
-									units: ordered(storey.units),
-								})),
-							})),
-							unitTypes: [...record.unitTypes]
-								.sort(
-									(left, right) =>
-										left.code
-											.replace(/\s/g, "")
-											.toUpperCase()
-											.localeCompare(
-												right.code.replace(/\s/g, "").toUpperCase()
-											) || left.id.localeCompare(right.id)
-								)
-								.map((unitType) => ({
-									...unitType,
-									unitCount: units.filter(
-										(unit) => unit.unitTypeId === unitType.id
-									).length,
-								})),
-						},
-					},
-				});
+				await route.fulfill({ json: { data: fullProject(record) } });
 				return;
 			}
 		}

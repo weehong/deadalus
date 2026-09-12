@@ -35,6 +35,11 @@ const EnvSchema = z.object({
 	// Supabase project URL. Access tokens issued by its Auth service are
 	// verified against the JWKS published under `/auth/v1/.well-known/jwks.json`.
 	SUPABASE_URL: z.string().url(),
+	// Signs the Member tokens the Field uses (ADR-0009). HS256 needs a secret
+	// long enough that it cannot be guessed; nothing else ever reads it.
+	MEMBER_TOKEN_SECRET: z
+		.string()
+		.min(32, "MEMBER_TOKEN_SECRET must be at least 32 characters"),
 });
 
 /**

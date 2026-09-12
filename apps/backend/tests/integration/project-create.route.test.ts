@@ -53,6 +53,7 @@ beforeEach(() => {
 				code: record.code,
 				blocks: [],
 				unitTypes: [],
+				catalogueItems: [],
 			};
 		}
 	);
@@ -69,8 +70,12 @@ it("creates a full Project with trimmed name and normalized code", async () => {
 			id: "project-1",
 			name: "Emerald Gardens",
 			code: "EG2",
+			itemCount: 0,
+			entryCount: 0,
+			progression: null,
 			blocks: [],
 			unitTypes: [],
+			catalogueItems: [],
 		},
 	});
 });

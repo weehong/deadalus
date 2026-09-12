@@ -477,7 +477,8 @@ same migration as the tables, and the fetch helper has a separate operation
 for empty 204 responses. The Dialog
 primitive uses HeadlessUI for its accessible name, focus containment, Escape
 handling and trigger focus restoration. Query invalidation refreshes the
-Directory and affected detail after mutations. No Assignment check is built.
+Directory and affected detail after mutations. No Assignment check is built
+(section 18 adds one).
 
 Migrations and verification target the dedicated `daedalus2` schema. Local
 fallback URLs that still select `public` are an existing inconsistency recorded
@@ -598,3 +599,136 @@ files were read directly without repository copies. Source workbook totals,
 actual database atomicity/concurrency checks, and combined browser verification
 are recorded separately from mocked HTTP and browser evidence in the verification
 record. Uploading revisions into a populated Structure remains outside scope.
+
+## 18. Items, Progression and the Field
+
+Built 2026-09-12 from the
+[approved Items spec](.scratch/items-and-progression/spec.md) and its ten
+tickets, after the grilling interview that rewrote the glossary's Item entry
+and added Item Catalogue, Catalogue Item, Progression, Progress entry and
+Field. ADR-0008 (Items are per-Unit copies made from a per-Project Item
+Catalogue) and ADR-0009 (Member Sessions issued by the API for the proof of
+concept) record the two decisions that were hard to reverse.
+
+Three tables join the `daedalus2` schema: `catalogue_items` (name and name
+key, unique per Project), `items` (one per Unit and Catalogue Item, carrying
+the Assignment as a nullable Subcontractor reference with `assignedAt`, and a
+stored `progression`) and `progress_entries` (append-only; value, optional
+note, author kind, id and name snapshot, Subcontractor name snapshot). The
+Catalogue Item and Subcontractor references are `Restrict`; the services
+refuse first with `CATALOGUE_ITEM_IN_USE` and `SUBCONTRACTOR_HAS_ASSIGNMENTS`.
+An Item has no name of its own, which is how a Catalogue Item rename flows.
+
+A Unit selection (`blockIds`, `storeyIds`, `unitTypeIds`, intersected;
+everything when none) drives apply, remove and bulk assign under
+`/projects/:id/catalogue-items/:catalogueItemId/items`,
+`.../items/remove` and `/projects/:id/assignments`; each answers the full
+Project plus counts in `meta`. Apply skips Units already holding the Item;
+bulk assign skips Items assigned elsewhere unless `reassign` is set and
+unassigns when `subcontractorId` is null. `PATCH /projects/:id/items/:itemId`
+assigns one Item. Assignment writes name only the Subcontractor reference and
+`assignedAt`. The full Project read carries `itemCount`, `entryCount` and
+`progression` (null with no Items) at every level and a compact per-Unit
+`items` summary of Catalogue Item and Subcontractor ids, so every dialog's
+preview is exact; the Unit's full Items, with each latest entry, are a
+separate read. The Projects list carries `itemCount` and `progression` from
+one roll-up query scoped to the listed Projects.
+
+`POST /projects/:id/items/:itemId/entries` inserts the entry and updates the
+stored Progression in one transaction, refusing an unassigned Item with
+`ITEM_UNASSIGNED`; history is newest first. Roll-ups are the unweighted mean
+of `items.progression` beneath a node, computed on read. The Console shows a
+Progression badge on every Structure row and in the Projects list, an Items
+disclosure on the Unit card with entry form and history, and delete
+confirmations that name the Items and entries that go.
+
+The Field is a second route tree in the same frontend (`/field/login`,
+`/field`, `/field/projects/$id`, `/field/units/$unitId`) with its own Zustand
+Session read model mirrored to local storage. `POST /field/sessions` takes a
+phone number only, normalises it, and signs an HS256 token (`iss` daedalus,
+`aud` field, `sub` the Member id, thirty days) with the required
+`MEMBER_TOKEN_SECRET`. `requireMember` verifies it and loads the Member with
+its Subcontractor on every request; a removed Member is a 401. The
+Administrator check and the Member check reject each other's tokens. Field
+reads filter to the Member's Subcontractor server-side, omit empty nodes and
+answer the same 404 for an unknown id and for anything outside the
+Subcontractor, including an unassigned Item; the Field entry route reuses the
+Console's one-transaction write with a Member author.
+
+Both seams are covered as the spec agreed: the API over HTTP with Prisma
+mocked and tokens signed for tests, and the browser against browser-edge
+fakes at desktop and 390px widths, in both locales, including keyboard and
+accessibility checks. The migration and seed were applied to the local
+Docker PostgreSQL in a `daedalus2` schema, the seed run twice with identical
+counts and every Item's stored Progression equal to its latest entry; the
+hosted Supabase database was not contacted. The phone-only sign-in is
+knowingly insecure and must be replaced before any use beyond the proof of
+concept.
+
+## 19. QR labels
+
+Built 2026-09-12 from the
+[approved QR labels spec](.scratch/qr-labels/spec.md) and its four tickets,
+after the grilling interview that added the glossary's QR label entry and
+[ADR-0010](docs/adr/0010-qr-labels-carry-the-units-field-url.md): a label
+encodes the absolute URL of the Unit's existing Field screen,
+`<origin>/field/units/<unit id>`, and nothing else. No table, column, token,
+resolver route or migration joins the schema, and the backend is untouched:
+a QR label is a rendering of a Unit that already exists.
+
+Scanning is the Field's own Sign in doing its job. The `_field` guard now
+redirects to `/field/login` with a `redirect` search param holding the
+requested path and search. A pure `fieldReturnTo` keeps that value only when
+it is a relative Field path that is not Sign in itself, so a full URL, a
+protocol-relative host, a Console path and an empty string are all dropped;
+Sign in navigates to what survives, or to `/field`. The route's
+already-signed-in guard honours it the same way, and the guarded layout
+remembers the last Field screen the Session was alive on, so a 401 mid-Session
+returns there too rather than to the Projects list. A deliberate Sign out does
+not: the phone may be the site's rather than the Member's, so only a Session
+that lapsed under them is owed the screen back. The Unit screen's existing
+not-found state is reworded for a scan and names the Member's Subcontractor;
+the API still says nothing about the Unit, and a Unit outside the
+Subcontractor and an unknown id remain the same 404 (ADR-0003).
+
+Printing is one Console route, `/projects/$id/qr-labels` with an optional
+`block`. It is behind the same Administrator Session check as every Console
+screen, extracted into `requireAdministratorSession` and applied from outside
+the Console shell, so the printed page carries no sidebar, header or Project
+tabs. The page reads the full Project with the existing query hook and needs
+nothing new from the API. `qrLabelBlocks` turns a Project into the print run:
+every Block in Structure order or the one asked for, each with its Units in
+Storey then Unit order by position, each label carrying `fieldUnitUrl(origin,
+unitId)` and `unitLabel(storeyName, unitName)`. The sheets are the 21-up A4
+layout of Avery L7160 stock — three columns by seven rows of 63.5mm by 38.1mm
+labels, 15.15mm top and bottom margins, 7.2mm sides, a 2.54mm column gap and
+no row gap — with `@page { size: A4; margin: 0 }` and a page break before
+every sheet after the first, so a Block's last sheet is left short rather than
+shared. The stylesheet is rendered by the page rather than hoisted, so A4
+never applies to another Console screen's print. On screen the sheets sit at
+the same physical size behind a light border; in print the back link, heading,
+count and Print button go. A Block or Project with no Units says so instead of
+printing a blank sheet, and a stale `block` is a not-found notice.
+
+Codes come from `qrcode-generator` (MIT, no runtime dependencies, pinned at
+2.0.4), the only new dependency; `pnpm audit` reports the same advisories as
+the baseline `.scratch/dependency-audit/follow-up.md` records and no others.
+`qrCodePath` encodes at error correction level M and returns the dark modules
+as one SVG path with horizontal runs merged, so a sheet of 21 codes is 21
+elements rather than thousands of rectangles. The four-module quiet zone a
+scanner needs is applied by the label through the SVG viewBox, which keeps the
+code's box 30mm square and shrinks the modules to make room. Each code names
+its Unit's full label and carries its URL for tests.
+
+Both seams are covered as the spec agreed. Nothing was added at the API seam,
+which already asserts the Field's 404s. At the browser seam, the Field specs
+at 390px cover the scan of a signed-out visitor, a deep link keeping its
+search, every rejected `redirect`, an expired Session returning to the Unit,
+and the not-found copy in both locales; the Console specs cover both print
+actions, the order, the label text, each encoded URL, the A4 geometry
+measured in the page, the per-Block page break, the empty and not-found cases,
+the absence of Console chrome and the print stylesheet under Playwright's
+`emulateMedia({ media: "print" })`. `fieldReturnTo`, `fieldUnitUrl`,
+`unitLabel`, `qrLabelBlocks` and `qrCodePath` are unit-tested, and `QrLabel`
+and `QrLabelSheet` each have a story and a test. The Console's sign-in
+subtitle and brand blurb now say "QR label", as the glossary does.

@@ -61,7 +61,8 @@
       "confirmation": "删除 {{name}} 及其 {{count}} 名成员？此操作无法撤销。",
       "confirm": "删除分包商",
       "cancel": "取消",
-      "error": "无法删除分包商。请重试。"
+      "error": "无法删除分包商。请重试。",
+      "hasAssignments": "无法删除：仍有 {{count}} 个物品分配给此分包商。请先取消分配。"
     },
     "remove": {
       "actions": "操作",
@@ -131,6 +132,126 @@
       "deleteConfirm": "删除",
       "deleteError": "无法删除户型。请重试。"
     },
+    "items": {
+      "add": "添加目录物品",
+      "rename": "重命名目录物品",
+      "delete": "删除目录物品",
+      "save": "保存目录物品",
+      "saving": "正在保存…",
+      "cancel": "取消",
+      "name": "物品",
+      "unitsHolding": "单位",
+      "nameRequired": "请输入物品名称。",
+      "nameTooLong": "最多使用 60 个字符。",
+      "nameTaken": "此项目中已存在同名的目录物品。",
+      "error": "无法保存目录物品。请重试。",
+      "inUse": "无法删除：仍有 {{count}} 个单位持有此物品。",
+      "deleteTitle": "删除目录物品",
+      "deleteConfirmation": "从物品目录中删除 {{name}}？",
+      "deleteConfirm": "删除",
+      "deleteError": "无法删除目录物品。请重试。",
+      "empty": "暂无物品。添加目录物品以建立物品目录。"
+    },
+    "selection": {
+      "block": "楼栋",
+      "allBlocks": "所有楼栋",
+      "storeys": "楼层",
+      "allStoreys": "全选楼层",
+      "storeyOfBlock": "{{block}} · {{storey}}",
+      "unitTypes": "单位类型",
+      "allUnitTypes": "全选单位类型"
+    },
+    "assign": {
+      "action": "分配",
+      "title": "分配 {{name}}",
+      "search": "搜索名录",
+      "subcontractor": "分包商",
+      "choose": "选择分包商",
+      "unassign": "取消分配",
+      "searching": "正在搜索名录…",
+      "noMatches": "没有匹配的分包商。",
+      "reassign": "重新分配已分配给其他分包商的物品",
+      "chooseFirst": "请选择分包商，或取消分配。",
+      "preview": "{{assign}}；{{elsewhere}}。",
+      "previewSame": "{{assign}}；{{elsewhere}}；{{same}}。",
+      "willAssign": "将分配 {{count}} 个物品",
+      "willUnassign": "将取消分配 {{count}} 个物品",
+      "elsewhereSkipped": "{{count}} 个已分配给其他分包商的物品将被跳过",
+      "elsewhereReassigned": "{{count}} 个已分配给其他分包商的物品将被重新分配",
+      "same": "{{count}} 个已分配给 {{name}}",
+      "unassignedSkipped": "{{count}} 个未分配的物品将被跳过",
+      "result": "{{done}}；已跳过 {{skipped}} 个。",
+      "assigned": "已分配 {{count}} 个物品",
+      "unassigned": "已取消分配 {{count}} 个物品",
+      "submit": "分配",
+      "submitUnassign": "取消分配",
+      "cancel": "取消",
+      "close": "关闭",
+      "error": "无法分配物品。请重试。"
+    },
+    "unitItems": {
+      "toggle": "物品",
+      "loading": "正在加载物品…",
+      "error": "无法加载物品。请重试。",
+      "retry": "重试",
+      "empty": "此单位没有物品。",
+      "unassigned": "未分配",
+      "progression": "{{value}}%",
+      "subcontractor": "{{name}} 的分包商",
+      "assignError": "无法更改分配。请重试。"
+    },
+    "progress": {
+      "latest": "最新 {{value}}%，由 {{name}} 录入",
+      "noEntries": "尚无记录。",
+      "enterFor": "为 {{name}} 录入进度",
+      "value": "进度（0 到 100）",
+      "note": "备注（可选）",
+      "submit": "录入",
+      "submitting": "正在录入…",
+      "valueInvalid": "请输入 0 到 100 之间的整数。",
+      "noteTooLong": "备注请勿超过 200 个字符。",
+      "unassignedHint": "请先将此物品分配给分包商，再录入进度。",
+      "unassignedRefused": "此物品尚未分配。请先分配。",
+      "error": "无法录入进度。请重试。",
+      "history": "历史记录",
+      "historyFor": "{{name}} 的历史记录",
+      "historyLoading": "正在加载历史记录…",
+      "historyError": "无法加载历史记录。请重试。",
+      "historyEmpty": "尚无记录。",
+      "retry": "重试",
+      "entry": "{{value}}%，由 {{author}}录入",
+      "byAdministrator": "{{name}}（管理员）",
+      "byMember": "{{name}}（{{subcontractor}}）"
+    },
+    "apply": {
+      "action": "应用到单位",
+      "title": "将 {{name}} 应用到单位",
+      "preview": "将{{add}}；{{hold}}。",
+      "add": "添加 {{count}} 个物品",
+      "hold": "{{count}} 个单位已持有",
+      "result": "{{added}}；{{skipped}}。",
+      "added": "已添加 {{count}} 个物品",
+      "skipped": "已跳过 {{count}} 个已持有的单位",
+      "submit": "应用",
+      "cancel": "取消",
+      "close": "关闭",
+      "error": "无法应用目录物品。请重试。"
+    },
+    "removeItems": {
+      "action": "从单位移除",
+      "title": "从单位移除 {{name}}",
+      "preview": "将移除 {{count}} 个物品。",
+      "items": "{{count}} 个物品",
+      "entries": "{{count}} 条进度记录",
+      "confirm": "移除 {{items}}及 {{entries}}？此操作无法撤销。",
+      "result": "已移除 {{items}}及 {{entries}}。",
+      "continue": "继续",
+      "back": "返回",
+      "submit": "移除",
+      "cancel": "取消",
+      "close": "关闭",
+      "error": "无法移除物品。请重试。"
+    },
     "edit": {
       "action": "编辑项目",
       "submit": "保存更改",
@@ -142,7 +263,11 @@
       "name": "项目",
       "blocks": "楼栋",
       "storeys": "楼层",
-      "units": "单元"
+      "units": "单元",
+      "progression": "进度"
+    },
+    "progression": {
+      "none": "暂无物品"
     },
     "blocks": {
       "add": "添加楼栋",
@@ -152,7 +277,7 @@
       "save": "保存名称",
       "delete": "删除",
       "deleteTitle": "删除楼栋",
-      "deleteConfirm": "删除楼栋 {{name}} 及其 {{storeys}} 个楼层和 {{units}} 个单位？",
+      "deleteConfirm": "删除楼栋 {{name}} 及其 {{storeys}} 个楼层、{{units}} 个单位、{{items}} 个物品和 {{entries}} 条进度记录？",
       "clash": "名称已存在：{{names}}",
       "error": "无法保存楼栋。请重试。"
     },
@@ -186,6 +311,7 @@
       "tabs": "项目页面",
       "structure": "结构",
       "unitTypes": "户型",
+      "items": "物品",
       "blocks": "楼栋",
       "storeys": "楼层",
       "units": "单位",
@@ -278,7 +404,7 @@
       "save": "保存名称",
       "delete": "删除",
       "deleteTitle": "删除楼层",
-      "deleteConfirm": "删除楼层 {{name}} 及其 {{units}} 个单位？",
+      "deleteConfirm": "删除楼层 {{name}} 及其 {{units}} 个单位、{{items}} 个物品和 {{entries}} 条进度记录？",
       "clash": "名称已存在：{{names}}",
       "error": "无法保存楼层。请重试。"
     },
@@ -302,7 +428,7 @@
     "delete": {
       "action": "删除项目",
       "title": "删除项目？",
-      "confirmation": "删除 {{name}} 及其 {{blockCount}} 栋楼、{{storeyCount}} 个楼层和 {{unitCount}} 个单位？所有单位类型也将被删除。此操作无法撤销。",
+      "confirmation": "删除 {{name}} 及其 {{blockCount}} 栋楼、{{storeyCount}} 个楼层、{{unitCount}} 个单位、{{itemCount}} 个物品和 {{entryCount}} 条进度记录？所有单位类型和物品目录也将被删除。此操作无法撤销。",
       "confirm": "删除项目",
       "cancel": "取消",
       "error": "无法删除项目，请重试。"
@@ -316,7 +442,7 @@
       "save": "保存",
       "delete": "删除",
       "deleteTitle": "删除单元",
-      "deleteConfirm": "删除单元 {{name}}？",
+      "deleteConfirm": "删除单元 {{name}} 及其 {{items}} 个物品和 {{entries}} 条进度记录？",
       "clash": "名称已存在：{{names}}",
       "error": "无法保存单元。请重试。",
       "storeys": "添加单元的楼层",
@@ -337,12 +463,87 @@
         "codeRequired": "请输入项目代码",
         "codeInvalid": "请使用2至12个字母、数字或连字符"
       }
+    },
+    "qrLabels": {
+      "action": "打印二维码标签",
+      "back": "返回结构",
+      "headingBlock": "{{name}} · 楼栋 {{block}}",
+      "count": "{{count}} 个标签",
+      "print": "打印",
+      "empty": "暂无可标注的单元。请先在项目结构中添加单元，然后再打印。",
+      "sheet": "楼栋 {{block}} 标签，第 {{number}} 页",
+      "block": "楼栋 {{name}}",
+      "notFound": "未找到",
+      "notFoundBody": "此项目或楼栋已不存在。返回结构以选择其他。",
+      "actionForBlock": "打印楼栋 {{name}} 的二维码标签"
+    }
+  },
+  "field": {
+    "signIn": {
+      "kicker": "现场",
+      "heading": "登录",
+      "subtitle": "仅限成员。请输入管理员登记的手机号码。",
+      "phone": "手机号码",
+      "phonePlaceholder": "9123 4567",
+      "submit": "进入现场",
+      "submitting": "正在登录…",
+      "access": "尚未登记？请联系您的管理员。",
+      "sessionEnded": "您的会话已结束，请重新登录。",
+      "validation": {
+        "phoneRequired": "请输入手机号码"
+      },
+      "errors": {
+        "notRegistered": "该手机号码未登记",
+        "rateLimited": "尝试次数过多，请稍后再试。",
+        "unavailable": "无法连接登录服务。请检查网络后重试。",
+        "unknown": "出了点问题，请重试。"
+      }
+    },
+    "header": {
+      "label": "现场",
+      "signOut": "退出登录"
+    },
+    "projects": {
+      "kicker": "您的工作",
+      "heading": "项目",
+      "empty": "尚未分配工作。管理员为您的分包商分配项目后，会显示在这里。",
+      "listLabel": "项目",
+      "loading": "正在加载您的工作…",
+      "error": "无法加载您的项目。",
+      "retry": "重试"
+    },
+    "rows": {
+      "items_one": "{{count}} 个物品",
+      "items_other": "{{count}} 个物品"
+    },
+    "project": {
+      "loading": "正在加载项目…",
+      "error": "无法加载项目。",
+      "retry": "重试",
+      "notFound": "该项目不在您的工作范围内。可能已被重新分配，或链接已过期。",
+      "backToProjects": "返回项目",
+      "backToBlocks": "返回楼栋",
+      "backToStoreys": "返回楼层",
+      "blocks": "楼栋",
+      "storeys": "楼层",
+      "units": "单元",
+      "block": "{{name}} 栋",
+      "storey": "{{name}} 层"
+    },
+    "unit": {
+      "heading": "{{name}} 单元",
+      "loading": "正在加载单元…",
+      "error": "无法加载单元。",
+      "retry": "重试",
+      "notFound": "本单元没有 {{subcontractor}} 的物品。此二维码标签可能属于其他公司，或已过期。",
+      "backToUnits": "返回单元",
+      "items": "物品"
     }
   },
   "auth": {
     "brandKicker": "管理员控制台",
     "brandHeadline": "逐个单元，完成家具安装。",
-    "brandBlurb": "设置项目、楼栋、楼层和单元。把项目分配给分包商，再通过现场二维码读取完成情况。",
+    "brandBlurb": "设置项目、楼栋、楼层和单元。把项目分配给分包商，再通过现场的二维码标签读取进度。",
     "hierarchy": {
       "projects": "项目",
       "blocks": "楼栋",
@@ -350,7 +551,7 @@
       "units": "单元"
     },
     "heading": "登录",
-    "subtitle": "仅限管理员账号。分包商请使用单元上的二维码。",
+    "subtitle": "仅限管理员账号。成员请使用单元上的二维码标签。",
     "email": "工作邮箱",
     "emailPlaceholder": "name@company.com",
     "password": "密码",

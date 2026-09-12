@@ -70,7 +70,9 @@
       "confirmation_other": "Delete {{name}} and its {{count}} Members? This cannot be undone.",
       "confirm": "Delete subcontractor",
       "cancel": "Cancel",
-      "error": "Could not delete the Subcontractor. Please try again."
+      "error": "Could not delete the Subcontractor. Please try again.",
+      "hasAssignments_one": "Cannot delete: {{count}} Item is still assigned to this Subcontractor. Unassign it first.",
+      "hasAssignments_other": "Cannot delete: {{count}} Items are still assigned to this Subcontractor. Unassign them first."
     },
     "remove": {
       "actions": "Actions",
@@ -142,6 +144,139 @@
       "inUse_one": "Cannot delete: {{count}} Unit still uses this Unit Type.",
       "inUse_other": "Cannot delete: {{count}} Units still use this Unit Type."
     },
+    "items": {
+      "add": "Add Catalogue Item",
+      "rename": "Rename Catalogue Item",
+      "delete": "Delete Catalogue Item",
+      "save": "Save Catalogue Item",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "name": "Item",
+      "unitsHolding": "Units",
+      "nameRequired": "Enter an Item name.",
+      "nameTooLong": "Use at most 60 characters.",
+      "nameTaken": "A Catalogue Item with this name already exists in this Project.",
+      "error": "Could not save the Catalogue Item. Try again.",
+      "inUse": "Cannot delete: {{count}} Units still hold this Item.",
+      "inUse_one": "Cannot delete: {{count}} Unit still holds this Item.",
+      "inUse_other": "Cannot delete: {{count}} Units still hold this Item.",
+      "deleteTitle": "Delete Catalogue Item",
+      "deleteConfirmation": "Delete {{name}} from the Item Catalogue?",
+      "deleteConfirm": "Delete",
+      "deleteError": "Could not delete the Catalogue Item. Try again.",
+      "empty": "No Items yet. Add a Catalogue Item to build the Item Catalogue."
+    },
+    "selection": {
+      "block": "Block",
+      "allBlocks": "All Blocks",
+      "storeys": "Storeys",
+      "allStoreys": "Select all Storeys",
+      "storeyOfBlock": "{{block}} · {{storey}}",
+      "unitTypes": "Unit Types",
+      "allUnitTypes": "Select all Unit Types"
+    },
+    "assign": {
+      "action": "Assign",
+      "title": "Assign {{name}}",
+      "search": "Search the Directory",
+      "subcontractor": "Subcontractor",
+      "choose": "Choose a Subcontractor",
+      "unassign": "Unassign",
+      "searching": "Searching the Directory…",
+      "noMatches": "No Subcontractors match.",
+      "reassign": "Reassign Items already assigned elsewhere",
+      "chooseFirst": "Choose a Subcontractor, or Unassign.",
+      "preview": "{{assign}}; {{elsewhere}}.",
+      "previewSame": "{{assign}}; {{elsewhere}}; {{same}}.",
+      "willAssign_one": "Will assign {{count}} Item",
+      "willAssign_other": "Will assign {{count}} Items",
+      "willUnassign_one": "Will unassign {{count}} Item",
+      "willUnassign_other": "Will unassign {{count}} Items",
+      "elsewhereSkipped": "{{count}} already assigned elsewhere will be skipped",
+      "elsewhereReassigned": "{{count}} already assigned elsewhere will be reassigned",
+      "same": "{{count}} already assigned to {{name}}",
+      "unassignedSkipped": "{{count}} with no Assignment will be skipped",
+      "result": "{{done}}; skipped {{skipped}}.",
+      "assigned_one": "Assigned {{count}} Item",
+      "assigned_other": "Assigned {{count}} Items",
+      "unassigned_one": "Unassigned {{count}} Item",
+      "unassigned_other": "Unassigned {{count}} Items",
+      "submit": "Assign",
+      "submitUnassign": "Unassign",
+      "cancel": "Cancel",
+      "close": "Close",
+      "error": "Could not assign the Items. Try again."
+    },
+    "unitItems": {
+      "toggle": "Items",
+      "loading": "Loading Items…",
+      "error": "Could not load the Items. Try again.",
+      "retry": "Retry",
+      "empty": "No Items in this Unit.",
+      "unassigned": "Unassigned",
+      "progression": "{{value}}%",
+      "subcontractor": "Subcontractor for {{name}}",
+      "assignError": "Could not change the Assignment. Try again."
+    },
+    "progress": {
+      "latest": "Latest {{value}}% by {{name}}",
+      "noEntries": "No entries yet.",
+      "enterFor": "Enter progress for {{name}}",
+      "value": "Progression (0 to 100)",
+      "note": "Note (optional)",
+      "submit": "Enter",
+      "submitting": "Entering…",
+      "valueInvalid": "Enter a whole number from 0 to 100.",
+      "noteTooLong": "Keep the note to 200 characters.",
+      "unassignedHint": "Assign this Item to a Subcontractor before entering progress.",
+      "unassignedRefused": "This Item has no Assignment. Assign it first.",
+      "error": "Could not enter progress. Try again.",
+      "history": "History",
+      "historyFor": "History for {{name}}",
+      "historyLoading": "Loading history…",
+      "historyError": "Could not load the history. Try again.",
+      "historyEmpty": "No entries yet.",
+      "retry": "Retry",
+      "entry": "{{value}}% by {{author}}",
+      "byAdministrator": "{{name}} (Administrator)",
+      "byMember": "{{name}} ({{subcontractor}})"
+    },
+    "apply": {
+      "action": "Apply to Units",
+      "title": "Apply {{name}} to Units",
+      "preview": "Will {{add}}; {{hold}}.",
+      "add_one": "add {{count}} Item",
+      "add_other": "add {{count}} Items",
+      "hold_one": "{{count}} Unit already holds it",
+      "hold_other": "{{count}} Units already hold it",
+      "result": "{{added}}; {{skipped}}.",
+      "added_one": "Added {{count}} Item",
+      "added_other": "Added {{count}} Items",
+      "skipped_one": "skipped {{count}} Unit already holding it",
+      "skipped_other": "skipped {{count}} Units already holding it",
+      "submit": "Apply",
+      "cancel": "Cancel",
+      "close": "Close",
+      "error": "Could not apply the Catalogue Item. Try again."
+    },
+    "removeItems": {
+      "action": "Remove from Units",
+      "title": "Remove {{name}} from Units",
+      "preview_one": "Will remove {{count}} Item.",
+      "preview_other": "Will remove {{count}} Items.",
+      "items_one": "{{count}} Item",
+      "items_other": "{{count}} Items",
+      "entries_one": "{{count}} Progress entry",
+      "entries_other": "{{count}} Progress entries",
+      "confirm": "Remove {{items}} and {{entries}}? This cannot be undone.",
+      "result": "Removed {{items}} and {{entries}}.",
+      "continue": "Continue",
+      "back": "Back",
+      "submit": "Remove",
+      "cancel": "Cancel",
+      "close": "Close",
+      "error": "Could not remove the Items. Try again."
+    },
     "edit": {
       "action": "Edit project",
       "submit": "Save changes",
@@ -153,7 +288,11 @@
       "name": "Project",
       "blocks": "Blocks",
       "storeys": "Storeys",
-      "units": "Units"
+      "units": "Units",
+      "progression": "Progression"
+    },
+    "progression": {
+      "none": "No Items"
     },
     "blocks": {
       "add": "Add Block",
@@ -163,7 +302,7 @@
       "save": "Save name",
       "delete": "Delete",
       "deleteTitle": "Delete Block",
-      "deleteConfirm": "Delete Block {{name}} and its {{storeys}} storeys and {{units}} units?",
+      "deleteConfirm": "Delete Block {{name}} and its {{storeys}} Storeys, {{units}} Units, {{items}} Items and {{entries}} Progress entries?",
       "clash": "Names already exist: {{names}}",
       "error": "Could not save the Blocks. Please try again."
     },
@@ -197,6 +336,7 @@
       "tabs": "Project sections",
       "structure": "Structure",
       "unitTypes": "Unit Types",
+      "items": "Items",
       "blocks": "Blocks",
       "storeys": "Storeys",
       "units": "Units",
@@ -289,7 +429,7 @@
       "save": "Save name",
       "delete": "Delete",
       "deleteTitle": "Delete Storey",
-      "deleteConfirm": "Delete Storey {{name}} and its {{units}} units?",
+      "deleteConfirm": "Delete Storey {{name}} and its {{units}} Units, {{items}} Items and {{entries}} Progress entries?",
       "clash": "Names already exist: {{names}}",
       "error": "Could not save the Storeys. Please try again."
     },
@@ -313,7 +453,7 @@
     "delete": {
       "action": "Delete project",
       "title": "Delete project?",
-      "confirmation": "Delete {{name}} and its {{blockCount}} Blocks, {{storeyCount}} Storeys and {{unitCount}} Units? All Unit Types will also be removed. This cannot be undone.",
+      "confirmation": "Delete {{name}} and its {{blockCount}} Blocks, {{storeyCount}} Storeys, {{unitCount}} Units, {{itemCount}} Items and {{entryCount}} Progress entries? All Unit Types and Catalogue Items will also be removed. This cannot be undone.",
       "confirm": "Delete project",
       "cancel": "Cancel",
       "error": "Could not delete the project. Please try again."
@@ -327,7 +467,7 @@
       "save": "Save",
       "delete": "Delete",
       "deleteTitle": "Delete Unit",
-      "deleteConfirm": "Delete Unit {{name}}?",
+      "deleteConfirm": "Delete Unit {{name}} and its {{items}} Items and {{entries}} Progress entries?",
       "clash": "Names already exist: {{names}}",
       "error": "Could not save Units. Please try again.",
       "storeys": "Storeys to add Units to",
@@ -348,12 +488,87 @@
         "codeRequired": "Project code is required",
         "codeInvalid": "Use 2 to 12 letters, digits or hyphens"
       }
+    },
+    "qrLabels": {
+      "action": "Print QR labels",
+      "back": "Back to Structure",
+      "headingBlock": "{{name}} · Block {{block}}",
+      "count": "{{count}} labels",
+      "print": "Print",
+      "empty": "No Units to label yet. Add Units to this Project's Structure, then print.",
+      "sheet": "Block {{block}} labels, sheet {{number}}",
+      "block": "Block {{name}}",
+      "notFound": "Not found",
+      "notFoundBody": "This Project or Block no longer exists. Return to Structure to choose another.",
+      "actionForBlock": "Print QR labels for Block {{name}}"
+    }
+  },
+  "field": {
+    "signIn": {
+      "kicker": "The Field",
+      "heading": "Sign in",
+      "subtitle": "Members only. Enter the phone number your Administrator registered.",
+      "phone": "Phone number",
+      "phonePlaceholder": "9123 4567",
+      "submit": "Enter the Field",
+      "submitting": "Signing in…",
+      "access": "Not registered? Ask your Administrator.",
+      "sessionEnded": "Your Session has ended. Sign in again.",
+      "validation": {
+        "phoneRequired": "Enter your phone number"
+      },
+      "errors": {
+        "notRegistered": "That phone number is not registered",
+        "rateLimited": "Too many attempts. Please wait before trying again.",
+        "unavailable": "The sign-in service is unreachable. Check your connection and try again.",
+        "unknown": "Something went wrong. Please try again."
+      }
+    },
+    "header": {
+      "label": "Field",
+      "signOut": "Sign out"
+    },
+    "projects": {
+      "kicker": "Your work",
+      "heading": "Projects",
+      "empty": "No work assigned yet. Projects appear here once your Administrator assigns Items to your Subcontractor.",
+      "listLabel": "Projects",
+      "loading": "Loading your work…",
+      "error": "Your Projects could not be loaded.",
+      "retry": "Retry"
+    },
+    "rows": {
+      "items_one": "{{count}} Item",
+      "items_other": "{{count}} Items"
+    },
+    "project": {
+      "loading": "Loading Project…",
+      "error": "The Project could not be loaded.",
+      "retry": "Retry",
+      "notFound": "This Project is not in your work. It may have been reassigned, or the link is out of date.",
+      "backToProjects": "Back to Projects",
+      "backToBlocks": "Back to Blocks",
+      "backToStoreys": "Back to Storeys",
+      "blocks": "Blocks",
+      "storeys": "Storeys",
+      "units": "Units",
+      "block": "Block {{name}}",
+      "storey": "Storey {{name}}"
+    },
+    "unit": {
+      "heading": "Unit {{name}}",
+      "loading": "Loading Unit…",
+      "error": "The Unit could not be loaded.",
+      "retry": "Retry",
+      "notFound": "No Items for {{subcontractor}} in this Unit. The QR label may belong to another company, or be out of date.",
+      "backToUnits": "Back to Units",
+      "items": "Items"
     }
   },
   "auth": {
     "brandKicker": "Administrator console",
     "brandHeadline": "Furniture fitout, unit by unit.",
-    "brandBlurb": "Set out projects, blocks, storeys and units. Assign items to subcontractors, then read completion back off the QR codes on site.",
+    "brandBlurb": "Set out projects, blocks, storeys and units. Assign items to subcontractors, then read progression back off the QR labels on site.",
     "hierarchy": {
       "projects": "Projects",
       "blocks": "Blocks",
@@ -361,7 +576,7 @@
       "units": "Units"
     },
     "heading": "Sign in",
-    "subtitle": "Administrator accounts only. Subcontractors use the QR code on the unit.",
+    "subtitle": "Administrator accounts only. Members use the QR label on the Unit.",
     "email": "Work email",
     "emailPlaceholder": "name@company.com",
     "password": "Password",

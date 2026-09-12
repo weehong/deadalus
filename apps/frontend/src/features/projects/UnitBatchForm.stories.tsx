@@ -6,8 +6,24 @@ const meta = {
 	args: {
 		selectedStoreyId: "s1",
 		storeys: [
-			{ id: "s1", name: "01", position: 0, units: [] },
-			{ id: "s2", name: "02", position: 1, units: [] },
+			{
+				id: "s1",
+				name: "01",
+				position: 0,
+				itemCount: 0,
+				entryCount: 0,
+				progression: null,
+				units: [],
+			},
+			{
+				id: "s2",
+				name: "02",
+				position: 1,
+				itemCount: 0,
+				entryCount: 0,
+				progression: null,
+				units: [],
+			},
 		],
 		unitTypes: [{ id: "t", code: "AS1", description: "Study", unitCount: 0 }],
 		onSubmit: (): void => undefined,

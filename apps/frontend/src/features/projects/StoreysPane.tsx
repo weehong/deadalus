@@ -4,6 +4,7 @@ import { ApiRequestError } from "@/common/api";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { Dialog } from "@/components/ui/Dialog";
+import { ProgressionBadge } from "@/components/progress/ProgressionBadge";
 import { StructurePane } from "@/features/projects/StructurePane";
 import { BatchNamesForm } from "@/features/projects/BatchNamesForm";
 import { nameKey } from "@/features/projects/name-generator";
@@ -215,6 +216,7 @@ export const StoreysPane = ({
 				id: storey.id,
 				name: storey.name,
 				detail: t("projects.detail.unitCount", { count: storey.units.length }),
+				badge: <ProgressionBadge progression={storey.progression} />,
 			}))}
 			onSelect={onSelect}
 		>
@@ -289,6 +291,8 @@ export const StoreysPane = ({
 					{t("projects.storeys.deleteConfirm", {
 						name: deleting?.name,
 						units: deleting?.units.length ?? 0,
+						items: deleting?.itemCount ?? 0,
+						entries: deleting?.entryCount ?? 0,
 					})}
 				</p>
 				{failure && <Alert>{failure}</Alert>}

@@ -1,5 +1,6 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { ConsoleLayout } from "@/features/console/ConsoleLayout";
+import { requireAdministratorSession } from "@/features/console/guard";
 
 /**
  * Pathless layout: every Console screen sits under it, so the Session check
@@ -9,9 +10,7 @@ import { ConsoleLayout } from "@/features/console/ConsoleLayout";
  */
 export const Route = createFileRoute("/_console")({
 	beforeLoad: ({ context }) => {
-		if (!context.session)
-			// eslint-disable-next-line @typescript-eslint/only-throw-error -- TanStack redirects are control-flow values.
-			throw redirect({ to: "/login" });
+		requireAdministratorSession(context);
 	},
 	component: ConsoleLayout,
 });

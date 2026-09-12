@@ -18,10 +18,12 @@ const findFirst = vi.fn();
 const update = vi.fn();
 const remove = vi.fn();
 const count = vi.fn();
+const findMany = vi.fn();
 const database = {
 	project: { findUnique },
 	unitType: { create, findFirst, update, delete: remove },
 	unit: { count },
+	item: { findMany },
 };
 vi.mock("@/lib/prisma.js", () => ({
 	prisma: {
@@ -41,8 +43,17 @@ beforeAll(async () => {
 });
 afterAll(() => vi.unstubAllGlobals());
 beforeEach(() => {
-	for (const mock of [findUnique, create, findFirst, update, remove, count])
+	for (const mock of [
+		findUnique,
+		create,
+		findFirst,
+		update,
+		remove,
+		count,
+		findMany,
+	])
 		mock.mockReset();
+	findMany.mockResolvedValue([]);
 	records = [];
 	unitCount = 0;
 	findUnique.mockImplementation(async ({ where }: { where: { id: string } }) =>
@@ -52,6 +63,7 @@ beforeEach(() => {
 					name: "Gardens",
 					code: "EG2",
 					blocks: [],
+					catalogueItems: [],
 					unitTypes: records
 						.filter((r) => r.projectId === where.id)
 						.map(({ id, code, description }) => ({
@@ -137,7 +149,11 @@ it("adds a Unit Type preserving developer qualifiers and returns the full Projec
 			id: "p1",
 			name: "Gardens",
 			code: "EG2",
+			itemCount: 0,
+			entryCount: 0,
+			progression: null,
 			blocks: [],
+			catalogueItems: [],
 			unitTypes: [
 				{ id: "type-1", code: "BP2(p) (M)", description: null, unitCount: 0 },
 			],

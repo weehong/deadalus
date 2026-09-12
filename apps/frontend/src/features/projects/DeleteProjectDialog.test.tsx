@@ -9,7 +9,9 @@ it("names the Project and descendant counts and confirms through its callback", 
 		<DeleteProjectDialog
 			open
 			blockCount={2}
+			entryCount={6}
 			error={false}
+			itemCount={5}
 			name="Acme Fitout"
 			pending={false}
 			storeyCount={3}
@@ -21,7 +23,7 @@ it("names the Project and descendant counts and confirms through its callback", 
 	expect(
 		screen.getByRole("dialog", { name: "Delete project?" })
 	).toHaveTextContent(
-		"Delete Acme Fitout and its 2 Blocks, 3 Storeys and 4 Units? All Unit Types will also be removed. This cannot be undone."
+		"Delete Acme Fitout and its 2 Blocks, 3 Storeys, 4 Units, 5 Items and 6 Progress entries? All Unit Types and Catalogue Items will also be removed. This cannot be undone."
 	);
 	await userEvent.click(screen.getByRole("button", { name: "Delete project" }));
 	expect(onConfirm).toHaveBeenCalledOnce();
@@ -34,6 +36,8 @@ it("shows a retryable failure without losing the name and descendant counts", as
 			error
 			open
 			blockCount={1}
+			entryCount={0}
+			itemCount={0}
 			name="Acme Fitout"
 			pending={false}
 			storeyCount={2}
@@ -43,7 +47,7 @@ it("shows a retryable failure without losing the name and descendant counts", as
 		/>
 	);
 	expect(screen.getByRole("dialog")).toHaveTextContent(
-		"Delete Acme Fitout and its 1 Blocks, 2 Storeys and 3 Units? All Unit Types will also be removed. This cannot be undone."
+		"Delete Acme Fitout and its 1 Blocks, 2 Storeys, 3 Units, 0 Items and 0 Progress entries? All Unit Types and Catalogue Items will also be removed. This cannot be undone."
 	);
 	expect(screen.getByRole("alert")).toHaveTextContent(
 		"Could not delete the project. Please try again."
@@ -60,7 +64,9 @@ it("refuses repeated confirmation and dismissal while deletion is pending", asyn
 			open
 			pending
 			blockCount={2}
+			entryCount={6}
 			error={false}
+			itemCount={5}
 			name="Acme Fitout"
 			storeyCount={3}
 			unitCount={4}

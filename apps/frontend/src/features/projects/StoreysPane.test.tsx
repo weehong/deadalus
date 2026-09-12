@@ -7,12 +7,29 @@ const blocks = [
 		id: "a",
 		name: "A",
 		position: 0,
+		itemCount: 0,
+		entryCount: 0,
+		progression: null,
 		storeys: [
 			{
 				id: "s",
 				name: "01",
 				position: 0,
-				units: [{ id: "u", name: "01", position: 0, unitTypeId: null }],
+				itemCount: 4,
+				entryCount: 1,
+				progression: 25,
+				units: [
+					{
+						id: "u",
+						name: "01",
+						position: 0,
+						itemCount: 0,
+						entryCount: 0,
+						progression: null,
+						unitTypeId: null,
+						items: [],
+					},
+				],
 			},
 		],
 	},
@@ -22,7 +39,15 @@ it("adds a single Storey and clears the field", async () => {
 	const add = vi.fn().mockResolvedValue(undefined);
 	render(
 		<StoreysPane
-			block={{ id: "b", name: "A", position: 0, storeys: [] }}
+			block={{
+				id: "b",
+				name: "A",
+				position: 0,
+				itemCount: 0,
+				entryCount: 0,
+				progression: null,
+				storeys: [],
+			}}
 			onAdd={add}
 			onDelete={vi.fn()}
 			onRename={vi.fn()}
@@ -48,6 +73,7 @@ it("renames inline and confirms deletion with descendant counts and focus", asyn
 			onSelect={vi.fn()}
 		/>
 	);
+	expect(screen.getByRole("button", { name: "01 1 units 25%" })).toBeVisible();
 	await user.click(screen.getByRole("button", { name: "Rename" }));
 	await user.clear(screen.getByLabelText("Storey name"));
 	await user.type(screen.getByLabelText("Storey name"), "Z");
@@ -55,7 +81,9 @@ it("renames inline and confirms deletion with descendant counts and focus", asyn
 	expect(rename).toHaveBeenCalledWith("s", "Z");
 	await user.click(screen.getByRole("button", { name: "Delete" }));
 	const dialog = screen.getByRole("dialog");
-	expect(dialog).toHaveTextContent("Delete Storey 01 and its 1 units?");
+	expect(dialog).toHaveTextContent(
+		"Delete Storey 01 and its 1 Units, 4 Items and 1 Progress entries?"
+	);
 	expect(within(dialog).getByRole("button", { name: "Cancel" })).toHaveFocus();
 	await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
 	expect(remove).not.toHaveBeenCalled();

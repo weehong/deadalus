@@ -6,6 +6,7 @@ for (const path of [
 	"/projects/p",
 	"/projects/p/unit-types",
 	"/projects/p/upload",
+	"/projects/p/qr-labels",
 ]) {
 	test(`a visitor to ${path} is sent to Sign in`, async ({ page }) => {
 		await page.goto(path);
@@ -60,7 +61,11 @@ test("keyboard reaches pane rows and forms and restores Structure deletion trigg
 	await signIn(page);
 	await page.goto("/projects/p");
 	await expect(page.getByRole("heading", { name: "Gardens" })).toBeVisible();
-	for (const name of ["A 1 storeys · 1 units", "01 1 units"]) {
+	// Each row's name ends with its Progression badge: "No Items" here.
+	for (const name of [
+		"A 1 storeys · 1 units No Items",
+		"01 1 units No Items",
+	]) {
 		const row = page.getByRole("button", { name, exact: true });
 		await tabTo(page, row);
 		await page.keyboard.press("Enter");

@@ -52,6 +52,27 @@ it("shows a retryable failure without losing the name and Member count", async (
 	expect(onConfirm).toHaveBeenCalledOnce();
 });
 
+it("shows the has-Assignments refusal with the Item count inline", () => {
+	render(
+		<DeleteSubcontractorDialog
+			open
+			assignedItemCount={12}
+			error={false}
+			memberCount={2}
+			name="Acme Fitout"
+			pending={false}
+			onCancel={vi.fn()}
+			onConfirm={vi.fn()}
+		/>
+	);
+	expect(screen.getByRole("alert")).toHaveTextContent(
+		"Cannot delete: 12 Items are still assigned to this Subcontractor. Unassign them first."
+	);
+	expect(screen.getByRole("dialog")).toHaveTextContent(
+		"Delete Acme Fitout and its 2 Members? This cannot be undone."
+	);
+});
+
 it("refuses repeated confirmation and dismissal while deletion is pending", async () => {
 	const onConfirm = vi.fn();
 	const onCancel = vi.fn();

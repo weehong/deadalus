@@ -17,9 +17,40 @@ import {
 	projectSchema,
 	projectParametersSchema,
 } from "@/schemas/project-detail.schema.js";
+import {
+	catalogueItemBodySchema,
+	catalogueItemParametersSchema,
+} from "@/schemas/catalogue-items.schema.js";
+import {
+	applyMetaSchema,
+	removeMetaSchema,
+	unitSelectionBodySchema,
+} from "@/schemas/unit-selection.schema.js";
+import {
+	assignItemBodySchema,
+	assignMetaSchema,
+	bulkAssignBodySchema,
+	itemParametersSchema,
+} from "@/schemas/assignments.schema.js";
+import { unitItemSchema } from "@/schemas/unit-items.schema.js";
+import {
+	progressEntryBodySchema,
+	progressEntrySchema,
+} from "@/schemas/progress-entries.schema.js";
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 
 import { z } from "@/lib/zod.js";
+import {
+	fieldItemParametersSchema,
+	fieldUnitItemsSchema,
+	fieldUnitParametersSchema,
+} from "@/schemas/field-items.schema.js";
+import {
+	fieldProjectParametersSchema,
+	fieldProjectRowSchema,
+	fieldProjectSchema,
+} from "@/schemas/field-projects.schema.js";
+import { createMemberSessionBodySchema } from "@/schemas/field.schema.js";
 import { createMatchBodySchema } from "@/schemas/matches.schema.js";
 import {
 	memberBodySchema,
@@ -281,6 +312,21 @@ registry.registerPath({
 		204: { description: "The Subcontractor and its Members were deleted." },
 		401: { description: "The bearer token is missing, invalid, or expired." },
 		404: { description: "The Subcontractor does not exist." },
+		409: {
+			description:
+				"SUBCONTRACTOR_HAS_ASSIGNMENTS: Items are still assigned to the Subcontractor; details.itemCount gives the current number.",
+			content: {
+				"application/json": {
+					schema: z.object({
+						error: z.object({
+							code: z.literal("SUBCONTRACTOR_HAS_ASSIGNMENTS"),
+							message: z.string(),
+							details: z.object({ itemCount: z.number().int().min(0) }),
+						}),
+					}),
+				},
+			},
+		},
 	},
 });
 
@@ -510,6 +556,11 @@ const ProjectRowSchema = registry.register(
 		blockCount: z.number().int().min(0),
 		storeyCount: z.number().int().min(0),
 		unitCount: z.number().int().min(0),
+		itemCount: z.number().int().min(0),
+		progression: z.number().min(0).max(100).nullable().openapi({
+			description:
+				"Average Item Progression beneath the Project; null with no Items",
+		}),
 	})
 );
 registry.registerPath({
@@ -522,7 +573,7 @@ registry.registerPath({
 	responses: {
 		200: {
 			description:
-				"Projects sorted by name key with descendant counts and page metadata. Page size is capped at 100.",
+				"Projects sorted by name key with descendant counts, the Items roll-up and page metadata. Page size is capped at 100.",
 			content: {
 				"application/json": {
 					schema: z.object({
@@ -571,11 +622,290 @@ registry.registerPath({
 	responses: {
 		200: {
 			description:
-				"The full Project, ordered by position then id; Unit Types by code key then id.",
+				"The full Project, ordered by position then id; Unit Types by code key then id; Catalogue Items by name key then id. Every level carries itemCount, entryCount and progression (the plain average of the Items beneath it, null with none).",
 			content: { "application/json": { schema: dataEnvelope(ProjectSchema) } },
 		},
 		401: { description: "A verified bearer token is required." },
 		404: { description: "Project not found." },
+	},
+});
+
+registry.registerPath({
+	method: "post",
+	path: "/api/v1/projects/{id}/catalogue-items",
+	summary: "Add a Catalogue Item",
+	tags: ["Projects"],
+	security: [{ bearerAuth: [] }],
+	request: {
+		params: projectParametersSchema,
+		body: {
+			required: true,
+			content: { "application/json": { schema: catalogueItemBodySchema } },
+		},
+	},
+	responses: {
+		201: {
+			description: "The full Project",
+			content: { "application/json": { schema: dataEnvelope(ProjectSchema) } },
+		},
+		400: { description: "Invalid name (trimmed, 1 to 60 characters)" },
+		401: { description: "Unauthorized" },
+		404: { description: "Project not found" },
+		409: {
+			description:
+				"CATALOGUE_ITEM_NAME_TAKEN; the name differs only by case or whitespace from an existing one",
+		},
+	},
+});
+registry.registerPath({
+	method: "patch",
+	path: "/api/v1/projects/{id}/catalogue-items/{catalogueItemId}",
+	summary: "Rename a Catalogue Item and every Item made from it",
+	tags: ["Projects"],
+	security: [{ bearerAuth: [] }],
+	request: {
+		params: catalogueItemParametersSchema,
+		body: {
+			required: true,
+			content: { "application/json": { schema: catalogueItemBodySchema } },
+		},
+	},
+	responses: {
+		200: {
+			description: "The full Project",
+			content: { "application/json": { schema: dataEnvelope(ProjectSchema) } },
+		},
+		400: { description: "Invalid name (trimmed, 1 to 60 characters)" },
+		401: { description: "Unauthorized" },
+		404: { description: "Catalogue Item not found in this Project" },
+		409: { description: "CATALOGUE_ITEM_NAME_TAKEN" },
+	},
+});
+registry.registerPath({
+	method: "delete",
+	path: "/api/v1/projects/{id}/catalogue-items/{catalogueItemId}",
+	summary: "Delete a Catalogue Item no Unit holds",
+	tags: ["Projects"],
+	security: [{ bearerAuth: [] }],
+	request: { params: catalogueItemParametersSchema },
+	responses: {
+		204: { description: "Deleted" },
+		400: { description: "Invalid parameters" },
+		401: { description: "Unauthorized" },
+		404: { description: "Catalogue Item not found in this Project" },
+		409: {
+			description:
+				"CATALOGUE_ITEM_IN_USE; details.itemCount gives the current number of Items made from it",
+		},
+	},
+});
+registry.registerPath({
+	method: "post",
+	path: "/api/v1/projects/{id}/catalogue-items/{catalogueItemId}/items",
+	summary: "Apply a Catalogue Item to a set of Units",
+	description:
+		"Creates one Item at Progression 0 with no Assignment in every selected Unit that holds none made from this Catalogue Item. A Unit is selected when it matches every filter given; no filters selects every Unit of the Project. Units already holding one are skipped, so a repeat apply is safe.",
+	tags: ["Projects"],
+	security: [{ bearerAuth: [] }],
+	request: {
+		params: catalogueItemParametersSchema,
+		body: {
+			required: true,
+			content: { "application/json": { schema: unitSelectionBodySchema } },
+		},
+	},
+	responses: {
+		201: {
+			description: "The full Project with the counts of the bulk action",
+			content: {
+				"application/json": {
+					schema: z.object({ data: ProjectSchema, meta: applyMetaSchema }),
+				},
+			},
+		},
+		400: { description: "A filter given as an empty array or malformed" },
+		401: { description: "Unauthorized" },
+		404: {
+			description:
+				"The Catalogue Item, or a Block, Storey or Unit Type in the selection, is not in this Project",
+		},
+	},
+});
+registry.registerPath({
+	method: "post",
+	path: "/api/v1/projects/{id}/catalogue-items/{catalogueItemId}/items/remove",
+	summary: "Remove a Catalogue Item's Items from a set of Units",
+	description:
+		"Deletes the Item made from this Catalogue Item in every selected Unit that holds one, and by cascade every Progress entry those Items carried; the entries are counted inside the transaction before the delete. A Unit is selected when it matches every filter given; no filters selects every Unit of the Project. A selection holding none returns zeros.",
+	tags: ["Projects"],
+	security: [{ bearerAuth: [] }],
+	request: {
+		params: catalogueItemParametersSchema,
+		body: {
+			required: true,
+			content: { "application/json": { schema: unitSelectionBodySchema } },
+		},
+	},
+	responses: {
+		200: {
+			description: "The full Project with the counts of the bulk action",
+			content: {
+				"application/json": {
+					schema: z.object({ data: ProjectSchema, meta: removeMetaSchema }),
+				},
+			},
+		},
+		400: { description: "A filter given as an empty array or malformed" },
+		401: { description: "Unauthorized" },
+		404: {
+			description:
+				"The Catalogue Item, or a Block, Storey or Unit Type in the selection, is not in this Project",
+		},
+	},
+});
+
+const UnitItemSchema = registry.register("UnitItem", unitItemSchema);
+registry.registerPath({
+	method: "post",
+	path: "/api/v1/projects/{id}/assignments",
+	summary: "Assign a Catalogue Item's Items across a set of Units to one Subcontractor",
+	description:
+		"With a Subcontractor: assigns every selected unassigned Item made from the Catalogue Item and, with `reassign`, every Item assigned elsewhere too; Items already assigned to that Subcontractor are skipped. With `null`: unassigns every selected Item that has an Assignment. Neither touches an Item's Progression or its entries.",
+	tags: ["Projects"],
+	security: [{ bearerAuth: [] }],
+	request: {
+		params: projectParametersSchema,
+		body: {
+			required: true,
+			content: { "application/json": { schema: bulkAssignBodySchema } },
+		},
+	},
+	responses: {
+		200: {
+			description: "The full Project with the counts of the bulk action",
+			content: {
+				"application/json": {
+					schema: z.object({ data: ProjectSchema, meta: assignMetaSchema }),
+				},
+			},
+		},
+		400: {
+			description:
+				"Missing Catalogue Item or Subcontractor, or a filter given as an empty array or malformed",
+		},
+		401: { description: "Unauthorized" },
+		404: {
+			description:
+				"The Catalogue Item, or a Block, Storey or Unit Type in the selection, is not in this Project; or the Subcontractor does not exist",
+		},
+	},
+});
+registry.registerPath({
+	method: "patch",
+	path: "/api/v1/projects/{id}/items/{itemId}",
+	summary: "Set, change or clear one Item's Assignment",
+	tags: ["Projects"],
+	security: [{ bearerAuth: [] }],
+	request: {
+		params: itemParametersSchema,
+		body: {
+			required: true,
+			content: { "application/json": { schema: assignItemBodySchema } },
+		},
+	},
+	responses: {
+		200: {
+			description: "The Unit's Items, ordered by name key",
+			content: {
+				"application/json": {
+					schema: dataEnvelope(z.array(UnitItemSchema)),
+				},
+			},
+		},
+		400: { description: "subcontractorId must be a string or null" },
+		401: { description: "Unauthorized" },
+		404: {
+			description:
+				"The Item is not in this Project, or the Subcontractor does not exist",
+		},
+	},
+});
+registry.registerPath({
+	method: "get",
+	path: "/api/v1/projects/{id}/units/{unitId}/items",
+	summary: "Read a Unit's Items",
+	tags: ["Projects"],
+	security: [{ bearerAuth: [] }],
+	request: { params: unitParametersSchema },
+	responses: {
+		200: {
+			description:
+				"The Unit's Items with name, Assignment, Progression and latest entry, ordered by name key",
+			content: {
+				"application/json": {
+					schema: dataEnvelope(z.array(UnitItemSchema)),
+				},
+			},
+		},
+		401: { description: "Unauthorized" },
+		404: { description: "Unit not found in this Project" },
+	},
+});
+const ProgressEntrySchema = registry.register(
+	"ProgressEntry",
+	progressEntrySchema
+);
+registry.registerPath({
+	method: "post",
+	path: "/api/v1/projects/{id}/items/{itemId}/entries",
+	summary: "Enter a Progress entry on an Item",
+	description:
+		"Appends an entry and sets the Item's stored Progression to its value in one transaction. The author is the Administrator behind the token. A later value may be lower than the last. An Item with no Assignment accepts none.",
+	tags: ["Projects"],
+	security: [{ bearerAuth: [] }],
+	request: {
+		params: itemParametersSchema,
+		body: {
+			required: true,
+			content: { "application/json": { schema: progressEntryBodySchema } },
+		},
+	},
+	responses: {
+		201: {
+			description: "The Unit's Items, ordered by name key",
+			content: {
+				"application/json": {
+					schema: dataEnvelope(z.array(UnitItemSchema)),
+				},
+			},
+		},
+		400: {
+			description:
+				"value must be a whole number from 0 to 100; note, when given, 1 to 200 characters",
+		},
+		401: { description: "Unauthorized" },
+		404: { description: "The Item is not in this Project" },
+		409: { description: "ITEM_UNASSIGNED: the Item has no Assignment" },
+	},
+});
+registry.registerPath({
+	method: "get",
+	path: "/api/v1/projects/{id}/items/{itemId}/entries",
+	summary: "Read an Item's Progress entries, newest first",
+	tags: ["Projects"],
+	security: [{ bearerAuth: [] }],
+	request: { params: itemParametersSchema },
+	responses: {
+		200: {
+			description: "The Item's history, newest first",
+			content: {
+				"application/json": {
+					schema: dataEnvelope(z.array(ProgressEntrySchema)),
+				},
+			},
+		},
+		401: { description: "Unauthorized" },
+		404: { description: "The Item is not in this Project" },
 	},
 });
 
@@ -955,3 +1285,214 @@ for (const [method, body, status] of [
 		},
 	});
 }
+
+// ---------------------------------------------------------------------------
+// The Field (Member routes, ADR-0009)
+// ---------------------------------------------------------------------------
+
+registry.registerComponent("securitySchemes", "memberBearerAuth", {
+	type: "http",
+	scheme: "bearer",
+	bearerFormat: "JWT",
+	description:
+		"A Member token issued by POST /api/v1/field/sessions. Never accepted by Console routes, which never accept a Supabase token here either.",
+});
+
+const FieldMemberSchema = registry.register(
+	"FieldMember",
+	z.object({
+		id: z.string(),
+		name: z.string(),
+		subcontractor: z.object({ id: z.string(), name: z.string() }),
+	})
+);
+
+const MemberSessionSchema = registry.register(
+	"MemberSession",
+	z.object({
+		token: z.string().openapi({
+			description:
+				"HS256 JWT: issuer daedalus, audience field, subject the Member id, thirty-day expiry.",
+		}),
+		member: FieldMemberSchema,
+	})
+);
+
+registry.registerPath({
+	method: "post",
+	path: "/api/v1/field/sessions",
+	summary: "Sign a Member in to the Field by phone number",
+	tags: ["Field"],
+	request: {
+		body: {
+			content: {
+				"application/json": { schema: createMemberSessionBodySchema },
+			},
+		},
+	},
+	responses: {
+		200: {
+			description: "The Member token and the Member with its Subcontractor.",
+			content: {
+				"application/json": { schema: dataEnvelope(MemberSessionSchema) },
+			},
+		},
+		400: { description: "The phone number is blank." },
+		404: {
+			description:
+				"MEMBER_NOT_FOUND: no Member holds this phone number, or it cannot be a phone number.",
+		},
+		429: { description: "Rate limited." },
+	},
+});
+
+registry.registerPath({
+	method: "get",
+	path: "/api/v1/field/me",
+	summary: "The signed-in Member",
+	tags: ["Field"],
+	security: [{ memberBearerAuth: [] }],
+	responses: {
+		200: {
+			description: "The Member behind the token, with its Subcontractor.",
+			content: {
+				"application/json": { schema: dataEnvelope(FieldMemberSchema) },
+			},
+		},
+		401: {
+			description:
+				"The Member token is missing, invalid, expired, for another audience, Supabase-signed, or names a Member that has been removed.",
+		},
+	},
+});
+
+const FieldProjectRowSchema = registry.register(
+	"FieldProjectRow",
+	fieldProjectRowSchema
+);
+registry.registerPath({
+	method: "get",
+	path: "/api/v1/field/projects",
+	summary: "The Projects where the Member's Subcontractor holds Items",
+	tags: ["Field"],
+	security: [{ memberBearerAuth: [] }],
+	responses: {
+		200: {
+			description:
+				"Projects where the Subcontractor holds at least one Item, ordered by name key then id; itemCount and progression are over its Items alone. The Subcontractor is the Member's own, never one named by the request.",
+			content: {
+				"application/json": {
+					schema: dataEnvelope(z.array(FieldProjectRowSchema)),
+				},
+			},
+		},
+		401: { description: "A verified Member token is required." },
+	},
+});
+
+const FieldProjectSchema = registry.register("FieldProject", fieldProjectSchema);
+registry.registerPath({
+	method: "get",
+	path: "/api/v1/field/projects/{id}",
+	summary: "Walk a Project by Block, Storey and Unit",
+	tags: ["Field"],
+	security: [{ memberBearerAuth: [] }],
+	request: { params: fieldProjectParametersSchema },
+	responses: {
+		200: {
+			description:
+				"The Project's Blocks, Storeys and Units in Structure order (position then id), each with the Subcontractor's own itemCount and progression; every node where it holds no Item is omitted.",
+			content: {
+				"application/json": { schema: dataEnvelope(FieldProjectSchema) },
+			},
+		},
+		401: { description: "A verified Member token is required." },
+		404: {
+			description:
+				"No such Project, or the Subcontractor holds nothing in it; the two are indistinguishable.",
+		},
+	},
+});
+
+const FieldUnitItemsSchema = registry.register(
+	"FieldUnitItems",
+	fieldUnitItemsSchema
+);
+registry.registerPath({
+	method: "get",
+	path: "/api/v1/field/units/{unitId}/items",
+	summary: "Read a Unit's heading and the Subcontractor's Items there",
+	tags: ["Field"],
+	security: [{ memberBearerAuth: [] }],
+	request: { params: fieldUnitParametersSchema },
+	responses: {
+		200: {
+			description:
+				"The Unit's Project, Block, Storey and name, and the Member's Subcontractor's Items in it (name, Assignment, Progression, latest entry), ordered by name key. The Subcontractor is the Member's own, never one named by the request.",
+			content: {
+				"application/json": { schema: dataEnvelope(FieldUnitItemsSchema) },
+			},
+		},
+		401: { description: "A verified Member token is required." },
+		404: {
+			description:
+				"No such Unit, or the Subcontractor holds nothing in it; the two are indistinguishable.",
+		},
+	},
+});
+registry.registerPath({
+	method: "post",
+	path: "/api/v1/field/items/{itemId}/entries",
+	summary: "Enter a Progress entry on an Item as the Member",
+	description:
+		"Appends an entry and sets the Item's stored Progression to its value in one transaction, as the Console's route does. The author is the Member behind the token, with its Subcontractor's name snapshotted. A later value may be lower than the last.",
+	tags: ["Field"],
+	security: [{ memberBearerAuth: [] }],
+	request: {
+		params: fieldItemParametersSchema,
+		body: {
+			required: true,
+			content: { "application/json": { schema: progressEntryBodySchema } },
+		},
+	},
+	responses: {
+		201: {
+			description: "The Unit as the Field reads it, the Item's Progression now the value",
+			content: {
+				"application/json": { schema: dataEnvelope(FieldUnitItemsSchema) },
+			},
+		},
+		400: {
+			description:
+				"value must be a whole number from 0 to 100; note, when given, 1 to 200 characters",
+		},
+		401: { description: "A verified Member token is required." },
+		404: {
+			description:
+				"No such Item, or it is not assigned to the Member's Subcontractor (including an Item with no Assignment); the cases are indistinguishable.",
+		},
+	},
+});
+registry.registerPath({
+	method: "get",
+	path: "/api/v1/field/items/{itemId}/entries",
+	summary: "Read an Item's Progress entries as the Member, newest first",
+	tags: ["Field"],
+	security: [{ memberBearerAuth: [] }],
+	request: { params: fieldItemParametersSchema },
+	responses: {
+		200: {
+			description: "The Item's history, newest first",
+			content: {
+				"application/json": {
+					schema: dataEnvelope(z.array(ProgressEntrySchema)),
+				},
+			},
+		},
+		401: { description: "A verified Member token is required." },
+		404: {
+			description:
+				"No such Item, or it is not assigned to the Member's Subcontractor; the cases are indistinguishable.",
+		},
+	},
+});

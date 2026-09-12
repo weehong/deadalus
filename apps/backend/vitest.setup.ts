@@ -10,3 +10,7 @@ process.env["DATABASE_URL"] ??=
 // Supabase is only contacted through a stubbed `fetch` in tests; the URL just
 // has to be well-formed so the env schema accepts it.
 process.env["SUPABASE_URL"] ??= "https://example.supabase.co";
+// Member tokens are signed and verified in-process; any 32+ character string
+// lets the sign/verify pair round-trip in tests.
+process.env["MEMBER_TOKEN_SECRET"] ??=
+	"test-member-token-secret-with-at-least-32-characters";

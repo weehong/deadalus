@@ -102,6 +102,46 @@ test("a failed delete keeps the confirmation and supports retry without duplicat
 	).toBeVisible();
 });
 
+test("deleting a Subcontractor that holds Assignments is refused inline with the Item count", async ({
+	page,
+}) => {
+	await interceptSubcontractors(page, [
+		{
+			id: "acme",
+			name: "Acme Fitout",
+			members: [{ id: "alex", name: "Alex", phone: "+6591111111" }],
+			assignedItemCount: 12,
+		},
+	]);
+	await signIn(page);
+	await page.goto("/subcontractors/acme");
+	await page.getByRole("button", { name: "Delete", exact: true }).click();
+	const dialog = page.getByRole("dialog", { name: "Delete subcontractor?" });
+	await dialog.getByRole("button", { name: "Delete subcontractor" }).click();
+	await expect(dialog.getByRole("alert")).toHaveText(
+		"Cannot delete: 12 Items are still assigned to this Subcontractor. Unassign them first."
+	);
+	await expect(dialog).toContainText(
+		"Delete Acme Fitout and its 1 Member? This cannot be undone."
+	);
+	await expect(page).toHaveURL(/\/subcontractors\/acme$/);
+	await dialog.getByRole("button", { name: "Cancel" }).click();
+	await expect(dialog).toBeHidden();
+	await expect(
+		page.getByRole("heading", { name: "Acme Fitout", exact: true })
+	).toBeVisible();
+	await page.evaluate(() => localStorage.setItem("i18nextLng", "zh-CN"));
+	await page.reload();
+	await page.getByRole("button", { name: "删除", exact: true }).click();
+	await page
+		.getByRole("dialog", { name: "删除分包商？" })
+		.getByRole("button", { name: "删除分包商" })
+		.click();
+	await expect(page.getByRole("dialog").getByRole("alert")).toHaveText(
+		"无法删除：仍有 12 个物品分配给此分包商。请先取消分配。"
+	);
+});
+
 test("the confirmation names the Subcontractor and Member count in Chinese", async ({
 	page,
 }) => {

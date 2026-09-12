@@ -6,9 +6,31 @@ const storey = {
 	id: "s",
 	name: "01",
 	position: 0,
-	units: [{ id: "u", name: "A", position: 0, unitTypeId: "t" }],
+	itemCount: 0,
+	entryCount: 0,
+	progression: null,
+	units: [
+		{
+			id: "u",
+			name: "A",
+			position: 0,
+			itemCount: 2,
+			entryCount: 3,
+			progression: 40,
+			unitTypeId: "t",
+			items: [],
+		},
+	],
 };
-const block = { id: "b", name: "B", position: 0, storeys: [storey] };
+const block = {
+	id: "b",
+	name: "B",
+	position: 0,
+	itemCount: 0,
+	entryCount: 0,
+	progression: null,
+	storeys: [storey],
+};
 const types = [{ id: "t", code: "AS1", description: null, unitCount: 1 }];
 it("edits name and clears the type inline, returning focus to Edit", async () => {
 	const user = userEvent.setup();
@@ -24,6 +46,7 @@ it("edits name and clears the type inline, returning focus to Edit", async () =>
 		/>
 	);
 	expect(screen.getByText("AS1")).toBeVisible();
+	expect(screen.getByText("40%")).toBeVisible();
 	await user.click(screen.getByRole("button", { name: "Edit" }));
 	expect(screen.getByLabelText("Unit name")).toHaveFocus();
 	await user.clear(screen.getByLabelText("Unit name"));
@@ -50,7 +73,9 @@ it("cancels deletion back to its trigger and confirms deletion with a safe focus
 	);
 	const trigger = screen.getByRole("button", { name: "Delete" });
 	await user.click(trigger);
-	expect(screen.getByRole("dialog")).toHaveTextContent("Delete Unit A?");
+	expect(screen.getByRole("dialog")).toHaveTextContent(
+		"Delete Unit A and its 2 Items and 3 Progress entries?"
+	);
 	await user.click(
 		within(screen.getByRole("dialog")).getByRole("button", { name: "Cancel" })
 	);

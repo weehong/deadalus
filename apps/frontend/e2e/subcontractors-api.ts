@@ -1,17 +1,7 @@
 import type { Page } from "@playwright/test";
+import { normalizePhone } from "./fake-shared";
 
 // The fake implements the API contract on its own; it must not import backend source.
-/** Contract rule: strip separators, `00` becomes `+`, no `+` defaults to +65, then E.164 or null. */
-const normalizePhone = (input: string): string | null => {
-	const compact = input.replace(/[\s\-()[\].]/g, "");
-	const international = compact.startsWith("00")
-		? `+${compact.slice(2)}`
-		: compact;
-	const phone = international.startsWith("+")
-		? international
-		: `+65${international}`;
-	return /^\+[1-9]\d{7,14}$/.test(phone) ? phone : null;
-};
 /** Contract rule: Directory identity ignores case and collapses runs of whitespace. */
 const subcontractorNameKey = (name: string): string =>
 	name.trim().replace(/\s+/g, " ").toLowerCase();
@@ -26,6 +16,8 @@ export interface FakeSubcontractor {
 	id: string;
 	name: string;
 	members: Array<FakeMember>;
+	/** Items assigned to it elsewhere; while any remain, delete is refused. */
+	assignedItemCount?: number;
 }
 
 export const directoryFixtures = (): Array<FakeSubcontractor> =>
@@ -327,6 +319,20 @@ export const interceptSubcontractors = async (
 				(entry) => entry.id === decodeURIComponent(detailMatch[1] ?? "")
 			);
 			if (index !== -1) {
+				const itemCount = records[index]!.assignedItemCount ?? 0;
+				if (itemCount > 0) {
+					await route.fulfill({
+						status: 409,
+						json: {
+							error: {
+								code: "SUBCONTRACTOR_HAS_ASSIGNMENTS",
+								message: "Items are still assigned to this Subcontractor",
+								details: { itemCount },
+							},
+						},
+					});
+					return;
+				}
 				records.splice(index, 1);
 				await route.fulfill({ status: 204 });
 				return;

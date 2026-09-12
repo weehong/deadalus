@@ -58,6 +58,8 @@ readable error. Defaults make local development work out of the box.
 | `RATE_LIMIT_WINDOW_MS` | `900000` | Rate limit window (ms) |
 | `RATE_LIMIT_MAX` | `100` | Max requests per window per IP |
 | `DATABASE_URL` | local Postgres | Prisma PostgreSQL connection string |
+| `SUPABASE_URL` | — (required) | Supabase project URL; Administrator tokens verify against its JWKS |
+| `MEMBER_TOKEN_SECRET` | — (required) | Signs the Field's Member tokens (HS256); at least 32 characters |
 
 ## Important Notes
 

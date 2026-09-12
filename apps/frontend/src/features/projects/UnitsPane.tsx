@@ -1,9 +1,10 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { ApiRequestError } from "@/common/api";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Alert } from "@/components/ui/Alert";
+import { ProgressionBadge } from "@/components/progress/ProgressionBadge";
 import { UnitCard } from "@/features/projects/UnitCard";
 import {
 	UnitBatchForm,
@@ -17,6 +18,7 @@ export const UnitsPane = ({
 	storey,
 	unitTypes,
 	pending = false,
+	renderUnitDetails,
 	onAdd,
 	onEdit,
 	onDelete,
@@ -25,6 +27,8 @@ export const UnitsPane = ({
 	storey?: Storey;
 	unitTypes: Array<UnitType>;
 	pending?: boolean;
+	/** What each Unit card shows below its name row, such as its Items. */
+	renderUnitDetails?: (unit: Unit) => ReactNode;
 	onAdd: (body: UnitBatchInput) => Promise<unknown>;
 	onEdit: (id: string, body: UnitEditInput) => Promise<unknown>;
 	onDelete: (id: string) => Promise<unknown>;
@@ -237,6 +241,8 @@ export const UnitsPane = ({
 							</form>
 						) : (
 							<UnitCard
+								badge={<ProgressionBadge progression={unit.progression} />}
+								details={renderUnitDetails?.(unit)}
 								name={unit.name}
 								actions={
 									<div className="flex gap-2">
@@ -294,7 +300,13 @@ export const UnitsPane = ({
 					if (!pending) setDeleting(undefined);
 				}}
 			>
-				<p>{t("projects.units.deleteConfirm", { name: deleting?.name })}</p>
+				<p>
+					{t("projects.units.deleteConfirm", {
+						name: deleting?.name,
+						items: deleting?.itemCount ?? 0,
+						entries: deleting?.entryCount ?? 0,
+					})}
+				</p>
 				{failure && <Alert>{failure}</Alert>}
 				<div className="mt-4 flex gap-3">
 					<Button

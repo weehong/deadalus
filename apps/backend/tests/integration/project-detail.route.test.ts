@@ -2,9 +2,11 @@ import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { createSigningKey, sign, stubJwks } from "../helpers/supabase-jwt.js";
 const findUnique = vi.fn();
+const findMany = vi.fn(async (): Promise<Array<unknown>> => []);
 vi.mock("@/lib/prisma.js", () => ({
-	prisma: { project: { findUnique } },
+	prisma: { project: { findUnique }, item: { findMany } },
 }));
+const noItems = { itemCount: 0, entryCount: 0, progression: null };
 let app: import("express").Application;
 let token: string;
 beforeAll(async () => {
@@ -40,6 +42,7 @@ describe("Project screen over HTTP", () => {
 			unitTypes: [
 				{ id: "t", code: "AS1", description: null, _count: { units: 1 } },
 			],
+			catalogueItems: [{ id: "c", name: "Sink", _count: { items: 0 } }],
 		});
 		const response = await request(app)
 			.get("/api/v1/projects/acme")
@@ -50,11 +53,117 @@ describe("Project screen over HTTP", () => {
 				id: "acme",
 				name: "Gardens",
 				code: "EG2",
-				blocks,
+				...noItems,
+				blocks: blocks.map((block) => ({
+					...block,
+					...noItems,
+					storeys: block.storeys.map((storey) => ({
+						...storey,
+						...noItems,
+						units: storey.units.map((unit) => ({
+							...unit,
+							...noItems,
+							items: [],
+						})),
+					})),
+				})),
 				unitTypes: [{ id: "t", code: "AS1", description: null, unitCount: 1 }],
+				catalogueItems: [{ id: "c", name: "Sink", itemCount: 0 }],
 			},
 		});
 	});
+});
+
+it("rolls the stored Item Progression and entry counts up every level, null where a node holds no Items", async () => {
+	const unit = (id: string): Record<string, unknown> => ({
+		id,
+		name: id,
+		position: 0,
+		unitTypeId: null,
+	});
+	findUnique.mockResolvedValue({
+		id: "acme",
+		name: "Gardens",
+		code: "EG2",
+		blocks: [
+			{
+				id: "a",
+				name: "A",
+				position: 0,
+				storeys: [
+					{
+						id: "a1",
+						name: "01",
+						position: 0,
+						units: [unit("u1"), unit("u2")],
+					},
+					{ id: "a2", name: "02", position: 1, units: [unit("u3")] },
+				],
+			},
+			{
+				id: "b",
+				name: "B",
+				position: 1,
+				storeys: [{ id: "b1", name: "01", position: 0, units: [unit("u4")] }],
+			},
+		],
+		unitTypes: [],
+		catalogueItems: [],
+	});
+	// u1 holds a Sink at 80 (two entries) and an unassigned Wardrobe at 0;
+	// u3 holds a Sink at 40 (one entry); u2, u4 and every node of Block B hold nothing.
+	const row = (
+		unitId: string,
+		catalogueItemId: string,
+		progression: number,
+		entries: number
+	): Record<string, unknown> => ({
+		unitId,
+		catalogueItemId,
+		subcontractorId: null,
+		progression,
+		_count: { entries },
+	});
+	findMany.mockResolvedValueOnce([
+		row("u1", "sink", 80, 2),
+		row("u1", "wardrobe", 0, 0),
+		row("u3", "sink", 40, 1),
+	]);
+	const response = await request(app)
+		.get("/api/v1/projects/acme")
+		.set("Authorization", `Bearer ${token}`);
+	expect(response.status).toBe(200);
+	expect(response.body.data).toMatchObject({
+		itemCount: 3,
+		entryCount: 3,
+		progression: 40,
+	});
+	const [a, b] = response.body.data.blocks;
+	expect(a).toMatchObject({ itemCount: 3, entryCount: 3, progression: 40 });
+	expect(a.storeys[0]).toMatchObject({
+		itemCount: 2,
+		entryCount: 2,
+		progression: 40,
+	});
+	expect(a.storeys[0].units[0]).toMatchObject({
+		itemCount: 2,
+		entryCount: 2,
+		progression: 40,
+	});
+	expect(a.storeys[0].units[1]).toMatchObject(noItems);
+	expect(a.storeys[1]).toMatchObject({
+		itemCount: 1,
+		entryCount: 1,
+		progression: 40,
+	});
+	expect(a.storeys[1].units[0]).toMatchObject({
+		itemCount: 1,
+		entryCount: 1,
+		progression: 40,
+	});
+	expect(b).toMatchObject(noItems);
+	expect(b.storeys[0]).toMatchObject(noItems);
+	expect(b.storeys[0].units[0]).toMatchObject(noItems);
 });
 
 it.each([undefined, "invalid-token"])(
@@ -146,6 +255,7 @@ it("orders every Structure list by position then id and the catalogue by code ke
 		code: "OR",
 		name: "Ordered",
 		blocks: [block("b3", 2), block("b2", 1), block("b1", 1)],
+		catalogueItems: [],
 		unitTypes: [
 			{
 				id: "t2",

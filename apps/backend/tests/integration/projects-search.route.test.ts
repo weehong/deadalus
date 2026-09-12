@@ -6,6 +6,7 @@ const count = vi.fn();
 vi.mock("@/lib/prisma.js", () => ({
 	prisma: {
 		project: { findMany, count },
+		item: { findMany: async () => [] },
 		$transaction: (queries: Array<Promise<unknown>>) => Promise.all(queries),
 	},
 }));
@@ -98,6 +99,8 @@ describe("Project search over HTTP", () => {
 					blockCount: 0,
 					storeyCount: 0,
 					unitCount: 0,
+					itemCount: 0,
+					progression: null,
 				},
 			]);
 			expect(response.body.meta).toEqual({ page: 1, pageSize: 20, total: 1 });

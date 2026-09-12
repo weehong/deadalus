@@ -3,7 +3,10 @@ import { ProjectForm } from "@/features/projects/ProjectForm";
 import { DeleteProjectDialog } from "@/features/projects/DeleteProjectDialog";
 import { useEditProject } from "@/features/projects/useEditProject";
 import { useDeleteProject } from "@/features/projects/useDeleteProject";
-import type { ProjectValues, ProjectFailure } from "@/features/projects/formSchemas";
+import type {
+	ProjectValues,
+	ProjectFailure,
+} from "@/features/projects/formSchemas";
 import { Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Page } from "@/components/layout/Page";
@@ -106,7 +109,9 @@ export const ProjectLayout = ({ id }: { id: string }): React.ReactElement => {
 					)}
 					<DeleteProjectDialog
 						blockCount={query.data.blocks.length}
+						entryCount={query.data.entryCount}
 						error={deletion.isError}
+						itemCount={query.data.itemCount}
 						name={query.data.name}
 						open={deleting}
 						pending={deletion.isPending}
@@ -156,6 +161,17 @@ export const ProjectLayout = ({ id }: { id: string }): React.ReactElement => {
 							}}
 						>
 							{t("projects.detail.unitTypes")}
+						</Link>
+						<Link
+							className="py-3"
+							params={{ id }}
+							to="/projects/$id/items"
+							activeProps={{
+								"aria-current": "page",
+								className: "border-b-2 border-ink font-semibold",
+							}}
+						>
+							{t("projects.detail.items")}
 						</Link>
 					</nav>
 					<Outlet />

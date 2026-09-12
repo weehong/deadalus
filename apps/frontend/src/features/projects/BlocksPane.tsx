@@ -1,9 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { ApiRequestError } from "@/common/api";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { Dialog } from "@/components/ui/Dialog";
+import { ProgressionBadge } from "@/components/progress/ProgressionBadge";
 import { StructurePane } from "@/features/projects/StructurePane";
 import { BatchNamesForm } from "@/features/projects/BatchNamesForm";
 import { nameKey } from "@/features/projects/name-generator";
@@ -11,6 +12,7 @@ import type { Block } from "@/features/projects/types";
 export const BlocksPane = ({
 	blocks,
 	extraActions,
+	renderBlockAction,
 	selectedId,
 	pending = false,
 	error,
@@ -21,6 +23,8 @@ export const BlocksPane = ({
 }: {
 	blocks: Array<Block>;
 	extraActions?: React.ReactNode;
+	/** An action of the screen's own beside each Block's Rename and Delete. */
+	renderBlockAction?: (block: Block) => ReactNode;
 	selectedId?: string;
 	pending?: boolean;
 	error?: string;
@@ -163,7 +167,8 @@ export const BlocksPane = ({
 						</Button>
 					</form>
 				) : (
-					<div className="flex gap-2 px-3 pb-3">
+					<div className="flex flex-wrap gap-2 px-3 pb-3">
+						{renderBlockAction?.(block)}
 						<Button
 							disabled={pending}
 							variant="secondary"
@@ -198,6 +203,7 @@ export const BlocksPane = ({
 						0
 					),
 				}),
+				badge: <ProgressionBadge progression={block.progression} />,
 			}))}
 			onSelect={onSelect}
 		>
@@ -277,6 +283,8 @@ export const BlocksPane = ({
 								(total, storey) => total + storey.units.length,
 								0
 							) ?? 0,
+						items: deleting?.itemCount ?? 0,
+						entries: deleting?.entryCount ?? 0,
 					})}
 				</p>
 				{failure && <Alert>{failure}</Alert>}

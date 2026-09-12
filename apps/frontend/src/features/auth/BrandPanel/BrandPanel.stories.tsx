@@ -9,7 +9,7 @@ const meta = {
 		kicker: "Administrator console",
 		headline: "Furniture fitout, unit by unit.",
 		blurb:
-			"Set out projects, blocks, storeys and units. Assign items to subcontractors, then read completion back off the QR codes on site.",
+			"Set out projects, blocks, storeys and units. Assign items to subcontractors, then read progression back off the QR labels on site.",
 		hierarchy: ["Projects", "Blocks", "Storeys", "Units"],
 	},
 } satisfies Meta<typeof BrandPanel>;

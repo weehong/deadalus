@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import type { PaginationMeta } from "@/common/api";
 import { Button } from "@/components/ui/Button";
 import type { ProjectRow } from "@/features/projects/api";
+import { ProgressionBadge } from "@/components/progress/ProgressionBadge";
 
 interface ProjectsTableProps {
 	data: Array<ProjectRow>;
@@ -45,6 +46,10 @@ export const ProjectsTable = ({
 			header: t("projects.columns.storeys"),
 		}),
 		columnHelper.accessor("unitCount", { header: t("projects.columns.units") }),
+		columnHelper.accessor("progression", {
+			header: t("projects.columns.progression"),
+			cell: (info) => <ProgressionBadge progression={info.getValue()} />,
+		}),
 	];
 	// eslint-disable-next-line react-hooks/incompatible-library
 	const table = useReactTable({

@@ -33,6 +33,33 @@ import {
 	deleteBlockController,
 } from "@/controllers/blocks.controller.js";
 import { projectParametersSchema } from "@/schemas/project-detail.schema.js";
+import {
+	addCatalogueItemController,
+	renameCatalogueItemController,
+	deleteCatalogueItemController,
+	applyCatalogueItemController,
+	removeCatalogueItemController,
+} from "@/controllers/catalogue-items.controller.js";
+import {
+	catalogueItemBodySchema,
+	catalogueItemParametersSchema,
+} from "@/schemas/catalogue-items.schema.js";
+import { unitSelectionBodySchema } from "@/schemas/unit-selection.schema.js";
+import {
+	assignItemController,
+	bulkAssignController,
+} from "@/controllers/assignments.controller.js";
+import { readUnitItemsController } from "@/controllers/unit-items.controller.js";
+import {
+	assignItemBodySchema,
+	bulkAssignBodySchema,
+	itemParametersSchema,
+} from "@/schemas/assignments.schema.js";
+import {
+	enterProgressController,
+	readProgressEntriesController,
+} from "@/controllers/progress-entries.controller.js";
+import { progressEntryBodySchema } from "@/schemas/progress-entries.schema.js";
 import { Router } from "express";
 import { requireAuth } from "@/middlewares/require-auth.js";
 import { validate } from "@/middlewares/validate.js";
@@ -122,6 +149,67 @@ projectsRouter.delete(
 	"/:id/unit-types/:unitTypeId",
 	validate({ params: unitTypeParametersSchema }),
 	deleteUnitTypeController
+);
+
+projectsRouter.post(
+	"/:id/catalogue-items",
+	validate({ params: projectParametersSchema, body: catalogueItemBodySchema }),
+	addCatalogueItemController
+);
+projectsRouter.patch(
+	"/:id/catalogue-items/:catalogueItemId",
+	validate({
+		params: catalogueItemParametersSchema,
+		body: catalogueItemBodySchema,
+	}),
+	renameCatalogueItemController
+);
+projectsRouter.delete(
+	"/:id/catalogue-items/:catalogueItemId",
+	validate({ params: catalogueItemParametersSchema }),
+	deleteCatalogueItemController
+);
+projectsRouter.post(
+	"/:id/catalogue-items/:catalogueItemId/items",
+	validate({
+		params: catalogueItemParametersSchema,
+		body: unitSelectionBodySchema,
+	}),
+	applyCatalogueItemController
+);
+projectsRouter.post(
+	"/:id/catalogue-items/:catalogueItemId/items/remove",
+	validate({
+		params: catalogueItemParametersSchema,
+		body: unitSelectionBodySchema,
+	}),
+	removeCatalogueItemController
+);
+
+projectsRouter.post(
+	"/:id/assignments",
+	validate({ params: projectParametersSchema, body: bulkAssignBodySchema }),
+	bulkAssignController
+);
+projectsRouter.patch(
+	"/:id/items/:itemId",
+	validate({ params: itemParametersSchema, body: assignItemBodySchema }),
+	assignItemController
+);
+projectsRouter.get(
+	"/:id/units/:unitId/items",
+	validate({ params: unitParametersSchema }),
+	readUnitItemsController
+);
+projectsRouter.post(
+	"/:id/items/:itemId/entries",
+	validate({ params: itemParametersSchema, body: progressEntryBodySchema }),
+	enterProgressController
+);
+projectsRouter.get(
+	"/:id/items/:itemId/entries",
+	validate({ params: itemParametersSchema }),
+	readProgressEntriesController
 );
 
 projectsRouter.post(

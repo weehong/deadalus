@@ -1,4 +1,5 @@
 import type { Route } from "@playwright/test";
+import { fullProject } from "./catalogue-items-api";
 import type { FakeProject } from "./projects-api";
 import type { StructureBody } from "../src/features/projects/matrix-to-structure";
 export async function handleStructure(
@@ -63,19 +64,6 @@ export async function handleStructure(
 			}),
 		})),
 	}));
-	await route.fulfill({
-		status: 201,
-		json: {
-			data: {
-				...project,
-				unitTypes: project.unitTypes.map((type) => ({
-					...type,
-					unitCount: project.blocks
-						.flatMap((block) => block.storeys.flatMap((storey) => storey.units))
-						.filter((unit) => unit.unitTypeId === type.id).length,
-				})),
-			},
-		},
-	});
+	await route.fulfill({ status: 201, json: { data: fullProject(project) } });
 	return true;
 }

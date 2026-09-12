@@ -1,39 +1,8 @@
 import type { Route } from "@playwright/test";
 import type { FakeProject } from "./projects-api";
-import type { Project } from "../src/features/projects/types";
+import { fullProject } from "./catalogue-items-api";
 
 const codeKey = (code: string): string => code.replace(/\s/g, "").toUpperCase();
-const fullProject = (project: FakeProject): Project => {
-	const ordered = <T extends { id: string; position: number }>(
-		rows: Array<T>
-	): Array<T> =>
-		[...rows].sort(
-			(a, b) => a.position - b.position || a.id.localeCompare(b.id)
-		);
-	const units = project.blocks
-		.flatMap((block) => block.storeys)
-		.flatMap((storey) => storey.units);
-	return {
-		...project,
-		blocks: ordered(project.blocks).map((block) => ({
-			...block,
-			storeys: ordered(block.storeys).map((storey) => ({
-				...storey,
-				units: ordered(storey.units),
-			})),
-		})),
-		unitTypes: [...project.unitTypes]
-			.sort(
-				(a, b) =>
-					codeKey(a.code).localeCompare(codeKey(b.code)) ||
-					a.id.localeCompare(b.id)
-			)
-			.map((type) => ({
-				...type,
-				unitCount: units.filter((unit) => unit.unitTypeId === type.id).length,
-			})),
-	};
-};
 export const handleUnitTypes = async (
 	route: Route,
 	records: Array<FakeProject>

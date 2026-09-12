@@ -3,6 +3,8 @@ interface StructureRow {
 	id: string;
 	name: string;
 	detail: string;
+	/** Shown at the end of the row, inside its button: the row's Progression. */
+	badge?: ReactNode;
 }
 interface StructurePaneProps {
 	heading: string;
@@ -39,14 +41,17 @@ export const StructurePane = ({
 					<li key={row.id} className="border-b border-rule last:border-0">
 						<button
 							aria-current={selectedId === row.id ? "true" : undefined}
-							className={`w-full p-4 text-left break-words ${selectedId === row.id ? "bg-ink text-canvas" : "hover:bg-surface"}`}
+							className={`flex w-full items-start justify-between gap-3 p-4 text-left break-words ${selectedId === row.id ? "bg-ink text-canvas" : "hover:bg-surface"}`}
 							type="button"
 							onClick={(): void => {
 								onSelect(row.id);
 							}}
 						>
-							<span className="block font-semibold">{row.name}</span>{" "}
-							<span className="text-sm">{row.detail}</span>
+							<span className="min-w-0">
+								<span className="block font-semibold">{row.name}</span>{" "}
+								<span className="text-sm">{row.detail}</span>
+							</span>{" "}
+							{row.badge}
 						</button>
 						{renderActions?.(row.id)}
 					</li>

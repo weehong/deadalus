@@ -32,6 +32,7 @@ model Subcontractor {
   name      String
   nameKey   String   @unique
   members   Member[]
+  items     Item[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -52,14 +53,15 @@ model Member {
 }
 
 model Project {
-  id        String     @id @default(cuid())
-  name      String
-  nameKey   String     @unique
-  code      String     @unique
-  blocks    Block[]
-  unitTypes UnitType[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id             String          @id @default(cuid())
+  name           String
+  nameKey        String          @unique
+  code           String          @unique
+  blocks         Block[]
+  unitTypes      UnitType[]
+  catalogueItems CatalogueItem[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   @@map("projects")
 }
@@ -105,6 +107,7 @@ model Unit {
   name       String
   nameKey    String
   position   Int
+  items      Item[]
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
@@ -127,4 +130,65 @@ model UnitType {
 
   @@unique([projectId, codeKey])
   @@map("unit_types")
+}
+
+/// Who made a Progress entry: an Administrator (Supabase subject) or a Member.
+enum ProgressAuthorKind {
+  administrator
+  member
+}
+
+/// One entry in a Project's Item Catalogue (ADR-0008): a name and nothing else.
+model CatalogueItem {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name      String
+  nameKey   String
+  items     Item[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, nameKey])
+  @@map("catalogue_items")
+}
+
+/// A per-Unit copy made from a Catalogue Item, carrying its own Assignment
+/// (the Subcontractor reference and `assignedAt`) and stored Progression.
+model Item {
+  id              String          @id @default(cuid())
+  unitId          String
+  unit            Unit            @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  catalogueItemId String
+  catalogueItem   CatalogueItem   @relation(fields: [catalogueItemId], references: [id], onDelete: Restrict)
+  subcontractorId String?
+  subcontractor   Subcontractor?  @relation(fields: [subcontractorId], references: [id], onDelete: Restrict)
+  assignedAt      DateTime?
+  progression     Int             @default(0)
+  entries         ProgressEntry[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@unique([unitId, catalogueItemId])
+  @@index([catalogueItemId])
+  @@index([subcontractorId])
+  @@index([unitId])
+  @@map("items")
+}
+
+/// Append-only history of an Item's Progression; the latest entry is the Progression.
+model ProgressEntry {
+  id                String             @id @default(cuid())
+  itemId            String
+  item              Item               @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  value             Int
+  note              String?
+  enteredByKind     ProgressAuthorKind
+  enteredById       String
+  enteredByName     String
+  subcontractorName String?
+  createdAt         DateTime           @default(now())
+
+  @@index([itemId, createdAt, id])
+  @@map("progress_entries")
 }

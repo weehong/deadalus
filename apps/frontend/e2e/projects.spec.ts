@@ -13,11 +13,21 @@ test("Projects is the active entry and lists codes and counts in name order with
 	await expect(
 		page.getByRole("link", { name: "Projects", exact: true })
 	).toHaveAttribute("aria-current", "page");
-	for (const name of ["Code", "Project", "Blocks", "Storeys", "Units"])
+	for (const name of [
+		"Code",
+		"Project",
+		"Blocks",
+		"Storeys",
+		"Units",
+		"Progression",
+	])
 		await expect(
 			page.getByRole("columnheader", { name, exact: true })
 		).toBeVisible();
-	await expect(page.getByRole("row").nth(1)).toHaveText("P01Project 01111");
+	// A Project with no Items has a blank Progression that reads "No Items".
+	await expect(page.getByRole("row").nth(1)).toHaveText(
+		"P01Project 01111No Items"
+	);
 	await expect(page.getByText("Page 1 of 2 · 21 projects")).toBeVisible();
 	await page.getByRole("button", { name: "Next", exact: true }).click();
 	await expect(page.getByText("Page 2 of 2 · 21 projects")).toBeVisible();

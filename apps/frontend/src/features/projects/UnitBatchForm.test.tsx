@@ -3,14 +3,44 @@ import userEvent from "@testing-library/user-event";
 import { it, expect, vi } from "vitest";
 import { UnitBatchForm } from "@/features/projects/UnitBatchForm";
 const storeys = [
-	{ id: "s1", name: "01", position: 0, units: [] },
+	{
+		id: "s1",
+		name: "01",
+		position: 0,
+		itemCount: 0,
+		entryCount: 0,
+		progression: null,
+		units: [],
+	},
 	{
 		id: "s2",
 		name: "02",
 		position: 1,
-		units: [{ id: "u", name: "A", position: 0, unitTypeId: null }],
+		itemCount: 0,
+		entryCount: 0,
+		progression: null,
+		units: [
+			{
+				id: "u",
+				name: "A",
+				position: 0,
+				itemCount: 0,
+				entryCount: 0,
+				progression: null,
+				unitTypeId: null,
+				items: [],
+			},
+		],
 	},
-	{ id: "s3", name: "03", position: 2, units: [] },
+	{
+		id: "s3",
+		name: "03",
+		position: 2,
+		itemCount: 0,
+		entryCount: 0,
+		progression: null,
+		units: [],
+	},
 ];
 const types = [{ id: "t", code: "AS1", description: null, unitCount: 0 }];
 it("preselects the current Storey and marks clashes in any selected Storey", async () => {
@@ -51,6 +81,9 @@ it("refuses no selected Storeys and the multiplied product beyond 2000", async (
 				id: `s${index + 1}`,
 				name: String(index + 1),
 				position: index,
+				itemCount: 0,
+				entryCount: 0,
+				progression: null,
 				units: [],
 			}))}
 			onCancel={vi.fn()}

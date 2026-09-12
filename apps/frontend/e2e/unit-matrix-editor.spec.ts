@@ -92,10 +92,10 @@ test("edits cells and Storeys, inserts and removes rows and Stacks, prevents dup
 			.filter({ hasText: "Empty Storeys omitted: West / 02" })
 	).toBeVisible();
 	await expect(
-		page.getByRole("button", { name: "Ground 6 units", exact: true })
+		page.getByRole("button", { name: "Ground 6 units No Items", exact: true })
 	).toBeVisible();
 	await page
-		.getByRole("button", { name: "Ground 6 units", exact: true })
+		.getByRole("button", { name: "Ground 6 units No Items", exact: true })
 		.click();
 	const blocksPane = page.getByRole("region", { name: "Blocks", exact: true });
 	await blocksPane.getByRole("button", { name: "Rename", exact: true }).click();
@@ -103,7 +103,7 @@ test("edits cells and Storeys, inserts and removes rows and Stacks, prevents dup
 	await blocksPane.getByLabel("Block name", { exact: true }).press("Enter");
 	await expect(
 		blocksPane.getByRole("button", {
-			name: "Renamed 1 storeys · 6 units",
+			name: "Renamed 1 storeys · 6 units No Items",
 			exact: true,
 		})
 	).toBeVisible();

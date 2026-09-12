@@ -18,3 +18,4 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 export const Pending: Story = { args: { pending: true } };
 export const Failed: Story = { args: { error: true } };
+export const Refused: Story = { args: { assignedItemCount: 12 } };

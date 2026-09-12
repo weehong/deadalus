@@ -16,7 +16,7 @@ export const WithActions: Story = {
 	args: {
 		actions: (
 			<>
-				<Button variant="secondary">QR sheets</Button>
+				<Button variant="secondary">Print QR labels</Button>
 				<Button>New project</Button>
 			</>
 		),

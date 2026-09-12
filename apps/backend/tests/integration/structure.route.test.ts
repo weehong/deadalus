@@ -3,6 +3,7 @@ import { beforeAll, beforeEach, afterAll, expect, it, vi } from "vitest";
 import { createSigningKey, sign, stubJwks } from "../helpers/supabase-jwt.js";
 const db = {
 	project: { findUnique: vi.fn() },
+	item: { findMany: vi.fn() },
 	block: { count: vi.fn(), createMany: vi.fn() },
 	storey: { createMany: vi.fn() },
 	unit: { createMany: vi.fn() },
@@ -20,7 +21,9 @@ const project = {
 	code: "EG",
 	blocks: [],
 	unitTypes: [],
+	catalogueItems: [],
 };
+const noItems = { itemCount: 0, entryCount: 0, progression: null };
 const body = {
 	blocks: [
 		{
@@ -49,6 +52,7 @@ afterAll(() => vi.unstubAllGlobals());
 beforeEach(() => {
 	vi.clearAllMocks();
 	db.project.findUnique.mockResolvedValue(project);
+	db.item.findMany.mockResolvedValue([]);
 	db.block.count.mockResolvedValue(0);
 	db.unitType.findMany.mockResolvedValue([{ id: "existing", codeKey: "A1" }]);
 });
@@ -158,7 +162,7 @@ it.each([
 it("creates ordered rows atomically, reuses code keys and preserves first spelling", async () => {
 	const response = await send(body);
 	expect(response.status).toBe(201);
-	expect(response.body.data).toEqual(project);
+	expect(response.body.data).toEqual({ ...project, ...noItems });
 	expect(transaction).toHaveBeenCalledWith(
 		expect.any(Function),
 		expect.objectContaining({ isolationLevel: "Serializable" })

@@ -57,7 +57,7 @@ test("adds single, range and list Blocks, marks clashes, renames and deletes", a
 		});
 	await renamed.getByRole("button", { name: "Delete" }).click();
 	await expect(page.getByRole("dialog")).toContainText(
-		"Delete Block Renamed and its 0 storeys and 0 units?"
+		"Delete Block Renamed and its 0 Storeys, 0 Units, 0 Items and 0 Progress entries?"
 	);
 	await page
 		.getByRole("dialog")

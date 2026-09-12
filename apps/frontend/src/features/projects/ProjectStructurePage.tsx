@@ -6,8 +6,14 @@ import { useTranslation } from "react-i18next";
 import { StoreysPane } from "@/features/projects/StoreysPane";
 import { useStoreyMutations } from "@/features/projects/useStoreyMutations";
 import { UnitsPane } from "@/features/projects/UnitsPane";
+import { UnitItems } from "@/features/projects/UnitItems";
 import { useUnitMutations } from "@/features/projects/useUnitMutations";
 import { useProjectQuery } from "@/features/projects/useProjectQuery";
+
+/** A Link wearing the secondary Button's clothes; both print actions are links. */
+const PRINT_ACTION =
+	"inline-flex min-h-10 items-center justify-center border border-rule px-3 py-2 font-heading text-sm font-semibold leading-tight text-ink transition hover:bg-ink/7 active:bg-ink/14";
+
 export interface StructureSearch {
 	imported?: boolean;
 	importedOmitted?: Array<string>;
@@ -90,7 +96,15 @@ export const ProjectStructurePage = ({
 					})}
 				</p>
 			)}
-			<div className="mb-4 flex flex-wrap gap-3">
+			<div className="mb-4 flex flex-wrap items-center gap-3">
+				<Link
+					className={PRINT_ACTION}
+					params={{ id }}
+					search={{}}
+					to="/projects/$id/qr-labels"
+				>
+					{t("projects.qrLabels.action")}
+				</Link>
 				{project.blocks.length > 0 ? (
 					<>
 						<button
@@ -131,6 +145,19 @@ export const ProjectStructurePage = ({
 						mutations.rename.isPending ||
 						mutations.remove.isPending
 					}
+					renderBlockAction={(entry): React.ReactElement => (
+						<Link
+							className={PRINT_ACTION}
+							params={{ id }}
+							search={{ block: entry.id }}
+							to="/projects/$id/qr-labels"
+							aria-label={t("projects.qrLabels.actionForBlock", {
+								name: entry.name,
+							})}
+						>
+							{t("projects.qrLabels.action")}
+						</Link>
+					)}
 					onAdd={(names): Promise<unknown> => mutations.add.mutateAsync(names)}
 					onDelete={(blockId): Promise<unknown> =>
 						mutations.remove.mutateAsync(blockId)
@@ -187,6 +214,9 @@ export const ProjectStructurePage = ({
 						unitMutations.edit.isPending ||
 						unitMutations.remove.isPending
 					}
+					renderUnitDetails={(unit) => (
+						<UnitItems projectId={id} unitId={unit.id} />
+					)}
 					onAdd={(body) => unitMutations.add.mutateAsync(body)}
 					onDelete={(unitId) => unitMutations.remove.mutateAsync(unitId)}
 					onEdit={(unitId, body) =>

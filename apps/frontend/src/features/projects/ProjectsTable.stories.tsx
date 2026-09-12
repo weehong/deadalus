@@ -14,6 +14,8 @@ const meta = {
 				blockCount: 2,
 				storeyCount: 4,
 				unitCount: 8,
+				itemCount: 16,
+				progression: 62.5,
 			},
 			{
 				id: "klw",
@@ -22,6 +24,8 @@ const meta = {
 				blockCount: 0,
 				storeyCount: 0,
 				unitCount: 0,
+				itemCount: 0,
+				progression: null,
 			},
 		],
 		meta: { page: 1, pageSize: 20, total: 21 },

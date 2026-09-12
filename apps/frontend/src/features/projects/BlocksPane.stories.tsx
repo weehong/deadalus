@@ -4,7 +4,17 @@ const meta = {
 	title: "Projects/BlocksPane",
 	component: BlocksPane,
 	args: {
-		blocks: [{ id: "a", name: "A", position: 0, storeys: [] }],
+		blocks: [
+			{
+				id: "a",
+				name: "A",
+				position: 0,
+				itemCount: 0,
+				entryCount: 0,
+				progression: null,
+				storeys: [],
+			},
+		],
 		selectedId: "a",
 		onSelect: (): void => undefined,
 		onAdd: (): Promise<void> => Promise.resolve(),

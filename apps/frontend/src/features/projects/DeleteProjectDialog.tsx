@@ -9,6 +9,8 @@ export const DeleteProjectDialog = ({
 	blockCount,
 	storeyCount,
 	unitCount,
+	itemCount,
+	entryCount,
 	pending,
 	error,
 	onCancel,
@@ -19,6 +21,8 @@ export const DeleteProjectDialog = ({
 	blockCount: number;
 	storeyCount: number;
 	unitCount: number;
+	itemCount: number;
+	entryCount: number;
 	pending: boolean;
 	error: boolean;
 	onCancel: () => void;
@@ -39,6 +43,8 @@ export const DeleteProjectDialog = ({
 					blockCount,
 					storeyCount,
 					unitCount,
+					itemCount,
+					entryCount,
 				})}
 			</p>
 			{error && <Alert>{t("projects.delete.error")}</Alert>}

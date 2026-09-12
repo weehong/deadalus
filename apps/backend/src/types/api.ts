@@ -1,7 +1,7 @@
-/** Successful response envelope. */
-export interface ApiResponse<T> {
+/** Successful response envelope; `meta` carries page metadata or the counts of a bulk action. */
+export interface ApiResponse<T, M = PaginationMeta> {
 	readonly data: T;
-	readonly meta?: PaginationMeta;
+	readonly meta?: M;
 }
 
 export interface PaginationMeta {

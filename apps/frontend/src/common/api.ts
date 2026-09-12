@@ -6,9 +6,10 @@ export interface PaginationMeta {
 	total: number;
 }
 
-export interface ApiEnvelope<T> {
+/** A successful envelope; `meta` carries page metadata or the counts of a bulk action. */
+export interface ApiEnvelope<T, M = PaginationMeta> {
 	data: T;
-	meta?: PaginationMeta;
+	meta?: M;
 }
 
 interface ApiErrorBody {
@@ -34,9 +35,21 @@ export class ApiRequestError extends Error {
  */
 const API_URL = import.meta.env.VITE_API_URL ?? "";
 
-/** Attach the current Session and translate failed API responses. */
-async function apiRequest(path: string, init?: RequestInit): Promise<Response> {
-	const token = await getAccessToken();
+/** Where a request's bearer comes from and what a 401 means; the Administrator's Session by default. */
+export interface ApiRequestOptions {
+	/** The bearer token for the request; null sends none. */
+	getToken?: () => Promise<string | null> | string | null;
+	/** Called when a request that carried a token is answered 401: the Session is over. */
+	onUnauthorized?: () => void;
+}
+
+/** Attach the Session's token and translate failed API responses. */
+async function apiRequest(
+	path: string,
+	init?: RequestInit,
+	{ getToken = getAccessToken, onUnauthorized }: ApiRequestOptions = {}
+): Promise<Response> {
+	const token = await getToken();
 	const response = await fetch(`${API_URL}${path}`, {
 		...init,
 		headers: {
@@ -54,6 +67,7 @@ async function apiRequest(path: string, init?: RequestInit): Promise<Response> {
 		const body = (await response
 			.json()
 			.catch((): ApiErrorBody => ({}))) as ApiErrorBody;
+		if (response.status === 401 && token) onUnauthorized?.();
 		throw new ApiRequestError(
 			response.status,
 			body.error?.message ?? `Request failed: ${response.status.toString()}`,
@@ -65,25 +79,28 @@ async function apiRequest(path: string, init?: RequestInit): Promise<Response> {
 	return response;
 }
 
-/** Fetch a JSON envelope with the current Session. */
-export async function apiFetchEnvelope<T>(
+/** Fetch a JSON envelope with the Session's token. */
+export async function apiFetchEnvelope<T, M = PaginationMeta>(
 	path: string,
-	init?: RequestInit
-): Promise<ApiEnvelope<T>> {
-	const response = await apiRequest(path, init);
-	return (await response.json()) as ApiEnvelope<T>;
+	init?: RequestInit,
+	options?: ApiRequestOptions
+): Promise<ApiEnvelope<T, M>> {
+	const response = await apiRequest(path, init, options);
+	return (await response.json()) as ApiEnvelope<T, M>;
 }
 
 /**
- * Fetch from the API, unwrapping the `{ data }` envelope. The current Session's
+ * Fetch from the API, unwrapping the `{ data }` envelope. The Administrator's
  * access token rides along as a bearer header so protected routes can verify
- * the caller against Supabase's signing keys.
+ * the caller against Supabase's signing keys; the Field passes its own
+ * `options` to send the Member token instead.
  */
 export async function apiFetch<T>(
 	path: string,
-	init?: RequestInit
+	init?: RequestInit,
+	options?: ApiRequestOptions
 ): Promise<T> {
-	return (await apiFetchEnvelope<T>(path, init)).data;
+	return (await apiFetchEnvelope<T>(path, init, options)).data;
 }
 
 /** Send a request whose successful response has no body (HTTP 204). */

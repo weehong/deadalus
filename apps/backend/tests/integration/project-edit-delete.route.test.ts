@@ -8,6 +8,7 @@ const removeBlocks = vi.fn();
 const database = {
 	project: { update, delete: remove },
 	block: { deleteMany: removeBlocks },
+	item: { findMany: vi.fn().mockResolvedValue([]) },
 };
 vi.mock("@/lib/prisma.js", () => ({
 	prisma: {
@@ -25,6 +26,7 @@ const record = {
 	code: "EG2",
 	blocks: [],
 	unitTypes: [],
+	catalogueItems: [],
 };
 beforeAll(async () => {
 	const key = await createSigningKey();
@@ -62,6 +64,9 @@ it.each([
 		expect(response.body).toEqual({
 			data: {
 				...record,
+				itemCount: 0,
+				entryCount: 0,
+				progression: null,
 				name: body.name?.trim() ?? "Emerald",
 				code: body.code?.trim().toUpperCase() ?? "EG2",
 			},

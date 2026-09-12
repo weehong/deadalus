@@ -1,4 +1,5 @@
 import type { Route } from "@playwright/test";
+import { fullProject } from "./catalogue-items-api";
 import type { FakeProject } from "./projects-api";
 const key = (name: string): string =>
 	name.trim().replace(/\s+/g, " ").toLowerCase();
@@ -101,20 +102,9 @@ export const handleUnits = async (
 		}
 		if (body.unitTypeId !== undefined) unit.unitTypeId = body.unitTypeId;
 	} else return fail(404, "NOT_FOUND");
-	const units = project.blocks
-		.flatMap((b) => b.storeys)
-		.flatMap((s) => s.units);
 	await route.fulfill({
 		status: add ? 201 : 200,
-		json: {
-			data: {
-				...project,
-				unitTypes: project.unitTypes.map((type) => ({
-					...type,
-					unitCount: units.filter((u) => u.unitTypeId === type.id).length,
-				})),
-			},
-		},
+		json: { data: fullProject(project) },
 	});
 	return true;
 };

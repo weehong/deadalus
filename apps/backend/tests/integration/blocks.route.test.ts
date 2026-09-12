@@ -3,6 +3,7 @@ import { beforeAll, beforeEach, afterAll, expect, it, vi } from "vitest";
 import { createSigningKey, sign, stubJwks } from "../helpers/supabase-jwt.js";
 const db = {
 	project: { findUnique: vi.fn() },
+	item: { findMany: vi.fn() },
 	block: {
 		findMany: vi.fn(),
 		findFirst: vi.fn(),
@@ -23,7 +24,9 @@ const project = {
 	code: "EG",
 	blocks: [],
 	unitTypes: [],
+	catalogueItems: [],
 };
+const noItems = { itemCount: 0, entryCount: 0, progression: null };
 beforeAll(async () => {
 	const key = await createSigningKey();
 	stubJwks(key);
@@ -34,6 +37,7 @@ afterAll(() => vi.unstubAllGlobals());
 beforeEach(() => {
 	vi.clearAllMocks();
 	db.project.findUnique.mockResolvedValue(project);
+	db.item.findMany.mockResolvedValue([]);
 	db.block.findMany.mockResolvedValue([]);
 	db.block.findFirst.mockResolvedValue({ id: "b", projectId: "p" });
 });
@@ -119,7 +123,7 @@ it("renames in place and returns a full Project", async () => {
 		.set("Authorization", `Bearer ${token}`)
 		.send({ name: "New" });
 	expect(response.status).toBe(200);
-	expect(response.body.data).toEqual(project);
+	expect(response.body.data).toEqual({ ...project, ...noItems });
 });
 it.each(["patch", "delete"] as const)(
 	"scopes %s to the Project",

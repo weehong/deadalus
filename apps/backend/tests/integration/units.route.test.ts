@@ -3,6 +3,7 @@ import { beforeAll, beforeEach, afterAll, expect, it, vi } from "vitest";
 import { createSigningKey, sign, stubJwks } from "../helpers/supabase-jwt.js";
 const db = {
 	project: { findUnique: vi.fn() },
+	item: { findMany: vi.fn() },
 	block: { findFirst: vi.fn() },
 	storey: { findMany: vi.fn() },
 	unitType: { findFirst: vi.fn() },
@@ -26,7 +27,9 @@ const project = {
 	code: "EG",
 	blocks: [{ id: "b", name: "A", position: 0, storeys: [] }],
 	unitTypes: [],
+	catalogueItems: [],
 };
+const noItems = { itemCount: 0, entryCount: 0, progression: null };
 beforeAll(async () => {
 	const key = await createSigningKey();
 	stubJwks(key);
@@ -39,6 +42,7 @@ beforeEach(() => {
 	db.unit.createMany.mockReset();
 	transaction.mockImplementation(async (work) => work(db));
 	db.project.findUnique.mockResolvedValue(project);
+	db.item.findMany.mockResolvedValue([]);
 	db.unit.findMany.mockResolvedValue([]);
 	db.storey.findMany.mockResolvedValue([{ id: "s1" }, { id: "s2" }]);
 	db.unitType.findFirst.mockResolvedValue({ id: "t" });
@@ -152,7 +156,11 @@ it("renames in place and returns a full Project", async () => {
 		.set("Authorization", `Bearer ${token}`)
 		.send({ name: "New" });
 	expect(response.status).toBe(200);
-	expect(response.body.data).toEqual(project);
+	expect(response.body.data).toEqual({
+		...project,
+		...noItems,
+		blocks: [{ ...project.blocks[0]!, ...noItems }],
+	});
 });
 it.each(["patch", "delete"] as const)(
 	"scopes %s to the Project",

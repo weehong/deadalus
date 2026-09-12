@@ -55,7 +55,7 @@ test("traps delete focus, closes on Escape, restores focus, then deletes", async
 	await trigger.click();
 	const dialog = page.getByRole("dialog", { name: "Delete project?" });
 	await expect(dialog).toContainText(
-		"Project 01 and its 1 Blocks, 1 Storeys and 1 Units"
+		"Project 01 and its 1 Blocks, 1 Storeys, 1 Units, 0 Items and 0 Progress entries"
 	);
 	const cancel = dialog.getByRole("button", { name: "Cancel" });
 	const confirm = dialog.getByRole("button", {

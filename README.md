@@ -39,6 +39,7 @@ Fill in the Supabase values (Project Settings → API in the dashboard):
 | `apps/frontend/.env`  | `VITE_SUPABASE_ANON_KEY` | The publishable anonymous key                     |
 | `apps/backend/.env`   | `SUPABASE_URL`           | The same project URL                              |
 | `apps/backend/.env`   | `DATABASE_URL`           | Session-pooler string **with `?schema=daedalus2`** |
+| `apps/backend/.env`   | `MEMBER_TOKEN_SECRET`    | Any 32+ character secret (`openssl rand -hex 32`) that signs Member tokens for the Field |
 
 The service-role key never enters this repository. `DATABASE_URL` is the
 Supabase Postgres (see `docs/adr/0002-*.md`). For local Docker development,
@@ -131,6 +132,10 @@ the Console.
 | `/projects/new` | Create a Project with a unique name and code |
 | `/projects/$id` | Structure panes, Project edit and confirmed deletion |
 | `/projects/$id/unit-types` | Manage the Project's Unit Type catalogue |
+| `/projects/$id/items` | The Item Catalogue: apply, assign and remove Items across Units |
+| `/projects/$id/qr-labels` | Print-ready QR labels for one Block or the whole Project |
+| `/field/login` | Member sign in to the Field by phone number |
+| `/field` | The Field: the Member's Projects, then Blocks, Storeys, Units and Items |
 | `/subcontractors` | Searchable, paged Directory with a New subcontractor action |
 | `/subcontractors/new` | Create a Subcontractor with its first Member |
 | `/subcontractors/$id` | Rename, manage Members, and confirm deletion |
@@ -192,6 +197,85 @@ English and Chinese copy is available; Chinese is flagged for native review.
 The idempotent seed includes one Project with 2 Blocks, 4 Storeys, 8 Units and
 2 Unit Types. See the [approved spec](.scratch/projects/spec.md) and
 [49-story evidence matrix](.scratch/projects/verification/ticket-09.md).
+
+## Items, Progression and the Field
+
+Each Project has an Item Catalogue on its Items tab: a list of Item names,
+unique within the Project ignoring case and whitespace. An Administrator
+applies a Catalogue Item to a set of Units chosen by Block, Storeys and Unit
+Types; every selected Unit that does not already hold it gets its own Item,
+and the dialog previews the exact counts before submit. The same selection
+drives Assign, which gives those Items to one Subcontractor (skipping Items
+assigned elsewhere unless Reassign is ticked, or unassigning them), and Remove
+from Units, which deletes them with their Progress entries after a confirmation.
+Renaming a Catalogue Item renames every Item; deleting one in use is refused
+with the count, as is deleting a Subcontractor that holds Assignments.
+
+Progression is a whole number from 0 to 100 per Item, recorded as a dated
+history of Progress entries with an optional note; the latest entry is the
+Item's Progression and an Item without an Assignment accepts none. Every
+Unit, Storey, Block and Project shows the plain average of the Items beneath
+it, unassigned Items counting at 0, and nothing where there are no Items.
+Administrators enter progress from the Unit card's Items disclosure, which
+also shows each Item's Subcontractor, latest entry and history. See
+[ADR-0008](docs/adr/0008-items-are-copies-made-from-a-per-project-item-catalogue.md).
+
+The Field is the Member-facing part of Daedalus, mobile-first, in the same
+frontend at `/field`. For this proof of concept a Member signs in with their
+phone number alone: the API looks the number up in the Directory and issues
+its own thirty-day token, signed with `MEMBER_TOKEN_SECRET`. **Anyone who
+knows a Member's phone number can act as that Member**; this is a deliberate,
+temporary exception to the Supabase authentication in ADR-0001, recorded with
+its replacement path in
+[ADR-0009](docs/adr/0009-member-sessions-are-issued-by-the-api-for-the-proof-of-concept.md).
+A signed-in Member sees only the Projects, Blocks, Storeys and Units where
+their Subcontractor holds Items, with that Subcontractor's own Progression at
+each level, and enters progress on those Items. Every Field route derives the
+Subcontractor from the Member loaded on each request; anything outside it is
+a 404, and a removed Member is signed out on their next request.
+
+All Console routes require a verified Administrator Session; all Field routes
+require a Member token and never accept the other kind. Both are documented
+at `/openapi.json`. The seed adds three Catalogue Items, Items across the
+sample Project's Units, two Assignments and a few Progress entries. See the
+[approved spec](.scratch/items-and-progression/spec.md) and the ten tickets
+beside it.
+
+## QR labels
+
+Every Unit has a QR label: a printed sticker whose code carries nothing but
+the absolute URL of that Unit's Field screen, `<origin>/field/units/<unit
+id>`. A Member scans it with the phone's camera and lands on the Unit, where
+the Items assigned to their Subcontractor are waiting. Without a Session they
+are sent to Sign in first and returned to the scanned Unit afterwards; the
+return-to destination is kept only when it is a relative Field path, so a
+crafted sign-in link cannot send a Member off-site or into the Console. A
+Session that expires mid-visit comes back the same way, while a deliberate Sign
+out does not, since the phone may be the site's rather than the Member's. Where their Subcontractor
+holds no Item in that Unit, and for a label whose Unit is gone, the Field says
+so by name and offers a way back to their Projects.
+
+Administrators print from the Structure tab: **Print QR labels** for the whole
+Project beside the Structure actions, or one per Block in the Blocks pane.
+Both open `/projects/$id/qr-labels`, a page with no Console chrome that
+previews the sheets on screen and prints with the browser's own Print, to
+paper or PDF. The layout is the 21-up A4 layout of Avery L7160 stock: three
+columns by seven rows of 63.5mm by 38.1mm labels, in Storey then Unit order,
+each Block starting a new page. A label carries the code at about 30mm, the
+Unit's full label in large type (#12-01) and the Project code and Block name
+beneath. A Block or Project with no Units says so instead of printing a blank
+sheet. Codes are generated in the browser by the pinned, dependency-free
+`qrcode-generator` and drawn as inline SVG, with the four-module quiet zone a
+scanner needs, so they print crisply at any size and no server is involved.
+
+The URL is the whole of the label: it grants nothing, so a photographed
+label is worth nothing without a Member Session, and nothing is stored for
+a label. Two consequences follow from
+[ADR-0010](docs/adr/0010-qr-labels-carry-the-units-field-url.md): the Field's
+Unit route and the origin the labels were printed from are now fixed for as
+long as those labels are on doors, so **print from the deployed Console**
+(labels printed from a development origin point at that origin), and a Unit
+deleted and made again needs a new label.
 
 ## The example slice is disposable
 

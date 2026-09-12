@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { nameKey } from "@/lib/name-key.js";
 import { HttpError } from "@/lib/http-error.js";
 import { prisma } from "@/lib/prisma.js";
+import { deleteUnlessHeld } from "@/services/delete-unless-held.js";
 import type {
 	ListSubcontractorsQuery,
 	MemberBody,
@@ -101,9 +102,22 @@ export async function getSubcontractor(id: string): Promise<Subcontractor> {
 	return record;
 }
 
+/** A Subcontractor holding an Assignment cannot be deleted; the count comes back with the refusal. */
 export async function deleteSubcontractor(id: string): Promise<void> {
-	const result = await prisma.subcontractor.deleteMany({ where: { id } });
-	if (result.count === 0) throw HttpError.notFound("Subcontractor not found");
+	await deleteUnlessHeld(
+		{ subcontractorId: id },
+		{
+			code: "SUBCONTRACTOR_HAS_ASSIGNMENTS",
+			message: "Items are still assigned to this Subcontractor",
+			changedMessage: "Assignments changed; refresh and try again",
+		},
+		async () => {
+			const { count } = await prisma.subcontractor.deleteMany({
+				where: { id },
+			});
+			if (count === 0) throw HttpError.notFound("Subcontractor not found");
+		}
+	);
 }
 
 export async function removeMember(
